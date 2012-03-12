@@ -66,6 +66,11 @@ QDialog *ToBlackAndWhiteProcessor::getOptionDialog(Area area,
   return result;
 }
 
+QString ToBlackAndWhiteProcessor::name() const
+{
+  return "Black And White";
+}
+
 void ToBlackAndWhiteProcessor::confirm
     (ToBlackAndWhiteProcessor::ThresholdType type,
      int startColor,

@@ -54,6 +54,11 @@ void ToGrayProcessor::interrupt()
 {
 }
 
+QString ToGrayProcessor::name() const
+{
+  return "Gray";
+}
+
 void ToGrayProcessor::confirm()
 {
   ToGrayProcessor *newProcessor = new ToGrayProcessor();

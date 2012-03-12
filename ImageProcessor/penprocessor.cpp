@@ -1,24 +1,23 @@
-#include "drawlineprocessor.h"
-
+#include "penprocessor.h"
 #include <QEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QSpinBox>
 #include "imageviewwidget.h"
 
-DrawLineProcessor::DrawLineProcessor() :
+PenProcessor::PenProcessor() :
     _width(1),
     valid(false),
     _optionWidget(NULL)
 {
 }
 
-MyImage::ImageTypeFlag DrawLineProcessor::resultType() const
+MyImage::ImageTypeFlag PenProcessor::resultType() const
 {
   return (MyImage::ImageTypeFlag)MyImage::Colored;
 }
 
-MyImage *DrawLineProcessor::processImage(const MyImage& image) const
+MyImage *PenProcessor::processImage(const MyImage& image) const
 {
   QImage *resultImage = new QImage(image.getImage());
   if (valid)
@@ -27,7 +26,7 @@ MyImage *DrawLineProcessor::processImage(const MyImage& image) const
     QPen pen(getCurrentColor());
     pen.setWidth(_width);
     painter->setPen(pen);
-    painter->drawLine(startPosition, endPosition);
+    painter->drawPoints(positions);
     painter->end();
     delete painter;
   }
@@ -36,7 +35,7 @@ MyImage *DrawLineProcessor::processImage(const MyImage& image) const
   return result;
 }
 
-QWidget *DrawLineProcessor::optionWidget()
+QWidget *PenProcessor::optionWidget()
 {
   if (_optionWidget == NULL)
   {
@@ -51,7 +50,7 @@ QWidget *DrawLineProcessor::optionWidget()
   return _optionWidget;
 }
 
-MyImage DrawLineProcessor::preProcessImage(const MyImage& image) const
+MyImage PenProcessor::preProcessImage(const MyImage& image) const
 {
   QImage *resultImage = new QImage(image.getImage());
   if (valid)
@@ -60,7 +59,7 @@ MyImage DrawLineProcessor::preProcessImage(const MyImage& image) const
     QPen pen(getCurrentColor());
     pen.setWidth(_width);
     painter->setPen(pen);
-    painter->drawLine(startPosition, endPosition);
+    painter->drawPoints(positions);
     painter->end();
     delete painter;
   }
@@ -69,43 +68,44 @@ MyImage DrawLineProcessor::preProcessImage(const MyImage& image) const
   return result;
 }
 
-bool DrawLineProcessor::cancelWhenNewOneIsCreated() const
+bool PenProcessor::cancelWhenNewOneIsCreated() const
 {
   return false;
 }
 
-void DrawLineProcessor::interrupt()
+void PenProcessor::interrupt()
 {
   valid = false;
 }
 
-QString DrawLineProcessor::name() const
+QString PenProcessor::name() const
 {
-  return "Line";
+  return "Pen";
 }
 
-bool DrawLineProcessor::eventFilter(QObject *object, QEvent *event)
+bool PenProcessor::eventFilter(QObject *object, QEvent *event)
 {
   ImageViewWidget *imageViewer = (ImageViewWidget *) object;
   switch (event->type())
   {
   case QEvent::MouseButtonPress:
-    startPosition = imageViewer->toImagePosition(((QMouseEvent *) event)->pos());
-    endPosition = startPosition;
+    positions.clear();
+    positions.push_back(
+        imageViewer->toImagePosition(((QMouseEvent *) event)->pos()));
     valid = true;
     break;
   case QEvent::MouseMove:
-    endPosition = imageViewer->toImagePosition(((QMouseEvent *) event)->pos());
+    positions.push_back(
+        imageViewer->toImagePosition(((QMouseEvent *) event)->pos()));
     emit optionChanged(this);
     break;
   case QEvent::MouseButtonRelease:
     {
-      DrawLineProcessor *newProcessor = new DrawLineProcessor();
+      PenProcessor *newProcessor = new PenProcessor();
       newProcessor->_width = _width;
       newProcessor->valid = valid;
       newProcessor->_colorChooser = _colorChooser;
-      newProcessor->startPosition = startPosition;
-      newProcessor->endPosition = endPosition;
+      newProcessor->positions = positions;
       emit processorCreated(newProcessor);
       valid = false;
     }
@@ -116,7 +116,7 @@ bool DrawLineProcessor::eventFilter(QObject *object, QEvent *event)
   return false;
 }
 
-void DrawLineProcessor::changeToWidth(int width)
+void PenProcessor::changeToWidth(int width)
 {
   _width = width;
 }

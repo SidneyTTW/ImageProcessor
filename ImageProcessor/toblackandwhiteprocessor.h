@@ -26,6 +26,7 @@ public:
   virtual MyImage::ImageTypeFlag resultType() const;
   virtual MyImage *processImage(const MyImage& image) const;
   virtual QDialog *getOptionDialog(Area area, const MyImage& image);
+  virtual QString name() const;
 
 private:
   /**

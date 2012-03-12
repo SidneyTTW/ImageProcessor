@@ -1,21 +1,22 @@
-#ifndef DRAWLINEPROCESSOR_H
-#define DRAWLINEPROCESSOR_H
+#ifndef PENPROCESSOR_H
+#define PENPROCESSOR_H
 
 #include "abstractimageprocessorwithsimpleoption.h"
 
+#include "imagealgorithm.h"
 #include <QSpinBox>
 
 /**
- * Class of processor to draw a line.
+ * Class of processor to convert an image into gray one.
  */
-class DrawLineProcessor : public AbstractImageProcessorWithSimpleOption
+class PenProcessor : public AbstractImageProcessorWithSimpleOption
 {
   Q_OBJECT
 public:
   /**
    * Constructor.
    */
-  DrawLineProcessor();
+  PenProcessor();
 
   virtual MyImage::ImageTypeFlag resultType() const;
   virtual MyImage *processImage(const MyImage& image) const;
@@ -45,12 +46,7 @@ private:
   /**
    * Start position of the line.
    */
-  QPoint startPosition;
-
-  /**
-   * End position of the line.
-   */
-  QPoint endPosition;
+  QPolygon positions;
 
   /**
    * The option widget.
@@ -64,4 +60,4 @@ public slots:
   void changeToWidth(int width);
 };
 
-#endif // DRAWLINEPROCESSOR_H
+#endif // PENPROCESSOR_H

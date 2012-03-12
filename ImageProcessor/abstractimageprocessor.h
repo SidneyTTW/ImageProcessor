@@ -42,6 +42,11 @@ public:
    */
   virtual MyImage *processImage(const MyImage& image) const=0;
 
+  /**
+   * @return Name of the processor
+   */
+  virtual QString name() const=0;
+
 signals:
   /**
    * Signal emitted when a new processor is created.

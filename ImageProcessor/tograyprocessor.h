@@ -2,6 +2,7 @@
 #define TOGRAYPROCESSOR_H
 
 #include "abstractimageprocessorwithsimpleoption.h"
+
 #include "imagealgorithm.h"
 
 class ToGrayOptionWidget;
@@ -24,6 +25,7 @@ public:
   virtual MyImage preProcessImage(const MyImage& image) const;
   virtual bool cancelWhenNewOneIsCreated() const;
   virtual void interrupt();
+  virtual QString name() const;
 
   /**
    * @return The type of the algorithm.

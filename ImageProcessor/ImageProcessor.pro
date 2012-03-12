@@ -34,7 +34,9 @@ SOURCES += main.cpp\
     xplotpicker.cpp \
     imageprocessorwithcomplexoptionaction.cpp \
     colorpushbutton.cpp \
-    colorchooser.cpp
+    colorchooser.cpp \
+    penprocessor.cpp \
+    processoraid.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -64,7 +66,9 @@ HEADERS  += mainwindow.h \
     xplotpicker.h \
     imageprocessorwithcomplexoptionaction.h \
     colorpushbutton.h \
-    colorchooser.h
+    colorchooser.h \
+    penprocessor.h \
+    processoraid.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \

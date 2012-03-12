@@ -5,14 +5,14 @@
 #include <QDialog>
 #include <QFileDialog>
 #include "colorchooser.h"
-#include "drawlineprocessor.h"
+#include "abstractimageprocessorwithsimpleoption.h"
+#include "abstractimageprocessorwithdialogoption.h"
 #include "imageprocessorwithsimpleoptionaction.h"
 #include "imageprocessorwithcomplexoptionaction.h"
 #include "imageviewwidget.h"
 #include "processchain.h"
 #include "simpleoptioncontainerwidget.h"
-#include "toblackandwhiteprocessor.h"
-#include "tograyprocessor.h"
+#include "processoraid.h"
 
 #include <QDebug>
 
@@ -30,9 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
   signalMapper2 = new QSignalMapper();
   signalMapper3 = new QSignalMapper();
 
-//  for (int i = 0;i < 10;++i)
+  QVector<AbstractImageProcessorWithSimpleOption *> simpleOptions =
+      ProcessorAid::simpleOptions();
+  for (int i = 0;i < simpleOptions.size();++i)
   {
-    ToGrayProcessor *processor = new ToGrayProcessor();
+    AbstractImageProcessorWithSimpleOption *processor = simpleOptions[i];
     processor->setColorChooser(this);
     connect(processor,
             SIGNAL(optionChanged(AbstractImageProcessorWithSimpleOption*)),
@@ -46,37 +48,18 @@ MainWindow::MainWindow(QWidget *parent) :
         new ImageProcessorWithSimpleOptionAction(processor, this);
     action->setCheckable(true);
     //action->setShortcut(QKeySequence::Open);
-    action->setStatusTip(tr("%1").arg("To Gray"));
-    action->setText(tr("%1").arg("To Gray"));
+    action->setStatusTip(processor->name());
+    action->setText(processor->name());
     simpleActions.append(action);
     connect(action, SIGNAL(triggered()), signalMapper1, SLOT(map()));
     signalMapper1->setMapping(action, (QObject *)action);
     ui->mainToolBar->addAction(action);
   }
+  QVector<AbstractImageProcessorWithDialogOption *> complexOptions =
+      ProcessorAid::complexOptions();
+  for (int i = 0;i < complexOptions.size();++i)
   {
-    DrawLineProcessor *processor = new DrawLineProcessor();
-    processor->setColorChooser(this);
-    connect(processor,
-            SIGNAL(optionChanged(AbstractImageProcessorWithSimpleOption*)),
-            this,
-            SLOT(simpleOptionChanged(AbstractImageProcessorWithSimpleOption*)));
-    connect(processor,
-            SIGNAL(processorCreated(AbstractImageProcessor*)),
-            this,
-            SLOT(addSimpleProcessor(AbstractImageProcessor*)));
-    ImageProcessorWithSimpleOptionAction *action =
-        new ImageProcessorWithSimpleOptionAction(processor, this);
-    action->setCheckable(true);
-    //action->setShortcut(QKeySequence::Open);
-    action->setStatusTip(tr("%1").arg("Draw Line"));
-    action->setText(tr("%1").arg("Draw Line"));
-    simpleActions.append(action);
-    connect(action, SIGNAL(triggered()), signalMapper1, SLOT(map()));
-    signalMapper1->setMapping(action, (QObject *)action);
-    ui->mainToolBar->addAction(action);
-  }
-  {
-    ToBlackAndWhiteProcessor *processor = new ToBlackAndWhiteProcessor();
+    AbstractImageProcessorWithDialogOption *processor = complexOptions[i];
     connect(processor,
             SIGNAL(processorCreated(AbstractImageProcessor*)),
             this,
@@ -84,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ImageProcessorWithComplexOptionAction *action =
         new ImageProcessorWithComplexOptionAction(processor, this);
     //action->setShortcut(QKeySequence::Open);
-    action->setStatusTip(tr("%1").arg("To Black and White"));
-    action->setText(tr("%1").arg("To Black and White"));
+    action->setStatusTip(processor->name());
+    action->setText(processor->name());
     complexActions.append(action);
     connect(action, SIGNAL(triggered()), signalMapper2, SLOT(map()));
     signalMapper2->setMapping(action, (QObject *)action);
