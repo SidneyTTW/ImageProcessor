@@ -1,5 +1,6 @@
 #include "colorpushbutton.h"
 
+#include <QColorDialog>
 #include <QPainter>
 
 ColorPushButton::ColorPushButton(QColor color) :
@@ -15,4 +16,11 @@ void ColorPushButton::paintEvent(QPaintEvent *event)
   painter->fillRect(0, 0, width(), height(), _color);
   painter->end();
   delete painter;
+}
+
+void ColorPushButton::mouseDoubleClickEvent(QMouseEvent *event)
+{
+  QColor color = QColorDialog::getColor(_color);
+  if (color.isValid())
+    setColor(color);
 }

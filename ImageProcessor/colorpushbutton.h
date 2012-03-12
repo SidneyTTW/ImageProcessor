@@ -34,6 +34,7 @@ public:
 
 protected:
   virtual void paintEvent(QPaintEvent *event);
+  virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
   /**
