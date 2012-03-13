@@ -183,6 +183,11 @@ public slots:
   void saveAs();
 
   /**
+   * Open process chain.
+   */
+  void openChain();
+
+  /**
    * Save process chain.
    */
   void saveChain();

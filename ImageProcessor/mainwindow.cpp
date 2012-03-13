@@ -89,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
   connect(ui->openAction, SIGNAL(triggered()), this, SLOT(open()));
   connect(ui->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+  connect(ui->openChainAction, SIGNAL(triggered()), this, SLOT(openChain()));
   connect(ui->saveChainAction, SIGNAL(triggered()), this, SLOT(saveChain()));
 }
 
@@ -259,7 +260,7 @@ void MainWindow::open()
 {
   QString path =
       QFileDialog::getOpenFileName(this,
-                                   "Select a file",
+                                   "Select an image file",
                                    tr(""),
                                    "Image (*.png *.jpg *.jpeg *.bmp)");
   if (path.isEmpty())
@@ -281,6 +282,30 @@ void MainWindow::open()
 void MainWindow::saveAs()
 {
   //TODO
+}
+
+
+void MainWindow::openChain()
+{
+  ImageViewWidget *widget = currentWidget();
+  ProcessChain *processChain = currentChain();
+  if (widget == NULL || processChain == NULL)
+    return;
+  QString path =
+      QFileDialog::getOpenFileName(this,
+                                   "Select a process chain file",
+                                   tr(""),
+                                   "Process Chain (*.pc)");
+  if (path.isEmpty())
+    return;
+  disconnectAll();
+  QList<AbstractImageProcessor *> chains = ProcessChain::loadProcessor(path);
+  AbstractImageProcessor *processor;
+  foreach(processor, chains)
+    if (processor != NULL)
+      processChain->addProcessorAtCurrentPosition(processor);
+  widget->setImage(processChain->getCurrentImage()->getImage());
+  update();
 }
 
 void MainWindow::saveChain()
