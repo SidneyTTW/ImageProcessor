@@ -1,5 +1,7 @@
 #include "processchain.h"
 
+#include <QFile>
+#include <QTextStream>
 #include "abstractimageprocessor.h"
 
 ProcessChain::ProcessChain(MyImage *image, int limit) :
@@ -55,15 +57,14 @@ void ProcessChain::maintainLists()
   QList<MyImage *>::Iterator itr2 = imageList.begin();
   while (processorList.size() > _limit)
   {
-    delete *itr1;
+    recycledProcessorList.append(*itr1);
     delete *itr2;
     itr1 = processorList.erase(itr1);
     itr2 = imageList.erase(itr2);
   }
   if (!processorList.isEmpty())
   {
-    delete processorList.first();
-    processorList.removeAt(0);
+    recycledProcessorList.append(processorList.takeFirst());
     processorList.insert(0, NULL);
     _currentIndex = imageList.size() - 1;
   }
@@ -75,15 +76,14 @@ void ProcessChain::compress()
   QList<MyImage *>::Iterator itr2 = imageList.begin();
   while (processorList.size() > 1)
   {
-    delete *itr1;
+    recycledProcessorList.append(*itr1);
     delete *itr2;
     itr1 = processorList.erase(itr1);
     itr2 = imageList.erase(itr2);
   }
   if (!processorList.isEmpty())
   {
-    delete processorList.first();
-    processorList.removeAt(0);
+    recycledProcessorList.append(processorList.takeFirst());
     processorList.insert(0, NULL);
     _currentIndex = 0;
   }
@@ -95,11 +95,28 @@ void ProcessChain::setLimit(int limit)
   maintainLists();
 }
 
+void ProcessChain::save(QString path)
+{
+  QFile file(path);
+  if (file.open(QFile::WriteOnly | QFile::Truncate)) {
+    QTextStream out(&file);
+    AbstractImageProcessor *processor;
+    foreach (processor, recycledProcessorList)
+      out << processor->name() << '{' << processor->toString() << '}';
+    foreach (processor, processorList)
+      if (processor != NULL)
+        out << processor->name() << '{' << processor->toString() << '}';
+  }
+  file.close();
+}
+
 ProcessChain::~ProcessChain()
 {
   delete firstImage;
   AbstractImageProcessor *processor;
   foreach (processor, processorList)
+    delete processor;
+  foreach (processor, recycledProcessorList)
     delete processor;
   MyImage *image;
   foreach (image, imageList)

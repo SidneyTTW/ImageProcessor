@@ -129,6 +129,13 @@ public:
    */
   void compress();
 
+  /**
+   * Save the chain.
+   *
+   * @param path The path of the file.
+   */
+  void save(QString path);
+
 private:
   /**
    * The current.
@@ -149,6 +156,11 @@ private:
    * The processor list.
    */
   QList<AbstractImageProcessor *> processorList;
+
+  /**
+   * The recycled processor list.
+   */
+  QList<AbstractImageProcessor *> recycledProcessorList;
 
   /**
    * The image list.
