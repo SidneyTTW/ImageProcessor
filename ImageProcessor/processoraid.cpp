@@ -1,5 +1,7 @@
 #include "processoraid.h"
 
+#include <QFile>
+#include <QTextStream>
 #include "drawlineprocessor.h"
 #include "penprocessor.h"
 #include "tograyprocessor.h"
@@ -18,5 +20,18 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
 {
   QVector<AbstractImageProcessorWithDialogOption *> result;
   result.push_back(new ToBlackAndWhiteProcessor());
+  return result;
+}
+
+QMap<QString, AbstractImageProcessor *> ProcessorAid::allProcessor()
+{
+  QVector<AbstractImageProcessorWithSimpleOption *> simple = simpleOptions();
+  QVector<AbstractImageProcessorWithDialogOption *> complex = complexOptions();
+  QMap<QString, AbstractImageProcessor *> result;
+  AbstractImageProcessor *processor;
+  foreach (processor, simple)
+    result.insert(processor->name(), processor);
+  foreach (processor, complex)
+    result.insert(processor->name(), processor);
   return result;
 }

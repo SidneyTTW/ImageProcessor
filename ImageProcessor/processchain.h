@@ -136,6 +136,12 @@ public:
    */
   void save(QString path);
 
+  /**
+   * @param path The path of the processor chain.
+   * @return List of processors.
+   */
+  static QList<AbstractImageProcessor *> loadProcessor(QString path);
+
 private:
   /**
    * The current.

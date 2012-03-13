@@ -1,8 +1,10 @@
 #include "processchain.h"
 
 #include <QFile>
+#include <QStringList>
 #include <QTextStream>
 #include "abstractimageprocessor.h"
+#include "processoraid.h"
 
 ProcessChain::ProcessChain(MyImage *image, int limit) :
     firstImage(image),
@@ -102,12 +104,37 @@ void ProcessChain::save(QString path)
     QTextStream out(&file);
     AbstractImageProcessor *processor;
     foreach (processor, recycledProcessorList)
-      out << processor->name() << '{' << processor->toString() << '}';
+      out << processor->name() << '|' << processor->toString() << '|';
     foreach (processor, processorList)
       if (processor != NULL)
-        out << processor->name() << '{' << processor->toString() << '}';
+        out << processor->name() << '|' << processor->toString() << '|';
   }
   file.close();
+}
+
+QList<AbstractImageProcessor *> ProcessChain::loadProcessor(QString path)
+{
+  QList<AbstractImageProcessor *> result;
+  QFile file(path);
+  if (file.open(QFile::ReadOnly)) {
+    QMap<QString, AbstractImageProcessor *> all = ProcessorAid::allProcessor();
+    QTextStream in(&file);
+    QString str = in.readAll();
+    QStringList list = str.split('|', QString::SkipEmptyParts);
+    while (list.size() >= 2)
+    {
+      QString name = list.takeFirst();
+      QString detail = list.takeFirst();
+      AbstractImageProcessor *processor = all.value(name, NULL);
+      if (processor != NULL)
+        result.push_back(processor->fromString(detail));
+    }
+    for (QMap<QString, AbstractImageProcessor *>::Iterator itr = all.begin();
+         itr != all.end();
+         ++itr)
+      delete itr.value();
+  }
+  return result;
 }
 
 ProcessChain::~ProcessChain()
