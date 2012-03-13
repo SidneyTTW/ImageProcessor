@@ -23,7 +23,11 @@ MyImage *PenProcessor::processImage(const MyImage& image) const
   if (valid)
   {
     QPainter *painter = new QPainter(resultImage);
-    QPen pen(getCurrentColor());
+    QPen pen;
+    if (getCurrentColor().isValid())
+      pen = QPen(getCurrentColor());
+    else
+      pen = QPen(_color);
     pen.setWidth(_width);
     painter->setPen(pen);
     painter->drawPoints(positions);
@@ -56,7 +60,11 @@ MyImage PenProcessor::preProcessImage(const MyImage& image) const
   if (valid)
   {
     QPainter *painter = new QPainter(resultImage);
-    QPen pen(getCurrentColor());
+    QPen pen;
+    if (getCurrentColor().isValid())
+      pen = QPen(getCurrentColor());
+    else
+      pen = QPen(_color);
     pen.setWidth(_width);
     painter->setPen(pen);
     painter->drawPoints(positions);
@@ -81,6 +89,32 @@ void PenProcessor::interrupt()
 QString PenProcessor::name() const
 {
   return "Pen";
+}
+
+QString PenProcessor::toString() const
+{
+  QColor color = _color;
+  if (getCurrentColor().isValid())
+    color = getCurrentColor();
+  QString result = tr("%1 %2").arg(color.rgba()).arg(_width);
+  for (int i = 0;i < positions.size();++i)
+    result += tr(" %1 %2").arg(positions[i].x()).arg(positions[i].y());
+  return result;
+}
+
+AbstractImageProcessor *PenProcessor::fromString(const QString& str) const
+{
+  QStringList list = str.split(' ', QString::SkipEmptyParts);
+  if (list.size() <= 2 || list.size() % 2 == 1)
+    return NULL;
+  PenProcessor *result = new PenProcessor();
+  QRgb rgb = list.takeFirst().toUInt();
+  result->_color = QColor(rgb);
+  result->_width = list.takeFirst().toInt();
+  while (!list.isEmpty())
+    result->positions.push_back(QPoint(list.takeFirst().toInt(),
+                                       list.takeFirst().toInt()));
+  return result;
 }
 
 bool PenProcessor::eventFilter(QObject *object, QEvent *event)

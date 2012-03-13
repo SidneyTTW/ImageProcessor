@@ -27,6 +27,8 @@ public:
   virtual MyImage *processImage(const MyImage& image) const;
   virtual QDialog *getOptionDialog(Area area, const MyImage& image);
   virtual QString name() const;
+  virtual QString toString() const;
+  virtual AbstractImageProcessor *fromString(const QString& str) const;
 
 private:
   /**

@@ -14,6 +14,11 @@ class AbstractImageProcessorWithSimpleOption : public AbstractImageProcessor
   Q_OBJECT
 public:
   /**
+   * Constructor.
+   */
+  AbstractImageProcessorWithSimpleOption() : _colorChooser(NULL) {}
+
+  /**
    * @return A widget connected with the configure instance to set the
    * confuration of the processor.
    */
@@ -54,7 +59,9 @@ public:
    */
   inline QColor getCurrentColor() const
   {
-    return _colorChooser->getCurrentColor();
+    if (_colorChooser != NULL)
+      return _colorChooser->getCurrentColor();
+    return QColor();
   }
 
 protected:

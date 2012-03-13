@@ -25,6 +25,8 @@ public:
   virtual bool cancelWhenNewOneIsCreated() const;
   virtual void interrupt();
   virtual QString name() const;
+  virtual QString toString() const;
+  virtual AbstractImageProcessor *fromString(const QString& str) const;
 
 protected:
   /**
@@ -42,6 +44,11 @@ private:
    * Width of the line.
    */
   int _width;
+
+  /**
+   * Color of the line.
+   */
+  QColor _color;
 
   /**
    * Start position of the line.

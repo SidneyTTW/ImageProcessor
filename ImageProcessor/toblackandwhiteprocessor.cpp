@@ -71,6 +71,27 @@ QString ToBlackAndWhiteProcessor::name() const
   return "Black And White";
 }
 
+QString ToBlackAndWhiteProcessor::toString() const
+{
+  QString result = tr("%1 %2").arg((int) type).arg(startColor);
+  for (int i = 0;i < thresholds.size();++i)
+    result += tr(" %1").arg(thresholds[i]);
+  return result;
+}
+
+AbstractImageProcessor *ToBlackAndWhiteProcessor::fromString(const QString& str) const
+{
+  QStringList list = str.split(' ', QString::SkipEmptyParts);
+  if (list.size() < 2)
+    return NULL;
+  ToBlackAndWhiteProcessor *result = new ToBlackAndWhiteProcessor();
+  result->type = (ThresholdType) list.takeFirst().toInt();
+  result->startColor = list.takeFirst().toInt();
+  while (!list.isEmpty())
+      result->thresholds.push_back(list.takeFirst().toInt());
+  return result;
+}
+
 void ToBlackAndWhiteProcessor::confirm
     (ToBlackAndWhiteProcessor::ThresholdType type,
      int startColor,

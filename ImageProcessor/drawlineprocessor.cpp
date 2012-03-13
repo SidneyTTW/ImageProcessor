@@ -24,7 +24,11 @@ MyImage *DrawLineProcessor::processImage(const MyImage& image) const
   if (valid)
   {
     QPainter *painter = new QPainter(resultImage);
-    QPen pen(getCurrentColor());
+    QPen pen;
+    if (getCurrentColor().isValid())
+      pen = QPen(getCurrentColor());
+    else
+      pen = QPen(_color);
     pen.setWidth(_width);
     painter->setPen(pen);
     painter->drawLine(startPosition, endPosition);
@@ -57,7 +61,11 @@ MyImage DrawLineProcessor::preProcessImage(const MyImage& image) const
   if (valid)
   {
     QPainter *painter = new QPainter(resultImage);
-    QPen pen(getCurrentColor());
+    QPen pen;
+    if (getCurrentColor().isValid())
+      pen = QPen(getCurrentColor());
+    else
+      pen = QPen(_color);
     pen.setWidth(_width);
     painter->setPen(pen);
     painter->drawLine(startPosition, endPosition);
@@ -82,6 +90,35 @@ void DrawLineProcessor::interrupt()
 QString DrawLineProcessor::name() const
 {
   return "Line";
+}
+
+QString DrawLineProcessor::toString() const
+{
+  QColor color = _color;
+  if (getCurrentColor().isValid())
+    color = getCurrentColor();
+  return tr("%1 %2 %3 %4 %5 %6").arg(color.rgba()).
+                                 arg(_width).
+                                 arg((startPosition.x())).
+                                 arg((startPosition.y())).
+                                 arg((endPosition.x())).
+                                 arg((endPosition.y()));
+}
+
+AbstractImageProcessor *DrawLineProcessor::fromString(const QString& str) const
+{
+  QStringList list = str.split(' ', QString::SkipEmptyParts);
+  if (list.size() != 6)
+    return NULL;
+  DrawLineProcessor *result = new DrawLineProcessor();
+  QRgb rgb = list.takeFirst().toUInt();
+  result->_color = QColor(rgb);
+  result->_width = list.takeFirst().toInt();
+  result->startPosition.setX(list.takeFirst().toInt());
+  result->startPosition.setY(list.takeFirst().toInt());
+  result->endPosition.setX(list.takeFirst().toInt());
+  result->endPosition.setY(list.takeFirst().toInt());
+  return result;
 }
 
 bool DrawLineProcessor::eventFilter(QObject *object, QEvent *event)

@@ -59,6 +59,18 @@ QString ToGrayProcessor::name() const
   return "Gray";
 }
 
+QString ToGrayProcessor::toString() const
+{
+  return tr("%1").arg((int)_type);
+}
+
+AbstractImageProcessor *ToGrayProcessor::fromString(const QString& str) const
+{
+  ToGrayProcessor *result = new ToGrayProcessor();
+  result->_type = (ImageAlgorithm::ImageToGrayAlgorithmType) str.toInt();
+  return result;
+}
+
 void ToGrayProcessor::confirm()
 {
   ToGrayProcessor *newProcessor = new ToGrayProcessor();
