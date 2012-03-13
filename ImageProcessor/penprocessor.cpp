@@ -111,6 +111,7 @@ AbstractImageProcessor *PenProcessor::fromString(const QString& str) const
   QRgb rgb = list.takeFirst().toUInt();
   result->_color = QColor(rgb);
   result->_width = list.takeFirst().toInt();
+  result->valid = true;
   while (!list.isEmpty())
     result->positions.push_back(QPoint(list.takeFirst().toInt(),
                                        list.takeFirst().toInt()));

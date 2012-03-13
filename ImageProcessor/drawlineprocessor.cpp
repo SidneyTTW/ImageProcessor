@@ -118,6 +118,7 @@ AbstractImageProcessor *DrawLineProcessor::fromString(const QString& str) const
   result->startPosition.setY(list.takeFirst().toInt());
   result->endPosition.setX(list.takeFirst().toInt());
   result->endPosition.setY(list.takeFirst().toInt());
+  result->valid = true;
   return result;
 }
 

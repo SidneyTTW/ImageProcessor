@@ -29,7 +29,7 @@ void ProcessChain::addProcessorAtCurrentPosition(AbstractImageProcessor *process
 
 void ProcessChain::addProcessorAt(AbstractImageProcessor *processor, int index)
 {
-  if (index >= 0 && index <= processorList.size())
+  if (index >= 0 && index < processorList.size())
   {
     int remainCount = 0;
     // Find the first thing to delete
@@ -39,7 +39,7 @@ void ProcessChain::addProcessorAt(AbstractImageProcessor *processor, int index)
     // Delete the things
     while (itr1 != processorList.end())
     {
-      delete *itr1;
+      recycledProcessorList.append(*itr1);
       delete *itr2;
       itr1 = processorList.erase(itr1);
       itr2 = imageList.erase(itr2);
