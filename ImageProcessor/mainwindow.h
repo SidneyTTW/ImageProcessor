@@ -183,6 +183,11 @@ public slots:
   void saveAs();
 
   /**
+   * Save process chain.
+   */
+  void saveChain();
+
+  /**
    * Change to the widget.
    */
   void changeToWidget(QObject *widget);

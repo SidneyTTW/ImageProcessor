@@ -89,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
   connect(ui->openAction, SIGNAL(triggered()), this, SLOT(open()));
   connect(ui->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+  connect(ui->saveChainAction, SIGNAL(triggered()), this, SLOT(saveChain()));
 }
 
 QColor MainWindow::getCurrentColor() const
@@ -280,6 +281,20 @@ void MainWindow::open()
 void MainWindow::saveAs()
 {
   //TODO
+}
+
+void MainWindow::saveChain()
+{
+  ProcessChain *processChain = currentChain();
+  if (processChain == NULL)
+    return;
+  QString path = QFileDialog::getSaveFileName(this,
+                                              "Export process chain",
+                                              "",
+                                              "Process Chain (*.pc)");
+  if (path.isEmpty())
+    return;
+  processChain->save(path);
 }
 
 void MainWindow::changeToWidget(QObject *widget)

@@ -90,6 +90,7 @@
     </property>
     <addaction name="openAction"/>
     <addaction name="saveAsAction"/>
+    <addaction name="saveChainAction"/>
    </widget>
    <widget class="QMenu" name="windowMenu">
     <property name="title">
@@ -160,6 +161,11 @@
   <action name="saveAsAction">
    <property name="text">
     <string>&amp;Save As</string>
+   </property>
+  </action>
+  <action name="saveChainAction">
+   <property name="text">
+    <string>Save Process Chain</string>
    </property>
   </action>
  </widget>
