@@ -25,6 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   while (ui->stackedWidget->currentWidget())
     ui->stackedWidget->removeWidget(ui->stackedWidget->currentWidget());
+  ui->openAction->setShortcut(QKeySequence::Open);
+  QList<QKeySequence> keyList;
+  keyList.push_back(QKeySequence::Save);
+  keyList.push_back(QKeySequence::SaveAs);
+  ui->saveAsAction->setShortcuts(keyList);
+  ui->undoAction->setShortcut(QKeySequence::Undo);
+  ui->redoAction->setShortcut(QKeySequence::Redo);
 
   signalMapper1 = new QSignalMapper();
   signalMapper2 = new QSignalMapper();
