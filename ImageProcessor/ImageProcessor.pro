@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     colorpushbutton.cpp \
     colorchooser.cpp \
     penprocessor.cpp \
-    processoraid.cpp
+    processoraid.cpp \
+    batchconvertiondialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -68,11 +69,13 @@ HEADERS  += mainwindow.h \
     colorpushbutton.h \
     colorchooser.h \
     penprocessor.h \
-    processoraid.h
+    processoraid.h \
+    batchconvertiondialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
-    toblackandwhitedialog.ui
+    toblackandwhitedialog.ui \
+    batchconvertiondialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
