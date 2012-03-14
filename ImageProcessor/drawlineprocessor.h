@@ -18,7 +18,7 @@ public:
   DrawLineProcessor();
 
   virtual MyImage::ImageTypeFlag resultType() const;
-  virtual MyImage *processImage(const MyImage& image) const;
+  virtual QImage *processImage(const QImage& image) const;
   virtual QWidget *optionWidget();
   virtual MyImage preProcessImage(const MyImage& image) const;
   virtual bool cancelWhenNewOneIsCreated() const;

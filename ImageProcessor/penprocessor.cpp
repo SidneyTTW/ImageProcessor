@@ -17,12 +17,12 @@ MyImage::ImageTypeFlag PenProcessor::resultType() const
   return (MyImage::ImageTypeFlag)MyImage::Colored;
 }
 
-MyImage *PenProcessor::processImage(const MyImage& image) const
+QImage *PenProcessor::processImage(const QImage& image) const
 {
-  QImage *resultImage = new QImage(image.getImage());
+  QImage *result = new QImage(image);
   if (valid)
   {
-    QPainter *painter = new QPainter(resultImage);
+    QPainter *painter = new QPainter(result);
     QPen pen;
     if (getCurrentColor().isValid())
       pen = QPen(getCurrentColor());
@@ -34,8 +34,6 @@ MyImage *PenProcessor::processImage(const MyImage& image) const
     painter->end();
     delete painter;
   }
-  MyImage *result = new MyImage(*resultImage, MyImage::Colored);
-  delete resultImage;
   return result;
 }
 

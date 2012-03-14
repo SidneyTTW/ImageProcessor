@@ -40,7 +40,21 @@ public:
    * @param image The given image.
    * @return The processed image.
    */
-  virtual MyImage *processImage(const MyImage& image) const=0;
+  virtual MyImage *processImage(const MyImage& image) const
+  {
+    QImage *resultImage = processImage(image.getImage());
+    MyImage *result = new MyImage(*resultImage, resultType());
+    delete resultImage;
+    return result;
+  }
+
+  /**
+   * Process image according to the given image and option.
+   *
+   * @param image The given image.
+   * @return The processed image.
+   */
+  virtual QImage *processImage(const QImage& image) const=0;
 
   /**
    * @return Name of the processor

@@ -13,12 +13,9 @@ MyImage::ImageTypeFlag ToGrayProcessor::resultType() const
   return (MyImage::ImageTypeFlag)MyImage::Gray;
 }
 
-MyImage *ToGrayProcessor::processImage(const MyImage& image) const
+QImage *ToGrayProcessor::processImage(const QImage& image) const
 {
-  QImage *resultImage = ImageAlgorithm::convertToGrayScale(image.getImage(),
-                                                           _type);
-  MyImage *result = new MyImage(*resultImage, MyImage::Gray);
-  delete resultImage;
+  QImage *result = ImageAlgorithm::convertToGrayScale(image, _type);
   return result;
 }
 

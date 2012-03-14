@@ -33,21 +33,19 @@ MyImage::ImageTypeFlag ToBlackAndWhiteProcessor::resultType() const
   return MyImage::BlackAndWhite;
 }
 
-MyImage *ToBlackAndWhiteProcessor::processImage(const MyImage& image) const
+QImage *ToBlackAndWhiteProcessor::processImage(const QImage& image) const
 {
   QVector<int> thresholdCopy;
   if (type == ToBlackAndWhiteProcessor::OTSU)
-    thresholdCopy.append(ImageAlgorithm::OTSU(image.getImage(),
+    thresholdCopy.append(ImageAlgorithm::OTSU(image,
                                               ImageAlgorithm::Green));
   else if (type == ToBlackAndWhiteProcessor::MaxEntropy)
-    thresholdCopy.append(ImageAlgorithm::maxEntropy(image.getImage(),
+    thresholdCopy.append(ImageAlgorithm::maxEntropy(image,
                                                     ImageAlgorithm::Green));
   else
     thresholdCopy = thresholds;
-  QImage *resultImage = ImageAlgorithm::convertToBlackAndWhite
-                        (image.getImage(), thresholdCopy, startColor);
-  MyImage *result = new MyImage(*resultImage, MyImage::BlackAndWhite);
-  delete resultImage;
+  QImage *result = ImageAlgorithm::convertToBlackAndWhite
+                   (image, thresholdCopy, startColor);
   return result;
 }
 
