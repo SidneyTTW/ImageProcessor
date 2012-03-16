@@ -73,8 +73,21 @@ void BatchConvertionDialog::on_okButton_clicked()
   }
   QList<AbstractImageProcessor *> chains =
       ProcessChain::loadProcessor(ui->processorLineEdit->text());
-  QDir::setCurrent(ui->targetFolderLineEdit->text());
-  // TODO: exam the process chain and the target folder.
+  if (chains.isEmpty())
+  {
+    QMessageBox::critical(this,
+                          "Failed",
+                          "Something wrong with the process chain file.");
+    return;
+  }
+  QDir().mkpath(ui->targetFolderLineEdit->text());
+  if (!QDir::setCurrent(ui->targetFolderLineEdit->text()))
+  {
+    QMessageBox::critical(this,
+                          "Failed",
+                          "Something wrong with the target folder.");
+    return;
+  }
   QProgressDialog progress("Processing images",
                            "Cancel",
                            0,

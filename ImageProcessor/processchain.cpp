@@ -115,25 +115,35 @@ void ProcessChain::save(QString path)
 QList<AbstractImageProcessor *> ProcessChain::loadProcessor(QString path)
 {
   QList<AbstractImageProcessor *> result;
-  QFile file(path);
-  if (file.open(QFile::ReadOnly)) {
-    QMap<QString, AbstractImageProcessor *> all = ProcessorAid::allProcessor();
-    QTextStream in(&file);
-    QString str = in.readAll();
-    QStringList list = str.split('|', QString::SkipEmptyParts);
-    while (list.size() >= 2)
-    {
-      QString name = list.takeFirst();
-      QString detail = list.takeFirst();
-      AbstractImageProcessor *processor = all.value(name, NULL);
-      if (processor != NULL)
-        result.push_back(processor->fromString(detail));
+  QMap<QString, AbstractImageProcessor *> all = ProcessorAid::allProcessor();
+  try
+  {
+    QFile file(path);
+    if (file.open(QFile::ReadOnly)) {
+      QTextStream in(&file);
+      QString str = in.readAll();
+      QStringList list = str.split('|', QString::SkipEmptyParts);
+      while (list.size() >= 2)
+      {
+        QString name = list.takeFirst();
+        QString detail = list.takeFirst();
+        AbstractImageProcessor *processor = all.value(name, NULL);
+        if (processor != NULL)
+          result.push_back(processor->fromString(detail));
+      }
     }
-    for (QMap<QString, AbstractImageProcessor *>::Iterator itr = all.begin();
-         itr != all.end();
-         ++itr)
-      delete itr.value();
   }
+  catch (...)
+  {
+    AbstractImageProcessor * processor;
+    foreach (processor, result)
+      delete processor;
+    result.clear();
+  }
+  for (QMap<QString, AbstractImageProcessor *>::Iterator itr = all.begin();
+       itr != all.end();
+       ++itr)
+    delete itr.value();
   return result;
 }
 
