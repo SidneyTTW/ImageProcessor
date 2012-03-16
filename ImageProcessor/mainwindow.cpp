@@ -14,6 +14,8 @@
 #include "simpleoptioncontainerwidget.h"
 #include "processoraid.h"
 
+#include "batchconvertiondialog.h"
+
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -98,6 +100,10 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
   connect(ui->openChainAction, SIGNAL(triggered()), this, SLOT(openChain()));
   connect(ui->saveChainAction, SIGNAL(triggered()), this, SLOT(saveChain()));
+  connect(ui->batchConvertionAction,
+          SIGNAL(triggered()),
+          this,
+          SLOT(batchConvertion()));
 }
 
 QColor MainWindow::getCurrentColor() const
@@ -274,9 +280,9 @@ void MainWindow::open()
     return;
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
-  MyImage *image = new MyImage(QImage(QImage(path).
-                                      convertToFormat(QImage::Format_ARGB32)),
-                              MyImage::Colored);
+  MyImage *image = new MyImage(QImage(path).
+                               convertToFormat(QImage::Format_ARGB32),
+                               MyImage::Colored);
   QAction *action = ui->windowMenu->addAction(path, signalMapper3, SLOT(map()));
   signalMapper3->setMapping(action, (QObject *)widget);
   widget->setImage(image->getImage());
@@ -327,6 +333,12 @@ void MainWindow::saveChain()
   if (path.isEmpty())
     return;
   processChain->save(path);
+}
+
+void MainWindow::batchConvertion()
+{
+  BatchConvertionDialog d;
+  d.exec();
 }
 
 void MainWindow::changeToWidget(QObject *widget)

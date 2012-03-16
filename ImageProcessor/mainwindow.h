@@ -193,6 +193,11 @@ public slots:
   void saveChain();
 
   /**
+   * Open a dialog to to batch convertion.
+   */
+  void batchConvertion();
+
+  /**
    * Change to the widget.
    */
   void changeToWidget(QObject *widget);

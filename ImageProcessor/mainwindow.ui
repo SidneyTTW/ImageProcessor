@@ -92,6 +92,7 @@
     <addaction name="saveAsAction"/>
     <addaction name="openChainAction"/>
     <addaction name="saveChainAction"/>
+    <addaction name="batchConvertionAction"/>
    </widget>
    <widget class="QMenu" name="windowMenu">
     <property name="title">
@@ -172,6 +173,11 @@
   <action name="openChainAction">
    <property name="text">
     <string>Open Process Chain</string>
+   </property>
+  </action>
+  <action name="batchConvertionAction">
+   <property name="text">
+    <string>Batch Convertion</string>
    </property>
   </action>
  </widget>
