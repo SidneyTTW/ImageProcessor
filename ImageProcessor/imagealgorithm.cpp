@@ -28,14 +28,6 @@ int ImageAlgorithm::calculateGray(int r, int g, int b,
   }
 }
 
-void ImageAlgorithm::getRGBA(const unsigned char * dataPtr,
-                             int& r, int& g, int& b, int& a) {
-  b = *dataPtr;
-  g = *(dataPtr+1);
-  r = *(dataPtr+2);
-  a = *(dataPtr+3);
-}
-
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.
 QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
@@ -65,12 +57,38 @@ QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
       int gray = calculateGray(r, g, b, type);
       for (int k = 0;k < 3;++k)
         *(grayImgDataPtr + k) = gray;
-      *(grayImgDataPtr + 3) = 0xFF;
+      *(grayImgDataPtr + 3) = MAX_COLOR_VALUE;
       imageDataPtr += 4;
       grayImgDataPtr += 4;
     }
   }
   return grayImg;
+}
+
+void ImageAlgorithm::convertToGrayScale(QImage *image,
+                                        ImageToGrayAlgorithmType type)
+{
+  if (!validType(*image))
+    return;
+  QSize imageSize = image->size();
+  int width = imageSize.width();
+  int height = imageSize.height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth = image->bytesPerLine();
+  unsigned char *backup = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup + realWidth * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      int gray = calculateGray(r, g, b, type);
+      setRGBA(imageDataPtr, gray, gray, gray, MAX_COLOR_VALUE);
+      imageDataPtr += 4;
+    }
+  }
 }
 
 QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
@@ -116,12 +134,58 @@ QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
       int gray = calculateGray(r, g, b, Green);
       for (int k = 0;k < 3;++k)
         *(blackAndWhiteImgDataPtr + k) = coloreMap[gray];
-      *(blackAndWhiteImgDataPtr + 3) = 255;
+      *(blackAndWhiteImgDataPtr + 3) = MAX_COLOR_VALUE;
       imageDataPtr += 4;
       blackAndWhiteImgDataPtr += 4;
     }
   }
   return blackAndWhiteImg;
+}
+
+void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
+                                            QVector<int> threshold,
+                                            int startColor)
+{
+  if (startColor != 0)
+    startColor = MAX_COLOR_VALUE;
+  int coloreMap[MAX_COLOR_VALUE + 1];
+  int currentIndex = 0;
+  int currentColor = startColor;
+  for (int i = 0;i <= MAX_COLOR_VALUE;++i)
+  {
+    if (currentIndex < threshold.size() && threshold[currentIndex] == i)
+    {
+      ++currentIndex;
+      currentColor = MAX_COLOR_VALUE - currentColor;
+    }
+    coloreMap[i] = currentColor;
+  }
+
+  if (!validType(*image))
+    return;
+  QSize imageSize = image->size();
+  int width = imageSize.width();
+  int height = imageSize.height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth = image->bytesPerLine();
+  unsigned char *backup = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup + realWidth * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      int gray = calculateGray(r, g, b, Green);
+      setRGBA(imageDataPtr,
+              coloreMap[gray],
+              coloreMap[gray],
+              coloreMap[gray],
+              MAX_COLOR_VALUE);
+      imageDataPtr += 4;
+    }
+  }
 }
 
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
