@@ -49,6 +49,20 @@ QImage *ToBlackAndWhiteProcessor::processImage(const QImage& image) const
   return result;
 }
 
+void ToBlackAndWhiteProcessor::processImage(QImage *image) const
+{
+  QVector<int> thresholdCopy;
+  if (type == ToBlackAndWhiteProcessor::OTSU)
+    thresholdCopy.append(ImageAlgorithm::OTSU(*image,
+                                              ImageAlgorithm::Green));
+  else if (type == ToBlackAndWhiteProcessor::MaxEntropy)
+    thresholdCopy.append(ImageAlgorithm::maxEntropy(*image,
+                                                    ImageAlgorithm::Green));
+  else
+    thresholdCopy = thresholds;
+  ImageAlgorithm::convertToBlackAndWhite(image, thresholdCopy, startColor);
+}
+
 QDialog *ToBlackAndWhiteProcessor::getOptionDialog(Area area,
                                                    const MyImage& image)
 {

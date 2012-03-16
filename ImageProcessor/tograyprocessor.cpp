@@ -19,6 +19,11 @@ QImage *ToGrayProcessor::processImage(const QImage& image) const
   return result;
 }
 
+void ToGrayProcessor::processImage(QImage *image) const
+{
+  ImageAlgorithm::convertToGrayScale(image, _type);
+}
+
 QWidget *ToGrayProcessor::optionWidget()
 {
   if (_optionWidget == NULL)

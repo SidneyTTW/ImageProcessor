@@ -19,6 +19,7 @@ public:
 
   virtual MyImage::ImageTypeFlag resultType() const;
   virtual QImage *processImage(const QImage& image) const;
+  virtual void processImage(QImage *image) const;
   virtual QWidget *optionWidget();
   virtual MyImage preProcessImage(const MyImage& image) const;
   virtual bool cancelWhenNewOneIsCreated() const;

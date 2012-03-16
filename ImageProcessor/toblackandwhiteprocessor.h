@@ -25,6 +25,7 @@ public:
   virtual MyImage::ImageType acceptableType() const;
   virtual MyImage::ImageTypeFlag resultType() const;
   virtual QImage *processImage(const QImage& image) const;
+  virtual void processImage(QImage *image) const;
   virtual QDialog *getOptionDialog(Area area, const MyImage& image);
   virtual QString name() const;
   virtual QString toString() const;

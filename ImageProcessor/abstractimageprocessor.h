@@ -57,6 +57,13 @@ public:
   virtual QImage *processImage(const QImage& image) const=0;
 
   /**
+   * Process image according to the given image and option.
+   *
+   * @param image The given image.
+   */
+  virtual void processImage(QImage *image) const=0;
+
+  /**
    * @return Name of the processor
    */
   virtual QString name() const=0;

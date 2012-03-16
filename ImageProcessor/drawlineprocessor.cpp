@@ -38,6 +38,24 @@ QImage *DrawLineProcessor::processImage(const QImage& image) const
   return result;
 }
 
+void DrawLineProcessor::processImage(QImage *image) const
+{
+  if (valid)
+  {
+    QPainter *painter = new QPainter(image);
+    QPen pen;
+    if (getCurrentColor().isValid())
+      pen = QPen(getCurrentColor());
+    else
+      pen = QPen(_color);
+    pen.setWidth(_width);
+    painter->setPen(pen);
+    painter->drawLine(startPosition, endPosition);
+    painter->end();
+    delete painter;
+  }
+}
+
 QWidget *DrawLineProcessor::optionWidget()
 {
   if (_optionWidget == NULL)
