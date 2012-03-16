@@ -34,7 +34,31 @@ public:
    * @param g Green.
    * @param b Blue.
    */
-  static int calculateGray(int r, int g, int b, ImageToGrayAlgorithmType type);
+  static inline int calculateGray(int r, int g, int b,
+                                  ImageToGrayAlgorithmType type)
+  {
+    switch (type)
+    {
+    case Green:
+      return g;
+      break;
+    case Float:
+      return 0.11 * b + 0.59 * g + 0.3 * r;
+      break;
+    case Integer:
+      return (11 * b + 59 * g + 30 * r) / 100;
+      break;
+    case Displacement:
+      return (77 * b + 151 * g + 28 * r) >> 8;
+      break;
+    case Average:
+      return (b + g + r) / 3;
+      break;
+    default:
+      return 0;
+      break;
+    }
+  }
 
   /**
    * Convert an image to a gray one.
@@ -75,6 +99,34 @@ public:
   static void convertToBlackAndWhite(QImage *image,
                                      QVector<int> threshold,
                                      int startColor=0);
+
+  /**
+   * Convolution.
+   * The alpha will be set to MAX_COLOR_VALUE
+   *
+   * @param image The image to convert.
+   * @param matrix The matrix.
+   * @param divisor The divisor.
+   * @param offset The offset.
+   */
+  static QImage *convolution(const QImage& image,
+                             const QVector<int>& matrix,
+                             int divisor,
+                             int offset);
+
+  /**
+   * Convolution.
+   * The alpha will be set to MAX_COLOR_VALUE
+   *
+   * @param image The image to convert.
+   * @param matrix The matrix.
+   * @param divisor The divisor.
+   * @param offset The offset.
+   */
+  static void convolution(QImage *image,
+                          const QVector<int>& matrix,
+                          int divisor,
+                          int offset);
 
   /**
    * Get the statistic of an image.
@@ -145,6 +197,24 @@ private:
   }
 
   /**
+   * Copy RGBA of a point.
+   *
+   * @param sourceDataPtr The pointer of the source data.
+   *                      The format of the image should be
+   *                      QImage::Format_ARGB32.
+   * @param targetDataPtr  The pointer of the target data.
+   *                       The format of the image should be
+   *                       QImage::Format_ARGB32.
+   */
+  static inline void copyRGBA(const unsigned char * sourceDataPtr,
+                              unsigned char * targetDataPtr)
+  {
+    int r, g, b, a;
+    getRGBA(sourceDataPtr, r, g, b, a);
+    setRGBA(targetDataPtr, r, g, b, a);
+  }
+
+  /**
    * Add RGBA of a point.
    *
    * @param sourceDataPtr The pointer of the source data.
@@ -158,6 +228,32 @@ private:
   static inline void addRGBA(const unsigned char * sourceDataPtr,
                              double factor,
                              unsigned char * targetDataPtr)
+  {
+    int sr, sg, sb, sa;
+    int tr, tg, tb, ta;
+    getRGBA(sourceDataPtr, sr, sg, sb, sa);
+    getRGBA(sourceDataPtr, tr, tg, tb, ta);
+    tr = qBound(0, (int)(tr + factor * sr), MAX_COLOR_VALUE);
+    tg = qBound(0, (int)(tg + factor * sg), MAX_COLOR_VALUE);
+    tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
+    ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
+    setRGBA(targetDataPtr, tr, tg, tb, ta);
+  }
+
+  /**
+   * Add RGBA of a point.
+   *
+   * @param sourceDataPtr The pointer of the source data.
+   *                      The format of the image should be
+   *                      QImage::Format_ARGB32.
+   * @param factor The factor.
+   * @param targetDataPtr  The pointer of the target data.
+   *                       The format of the image should be
+   *                       QImage::Format_ARGB32.
+   */
+  static inline void addRGBAs(const unsigned char * sourceDataPtr,
+                              double factor,
+                              unsigned char * targetDataPtr)
   {
     int sr, sg, sb, sa;
     int tr, tg, tb, ta;

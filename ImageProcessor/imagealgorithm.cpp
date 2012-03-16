@@ -2,32 +2,6 @@
 
 #include <qmath.h>
 
-int ImageAlgorithm::calculateGray(int r, int g, int b,
-                                  ImageToGrayAlgorithmType type)
-{
-  switch (type)
-  {
-  case Green:
-    return g;
-    break;
-  case Float:
-    return 0.11 * b + 0.59 * g + 0.3 * r;
-    break;
-  case Integer:
-    return (11 * b + 59 * g + 30 * r) / 100;
-    break;
-  case Displacement:
-    return (77 * b + 151 * g + 28 * r) >> 8;
-    break;
-  case Average:
-    return (b + g + r) / 3;
-    break;
-  default:
-    return 0;
-    break;
-  }
-}
-
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.
 QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
@@ -35,11 +9,10 @@ QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
 {
   if (!validType(image))
     return NULL;
-  QSize imageSize = image.size();
-  int width = imageSize.width();
-  int height = imageSize.height();
+  int width = image.width();
+  int height = image.height();
   const unsigned char *imageDataPtr = image.bits();
-  QImage *grayImg = new QImage(imageSize, SUPPORTED_FORMAT);
+  QImage *grayImg = new QImage(width, height, SUPPORTED_FORMAT);
   unsigned char *grayImgDataPtr = grayImg->bits();
   int realWidth1 = image.bytesPerLine();
   int realWidth2 = grayImg->bytesPerLine();
@@ -55,9 +28,7 @@ QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
       int r, g, b, a;
       getRGBA(imageDataPtr, r, g, b, a);
       int gray = calculateGray(r, g, b, type);
-      for (int k = 0;k < 3;++k)
-        *(grayImgDataPtr + k) = gray;
-      *(grayImgDataPtr + 3) = MAX_COLOR_VALUE;
+      setRGBA(grayImgDataPtr, gray, gray, gray, MAX_COLOR_VALUE);
       imageDataPtr += 4;
       grayImgDataPtr += 4;
     }
@@ -70,9 +41,8 @@ void ImageAlgorithm::convertToGrayScale(QImage *image,
 {
   if (!validType(*image))
     return;
-  QSize imageSize = image->size();
-  int width = imageSize.width();
-  int height = imageSize.height();
+  int width = image->width();
+  int height = image->height();
   unsigned char *imageDataPtr = image->bits();
   int realWidth = image->bytesPerLine();
   unsigned char *backup = imageDataPtr;
@@ -112,11 +82,10 @@ QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
 
   if (!validType(image))
     return NULL;
-  QSize imageSize = image.size();
-  int width = imageSize.width();
-  int height = imageSize.height();
+  int width = image.width();
+  int height = image.height();
   const unsigned char *imageDataPtr = image.bits();
-  QImage *blackAndWhiteImg = new QImage(imageSize, SUPPORTED_FORMAT);
+  QImage *blackAndWhiteImg = new QImage(width, height, SUPPORTED_FORMAT);
   unsigned char *blackAndWhiteImgDataPtr = blackAndWhiteImg->bits();
   int realWidth1 = image.bytesPerLine();
   int realWidth2 = blackAndWhiteImg->bytesPerLine();
@@ -132,9 +101,11 @@ QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
       int r, g, b, a;
       getRGBA(imageDataPtr, r, g, b, a);
       int gray = calculateGray(r, g, b, Green);
-      for (int k = 0;k < 3;++k)
-        *(blackAndWhiteImgDataPtr + k) = coloreMap[gray];
-      *(blackAndWhiteImgDataPtr + 3) = MAX_COLOR_VALUE;
+      setRGBA(blackAndWhiteImgDataPtr,
+              coloreMap[gray],
+              coloreMap[gray],
+              coloreMap[gray],
+              MAX_COLOR_VALUE);
       imageDataPtr += 4;
       blackAndWhiteImgDataPtr += 4;
     }
@@ -163,9 +134,8 @@ void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
 
   if (!validType(*image))
     return;
-  QSize imageSize = image->size();
-  int width = imageSize.width();
-  int height = imageSize.height();
+  int width = image->width();
+  int height = image->height();
   unsigned char *imageDataPtr = image->bits();
   int realWidth = image->bytesPerLine();
   unsigned char *backup = imageDataPtr;
@@ -188,21 +158,100 @@ void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::convolution(const QImage& image,
+                                    const QVector<int>& matrix,
+                                    int divisor,
+                                    int offset)
+{
+  int matrixSize = 0;
+  for (int i = 0;i < matrix.size();++i)
+  {
+    if ((2 * i + 1) * (2 * i + 1) == matrix.size())
+    {
+      matrixSize = 2 * i + 1;
+      break;
+    }
+  }
+  if (matrixSize == 0)
+    return NULL;
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *convolutionImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *convolutionImgDataPtr = convolutionImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = convolutionImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = convolutionImgDataPtr;
+
+  const int *factors = matrix.data();
+  int *offsets = new int[matrix.size()];
+  for (int i = 0;i < matrixSize;++i)
+    for (int j = 0;j < matrixSize;++j)
+      offsets[matrixSize * i + j] = realWidth1 * (i - matrixSize / 2) +
+                                    4 * (j - matrixSize / 2);
+
+  memcpy(convolutionImgDataPtr, imageDataPtr, width * 4);
+  if (height > 1)
+    memcpy(convolutionImgDataPtr + realWidth1 * (height - 1),
+           imageDataPtr + realWidth2 * (height - 1),
+           width * 4);
+
+  for(int i = 1;i < height - 1;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    convolutionImgDataPtr = backup2 + realWidth2 * i;
+    memcpy(convolutionImgDataPtr, imageDataPtr, 4);
+    for (int j = 1;j < width - 1;++j)
+    {
+      int sr, sg, sb, sa;
+      int tr = 0, tg = 0, tb = 0;
+      for (int k = 0;k < matrix.size();++k)
+      {
+        getRGBA(imageDataPtr + offsets[k], sr, sg, sb, sa);
+        tr += factors[k] * sr;
+        tg += factors[k] * sg;
+        tb += factors[k] * sb;
+      }
+      tr = tr / divisor + offset;
+      tg = tg / divisor + offset;
+      tb = tb / divisor + offset;
+      setRGBA(convolutionImgDataPtr, tr, tg, tb, MAX_COLOR_VALUE);
+      imageDataPtr += 4;
+      convolutionImgDataPtr += 4;
+    }
+    if (width > 1)
+      memcpy(convolutionImgDataPtr, imageDataPtr, 4);
+  }
+  return convolutionImg;
+}
+
+void ImageAlgorithm::convolution(QImage *image,
+                                 const QVector<int>& matrix,
+                                 int divisor,
+                                 int offset)
+{
+  QImage *result = convolution(*image, matrix, divisor, offset);
+  memcpy(image->bits(), result->bits(), result->byteCount());
+  delete result;
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {
   BasicStatistic result(image.width(), image.height());
   if (!validType(image))
     return result;
-  QSize imageSize = image.size();
-  int width = imageSize.width();
-  int realWidth1 = image.bytesPerLine();
-  int height = imageSize.height();
+  int width = image.width();
+  int realWidth = image.bytesPerLine();
+  int height = image.height();
   const unsigned char *imageDataPtr = image.bits();
-  const unsigned char *backup1 = imageDataPtr;
+  const unsigned char *backup = imageDataPtr;
   for(int i = 0;i < height;++i)
   {
-    imageDataPtr = backup1 + realWidth1 * i;
+    imageDataPtr = backup + realWidth * i;
     for(int j = 0;j < width;++j)
     {
       int r, g, b, a;
