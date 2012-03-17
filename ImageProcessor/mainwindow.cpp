@@ -16,8 +16,6 @@
 
 #include "batchconvertiondialog.h"
 
-#include <QDebug>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -275,7 +273,7 @@ void MainWindow::open()
       QFileDialog::getOpenFileName(this,
                                    "Select an image file",
                                    tr(""),
-                                   "Image (*.png *.jpg *.jpeg *.bmp)");
+                                   "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
   if (path.isEmpty())
     return;
   disconnectAll();
