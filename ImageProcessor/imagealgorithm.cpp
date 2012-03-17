@@ -216,9 +216,9 @@ QImage *ImageAlgorithm::convolution(const QImage& image,
           tb += factors[index] * sb;
         }
       }
-      tr = tr / divisor + offset;
-      tg = tg / divisor + offset;
-      tb = tb / divisor + offset;
+      tr = qBound(0, tr / divisor + offset, MAX_COLOR_VALUE);
+      tg = qBound(0, tg / divisor + offset, MAX_COLOR_VALUE);
+      tb = qBound(0, tb / divisor + offset, MAX_COLOR_VALUE);
       setRGBA(convolutionImgDataPtr, tr, tg, tb, MAX_COLOR_VALUE);
       imageDataPtr += 4;
       convolutionImgDataPtr += 4;
