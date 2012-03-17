@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include "convolutionprocessor.h"
 #include "drawlineprocessor.h"
 #include "penprocessor.h"
 #include "tograyprocessor.h"
@@ -20,6 +21,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
 {
   QVector<AbstractImageProcessorWithDialogOption *> result;
   result.push_back(new ToBlackAndWhiteProcessor());
+  result.push_back(new ConvolutionProcessor());
   return result;
 }
 

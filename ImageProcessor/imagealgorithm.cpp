@@ -160,22 +160,19 @@ void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
 
 QImage *ImageAlgorithm::convolution(const QImage& image,
                                     const QVector<int>& matrix,
+                                    int matrixWidth,
                                     int divisor,
                                     int offset)
 {
-  int matrixSize = 0;
-  for (int i = 0;i < matrix.size();++i)
-  {
-    if ((2 * i + 1) * (2 * i + 1) == matrix.size())
-    {
-      matrixSize = 2 * i + 1;
-      break;
-    }
-  }
-  if (matrixSize == 0)
-    return NULL;
   if (!validType(image))
     return NULL;
+  if (matrixWidth % 2 != 1 ||
+      matrix.size() % matrixWidth != 0 ||
+      (matrix.size() / matrixWidth) % 2 != 1)
+    return NULL;
+  int matrixHeight = matrix.size() / matrixWidth;
+  int borderWidth = matrixWidth / 2;
+  int borderHeight = matrixHeight / 2;
   int width = image.width();
   int height = image.height();
   const unsigned char *imageDataPtr = image.bits();
@@ -188,32 +185,36 @@ QImage *ImageAlgorithm::convolution(const QImage& image,
 
   const int *factors = matrix.data();
   int *offsets = new int[matrix.size()];
-  for (int i = 0;i < matrixSize;++i)
-    for (int j = 0;j < matrixSize;++j)
-      offsets[matrixSize * i + j] = realWidth1 * (i - matrixSize / 2) +
-                                    4 * (j - matrixSize / 2);
+  for (int i = 0;i < matrixWidth;++i)
+    for (int j = 0;j < matrixHeight;++j)
+      offsets[i + matrixWidth * j] = 4 * (i - borderWidth) +
+                                     realWidth1 * (j - borderHeight);
 
-  memcpy(convolutionImgDataPtr, imageDataPtr, width * 4);
-  if (height > 1)
-    memcpy(convolutionImgDataPtr + realWidth1 * (height - 1),
-           imageDataPtr + realWidth2 * (height - 1),
-           width * 4);
+  memcpy(convolutionImgDataPtr, imageDataPtr, image.byteCount());
 
-  for(int i = 1;i < height - 1;++i)
+  for(int i = 0;i < height;++i)
   {
     imageDataPtr = backup1 + realWidth1 * i;
     convolutionImgDataPtr = backup2 + realWidth2 * i;
-    memcpy(convolutionImgDataPtr, imageDataPtr, 4);
-    for (int j = 1;j < width - 1;++j)
+    for (int j = 0;j < width;++j)
     {
       int sr, sg, sb, sa;
       int tr = 0, tg = 0, tb = 0;
-      for (int k = 0;k < matrix.size();++k)
+      for (int k = 0;k < matrixHeight;++k)
       {
-        getRGBA(imageDataPtr + offsets[k], sr, sg, sb, sa);
-        tr += factors[k] * sr;
-        tg += factors[k] * sg;
-        tb += factors[k] * sb;
+        for (int l = 0;l < matrixWidth;++l)
+        {
+          if (i + k - borderHeight < 0 ||
+              i + k - borderHeight >= height ||
+              j + l - borderWidth < 0 ||
+              j + l - borderWidth >= width)
+            continue;
+          int index = k * matrixWidth + l;
+          getRGBA(imageDataPtr + offsets[index], sr, sg, sb, sa);
+          tr += factors[index] * sr;
+          tg += factors[index] * sg;
+          tb += factors[index] * sb;
+        }
       }
       tr = tr / divisor + offset;
       tg = tg / divisor + offset;
@@ -222,20 +223,22 @@ QImage *ImageAlgorithm::convolution(const QImage& image,
       imageDataPtr += 4;
       convolutionImgDataPtr += 4;
     }
-    if (width > 1)
-      memcpy(convolutionImgDataPtr, imageDataPtr, 4);
   }
   return convolutionImg;
 }
 
 void ImageAlgorithm::convolution(QImage *image,
                                  const QVector<int>& matrix,
+                                 int matrixWidth,
                                  int divisor,
                                  int offset)
 {
-  QImage *result = convolution(*image, matrix, divisor, offset);
-  memcpy(image->bits(), result->bits(), result->byteCount());
-  delete result;
+  QImage *result = convolution(*image, matrix, matrixWidth, divisor, offset);
+  if (result != NULL)
+  {
+    memcpy(image->bits(), result->bits(), result->byteCount());
+    delete result;
+  }
 }
 
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,

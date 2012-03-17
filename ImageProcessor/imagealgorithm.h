@@ -106,11 +106,13 @@ public:
    *
    * @param image The image to convert.
    * @param matrix The matrix.
+   * @param matrixWidth Width of the matrix.
    * @param divisor The divisor.
    * @param offset The offset.
    */
   static QImage *convolution(const QImage& image,
                              const QVector<int>& matrix,
+                             int matrixWidth,
                              int divisor,
                              int offset);
 
@@ -120,11 +122,13 @@ public:
    *
    * @param image The image to convert.
    * @param matrix The matrix.
+   * @param matrixWidth Width of the matrix.
    * @param divisor The divisor.
    * @param offset The offset.
    */
   static void convolution(QImage *image,
                           const QVector<int>& matrix,
+                          int matrixWidth,
                           int divisor,
                           int offset);
 

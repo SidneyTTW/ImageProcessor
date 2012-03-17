@@ -37,7 +37,9 @@ SOURCES += main.cpp\
     colorchooser.cpp \
     penprocessor.cpp \
     processoraid.cpp \
-    batchconvertiondialog.cpp
+    batchconvertiondialog.cpp \
+    convolutionprocessor.cpp \
+    convolutiondialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -70,12 +72,15 @@ HEADERS  += mainwindow.h \
     colorchooser.h \
     penprocessor.h \
     processoraid.h \
-    batchconvertiondialog.h
+    batchconvertiondialog.h \
+    convolutionprocessor.h \
+    convolutiondialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
     toblackandwhitedialog.ui \
-    batchconvertiondialog.ui
+    batchconvertiondialog.ui \
+    convolutiondialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
