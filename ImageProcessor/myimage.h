@@ -46,6 +46,13 @@ public:
     return _image;
   }
 
+  /**
+   * Save the image.
+   *
+   * @param path The path of the file.
+   */
+  void save(const QString& path) const;
+
 private:
   /**
    * The image.

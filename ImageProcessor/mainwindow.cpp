@@ -292,9 +292,19 @@ void MainWindow::open()
 
 void MainWindow::saveAs()
 {
-  //TODO
+  ProcessChain *processChain = currentChain();
+  if (processChain == NULL)
+    return;
+  QString path =
+      QFileDialog::
+      getSaveFileName(this,
+                      "Set the name of the image file",
+                      tr(""),
+                      "JPEG(*.jpg *.jpeg);;BMP(*.bmp);;PNG(*.png)");
+  if (path.isEmpty())
+    return;
+  processChain->getCurrentImage()->save(path);
 }
-
 
 void MainWindow::openChain()
 {
