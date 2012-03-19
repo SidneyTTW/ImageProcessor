@@ -6,6 +6,7 @@
 #include "drawlineprocessor.h"
 #include "midnumberprocessor.h"
 #include "penprocessor.h"
+#include "reverseprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
 
@@ -16,6 +17,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new PenProcessor());
   result.push_back(new ToGrayProcessor());
   result.push_back(new MidNumberProcessor());
+  result.push_back(new ReverseProcessor());
   return result;
 }
 

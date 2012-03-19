@@ -354,6 +354,67 @@ void ImageAlgorithm::midNumber(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::reverse(const QImage& image)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *reversedImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *reversedImgDataPtr = reversedImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = reversedImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = reversedImgDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    reversedImgDataPtr = backup2 + realWidth2 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      setRGBA(reversedImgDataPtr,
+              MAX_COLOR_VALUE - r,
+              MAX_COLOR_VALUE - g,
+              MAX_COLOR_VALUE - b,
+              a);
+      imageDataPtr += 4;
+      reversedImgDataPtr += 4;
+    }
+  }
+  return reversedImg;
+}
+
+void ImageAlgorithm::reverse(QImage *image)
+{
+  if (!validType(*image))
+    return;
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth = image->bytesPerLine();
+  unsigned char *backup = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup + realWidth * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      setRGBA(imageDataPtr,
+              MAX_COLOR_VALUE - r,
+              MAX_COLOR_VALUE - g,
+              MAX_COLOR_VALUE - b,
+              a);
+      imageDataPtr += 4;
+    }
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {

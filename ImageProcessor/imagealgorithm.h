@@ -155,6 +155,22 @@ public:
   static void midNumber(QImage *image, int matrixWidth, int matrixHeight);
 
   /**
+   * Reverse the color.
+   * The alpha will be remained.
+   *
+   * @param image The image to reverse.
+   */
+  static QImage *reverse(const QImage& image);
+
+  /**
+   * Reverse the color.
+   * The alpha will be remained.
+   *
+   * @param image The image to reverse.
+   */
+  static void reverse(QImage *image);
+
+  /**
    * Get the statistic of an image.
    *
    * @param image The image to convert.
