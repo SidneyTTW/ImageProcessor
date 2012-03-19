@@ -3,6 +3,7 @@
 SimpleOptionContainerWidget::SimpleOptionContainerWidget(QWidget *parent) :
     QWidget(parent)
 {
+  setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
   layout = new QStackedLayout();
   setLayout(layout);
 }
