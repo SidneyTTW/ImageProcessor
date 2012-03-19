@@ -29,7 +29,7 @@ MyImage::ImageType ConvolutionProcessor::acceptableType() const
 
 MyImage::ImageTypeFlag ConvolutionProcessor::resultType() const
 {
-  return MyImage::Gray;
+  return MyImage::Remain;
 }
 
 QImage *ConvolutionProcessor::processImage(const QImage& image) const

@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     processoraid.cpp \
     batchconvertiondialog.cpp \
     convolutionprocessor.cpp \
-    convolutiondialog.cpp
+    convolutiondialog.cpp \
+    midnumberprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     processoraid.h \
     batchconvertiondialog.h \
     convolutionprocessor.h \
-    convolutiondialog.h
+    convolutiondialog.h \
+    midnumberprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \

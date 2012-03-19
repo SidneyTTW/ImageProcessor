@@ -16,7 +16,7 @@ public:
   /**
    * The type flag of image.
    */
-  enum ImageTypeFlag{Colored=1, Gray=2, BlackAndWhite=4, NoImage=256};
+  enum ImageTypeFlag{Colored=1, Gray=2, BlackAndWhite=4, Remain=255, NoImage=256};
 
   /**
    * The type of images.

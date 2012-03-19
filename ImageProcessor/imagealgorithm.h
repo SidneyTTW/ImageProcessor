@@ -133,6 +133,28 @@ public:
                           int offset);
 
   /**
+   * Filter using mid number.
+   * The alpha will be set to MAX_COLOR_VALUE
+   *
+   * @param image The image to convert.
+   * @param matrixWidth Width of the matrix.
+   * @param matrixHeight Height of the matrix.
+   */
+  static QImage *midNumber(const QImage& image,
+                           int matrixWidth,
+                           int matrixHeight);
+
+  /**
+   * Filter using mid number.
+   * The alpha will be set to MAX_COLOR_VALUE
+   *
+   * @param image The image to convert.
+   * @param matrixWidth Width of the matrix.
+   * @param matrixHeight Height of the matrix.
+   */
+  static void midNumber(QImage *image, int matrixWidth, int matrixHeight);
+
+  /**
    * Get the statistic of an image.
    *
    * @param image The image to convert.

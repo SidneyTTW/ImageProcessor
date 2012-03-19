@@ -43,7 +43,11 @@ public:
   virtual MyImage *processImage(const MyImage& image) const
   {
     QImage *resultImage = processImage(image.getImage());
-    MyImage *result = new MyImage(*resultImage, resultType());
+    MyImage *result;
+    if (resultType() == MyImage::Remain)
+      result = new MyImage(*resultImage, image.getType());
+    else
+      result = new MyImage(*resultImage, resultType());
     delete resultImage;
     return result;
   }

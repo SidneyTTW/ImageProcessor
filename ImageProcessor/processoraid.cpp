@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include "convolutionprocessor.h"
 #include "drawlineprocessor.h"
+#include "midnumberprocessor.h"
 #include "penprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
@@ -14,6 +15,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new DrawLineProcessor());
   result.push_back(new PenProcessor());
   result.push_back(new ToGrayProcessor());
+  result.push_back(new MidNumberProcessor());
   return result;
 }
 
