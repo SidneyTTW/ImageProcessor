@@ -270,6 +270,13 @@ public:
    */
   static int maxEntropy(const QImage& image, ImageToGrayAlgorithmType type);
 
+  /**
+   * @param k (2k+1) will be the size of the core.
+   * @param d Standard deviation.
+   * @param result Pointer of an array(size is (2k+1)(2k+1)).
+   */
+  static void gaussCore(int k, float d,int *result);
+
 private:
   /**
    * Get RGBA of a point.

@@ -700,3 +700,30 @@ int ImageAlgorithm::maxEntropy(const QImage& image,
   }
   return result;
 }
+
+// Thanks to http://blog.sina.com.cn/s/blog_4b700c4c0102e02s.html
+// And I reserved the comments.
+void ImageAlgorithm::gaussCore(int k, float d,int *result)
+{
+  float *ftmp = new float[(2 * k + 1) * (2 * k + 1)];
+  for(int i = 0;i < k + 1;++i)               //取模板大小(2N+1) (2N+1)的右下角部分
+  {
+    for(int j = 0;j < k + 1;++j)
+    {
+      float tmp = (i * i + j * j) / d;        // m_b2表示平滑尺度gauss模板
+      ftmp[i * (k + 1) + j] = (float)(1.0 / qExp(tmp / 2));
+    }
+  }
+  int c = qCeil(1 / ftmp[(k + 1) * (k + 1) - 1] + 0.5);     //计算归一化系数
+  for(int i = 0;i < k + 1;++i)                             //给模板右下角付值
+    for(int j = 0;j < k + 1;++j)
+      result[(k + i) * (2 * k + 1) + (k + j)] =
+          (int)(ftmp[i * (k + 1) + j] * c + 0.5);
+  for(int i = k;i < 2 * k + 1;++i)                         //给模板左下角付值
+    for(int j = 0;j < k + 1;++j)
+      result[i * (2 * k + 1) + j] = result[i * (2 * k + 1) + (2 * k - j)];
+  for(int i = 0;i < k;++i)                                 //给模板上半部分付值
+    for(int j = 0;j < 2 * k + 1;++j)
+      result[i * (2 * k + 1) + j] = result[(2 * k - i) * (2 * k + 1) + j];
+  delete [] ftmp;
+}
