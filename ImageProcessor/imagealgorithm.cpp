@@ -415,6 +415,79 @@ void ImageAlgorithm::reverse(QImage *image)
   }
 }
 
+QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
+                                         int mapR[MAX_COLOR_VALUE],
+                                         int mapG[MAX_COLOR_VALUE],
+                                         int mapB[MAX_COLOR_VALUE],
+                                         RGBAField tunel)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = resultImgDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    resultImgDataPtr = backup2 + realWidth2 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      if (tunel.testFlag(Field_R))
+        r = mapR[r];
+      if (tunel.testFlag(Field_G))
+        g = mapG[g];
+      if (tunel.testFlag(Field_B))
+        b = mapB[b];
+      setRGBA(resultImgDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void  ImageAlgorithm::changeRGBWithMap(QImage *image,
+                                       int mapR[MAX_COLOR_VALUE],
+                                       int mapG[MAX_COLOR_VALUE],
+                                       int mapB[MAX_COLOR_VALUE],
+                                       RGBAField tunel)
+{
+  if (!validType(*image))
+    return;
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth = image->bytesPerLine();
+  unsigned char *backup = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup + realWidth * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      if (tunel.testFlag(Field_R))
+        r = mapR[r];
+      if (tunel.testFlag(Field_G))
+        g = mapG[g];
+      if (tunel.testFlag(Field_B))
+        b = mapB[b];
+      setRGBA(imageDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+    }
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {

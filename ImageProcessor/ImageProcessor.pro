@@ -41,7 +41,9 @@ SOURCES += main.cpp\
     convolutionprocessor.cpp \
     convolutiondialog.cpp \
     midnumberprocessor.cpp \
-    reverseprocessor.cpp
+    reverseprocessor.cpp \
+    histogramequalizationprocessor.cpp \
+    histogramequalizationoptionwidget.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -78,13 +80,16 @@ HEADERS  += mainwindow.h \
     convolutionprocessor.h \
     convolutiondialog.h \
     midnumberprocessor.h \
-    reverseprocessor.h
+    reverseprocessor.h \
+    histogramequalizationprocessor.h \
+    histogramequalizationoptionwidget.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
     toblackandwhitedialog.ui \
     batchconvertiondialog.ui \
-    convolutiondialog.ui
+    convolutiondialog.ui \
+    histogramequalizationoptionwidget.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

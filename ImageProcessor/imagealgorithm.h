@@ -16,6 +16,16 @@ public:
   enum ImageToGrayAlgorithmType{Green = 0, Float, Integer, Displacement, Average};
 
   /**
+   * An enum class to describe the RGBA fields.
+   */
+  enum RGBAFieldFlag{Field_R = 1, Field_G = 2, Field_B = 4};
+
+  /**
+   * The type of the RGBA fields.
+   */
+  typedef QFlags<RGBAFieldFlag> RGBAField;
+
+  /**
    * The only format supported.
    */
   const static QImage::Format SUPPORTED_FORMAT = QImage::Format_ARGB32;
@@ -171,6 +181,34 @@ public:
   static void reverse(QImage *image);
 
   /**
+   * @brief Change rgb tunel.
+   * The alpha will be remained.
+   *
+   * @param image The image.
+   * @param map The map.
+   * @param tunel The tunel to change.
+   */
+  static QImage *changeRGBWithMap(const QImage& image,
+                                  int mapR[MAX_COLOR_VALUE],
+                                  int mapG[MAX_COLOR_VALUE],
+                                  int mapB[MAX_COLOR_VALUE],
+                                  RGBAField tunel);
+
+  /**
+   * @brief Change rgb tunel.
+   * The alpha will be remained.
+   *
+   * @param image The image.
+   * @param map The map.
+   * @param tunel The tunel to change.
+   */
+  static void changeRGBWithMap(QImage *image,
+                               int mapR[MAX_COLOR_VALUE],
+                               int mapG[MAX_COLOR_VALUE],
+                               int mapB[MAX_COLOR_VALUE],
+                               RGBAField tunel);
+
+  /**
    * Get the statistic of an image.
    *
    * @param image The image to convert.
@@ -186,8 +224,7 @@ public:
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  static int OTSU(const QImage& image,
-                  ImageToGrayAlgorithmType type);
+  static int OTSU(const QImage& image, ImageToGrayAlgorithmType type);
 
 
   /**
@@ -196,8 +233,7 @@ public:
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  static int maxEntropy(const QImage& image,
-                        ImageToGrayAlgorithmType type);
+  static int maxEntropy(const QImage& image, ImageToGrayAlgorithmType type);
 
 private:
   /**
