@@ -16,6 +16,11 @@ public:
   enum ImageToGrayAlgorithmType{Green = 0, Float, Integer, Displacement, Average};
 
   /**
+   * An enum class to describe the way to resize image.
+   */
+  enum ResizeAlgorithmType{NearestNeighbor, Bilinear, Bicubic};
+
+  /**
    * An enum class to describe the RGBA fields.
    */
   enum RGBAFieldFlag{Field_R = 1, Field_G = 2, Field_B = 4};
@@ -342,6 +347,17 @@ private:
     tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
     ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
     setRGBA(targetDataPtr, tr, tg, tb, ta);
+  }
+
+  /**
+   * @param realWidth The bytes in a line.
+   * @param x The x position.
+   * @param y  The y position.
+   * @return The offset from the beginning of data pointer.
+   */
+  static inline void pixelOffset(int realWidth , int x, int y)
+  {
+    return realWidth * y + 4 * x;
   }
 };
 
