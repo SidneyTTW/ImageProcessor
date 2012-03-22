@@ -7,6 +7,7 @@
 #include "colorchooser.h"
 #include "abstractimageprocessorwithsimpleoption.h"
 #include "abstractimageprocessorwithdialogoption.h"
+#include "basicstatisticwidget.h"
 #include "imageprocessorwithsimpleoptionaction.h"
 #include "imageprocessorwithcomplexoptionaction.h"
 #include "imageviewwidget.h"
@@ -102,6 +103,18 @@ MainWindow::MainWindow(QWidget *parent) :
           SIGNAL(triggered()),
           this,
           SLOT(batchConvertion()));
+
+  statisticWidget = new BasicStatisticWidget();
+  addDockWidget(Qt::BottomDockWidgetArea, statisticWidget);
+
+  ui->windowMenu->addAction(ui->colorDockWidget->toggleViewAction());
+  ui->windowMenu->addAction(ui->mainToolBar->toggleViewAction());
+  ui->windowMenu->addAction(statisticWidget->toggleViewAction());
+
+  connect(ui->stackedWidget,
+          SIGNAL(currentChanged(int)),
+          this,
+          SLOT(currentChanged(int)));
 }
 
 QColor MainWindow::getCurrentColor() const
@@ -288,6 +301,7 @@ void MainWindow::open()
   actions.insert(widget, action);
   ui->stackedWidget->addWidget(widget);
   ui->stackedWidget->setCurrentWidget(widget);
+  statisticWidget->setBoundedImageView(widget);
 }
 
 void MainWindow::saveAs()
@@ -357,11 +371,24 @@ void MainWindow::changeToWidget(QObject *widget)
   ui->stackedWidget->setCurrentWidget((QWidget *)widget);
 }
 
+void MainWindow::currentChanged(int index)
+{
+  ProcessChain *processChain = currentChain();
+  if (processChain == NULL)
+  {
+    statisticWidget->setImage(QImage());
+    return;
+  }
+  statisticWidget->setImage(processChain->getCurrentImage()->getImage());
+}
+
 MainWindow::~MainWindow()
 {
   delete ui;
+  delete statisticWidget;
   delete signalMapper1;
   delete signalMapper2;
+  delete signalMapper3;
   for (int i = 0;i < simpleActions.size();++i)
     delete simpleActions[i];
   for (int i = 0;i < complexActions.size();++i)

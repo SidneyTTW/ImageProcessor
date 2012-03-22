@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BasicStatisticWidget</class>
+ <widget class="QDockWidget" name="BasicStatisticWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>555</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="features">
+   <set>QDockWidget::AllDockWidgetFeatures</set>
+  </property>
+  <property name="windowTitle">
+   <string>Histogram</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QRadioButton" name="greenButton">
+        <property name="toolTip">
+         <string>g
+Worst effect, but fastest.</string>
+        </property>
+        <property name="text">
+         <string>Green</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="averageButton">
+        <property name="toolTip">
+         <string>(b + g + r) / 3
+Poor effect, but fast.</string>
+        </property>
+        <property name="text">
+         <string>Average</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="floatButton">
+        <property name="toolTip">
+         <string>0.11 * b + 0.59 * g + 0.3 * r
+Best effect, but slowest.</string>
+        </property>
+        <property name="text">
+         <string>Float</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="integerButton">
+        <property name="toolTip">
+         <string>(11 * b + 59 * g + 30 * r) / 100
+Similar effect to Float, a little faster.</string>
+        </property>
+        <property name="text">
+         <string>Integer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="displacementButton">
+        <property name="toolTip">
+         <string>(77 * b + 151 * g + 28 * r) &gt;&gt; 8
+Similar effect to Integer, a little faster.</string>
+        </property>
+        <property name="text">
+         <string>Displacement</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

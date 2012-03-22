@@ -98,6 +98,12 @@ public slots:
   void zoomOut();
   void resume();
   void clear();
+
+signals:
+  /**
+   * Signal emitted when the image is changed.
+   */
+  void imageChanged(const QImage& image);
 };
 
 #endif // IMAGEVIEWWIDGET_H

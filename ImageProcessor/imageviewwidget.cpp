@@ -38,6 +38,8 @@ void ImageViewWidget::setImage(const QImage &image)
   synchronous();
 
   update();
+
+  emit imageChanged(image);
 }
 
 QPoint ImageViewWidget::toImagePosition(QPoint point)

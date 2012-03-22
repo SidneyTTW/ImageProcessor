@@ -13,6 +13,7 @@
 
 class AbstractImageProcessor;
 class AbstractImageProcessorWithSimpleOption;
+class BasicStatisticWidget;
 class ImageProcessorWithComplexOptionAction;
 class ImageProcessorWithSimpleOptionAction;
 class ImageViewWidget;
@@ -118,6 +119,11 @@ private:
   QMap <ImageViewWidget *, QAction *> actions;
 
   /**
+   * A dock widget to show statistics.
+   */
+  BasicStatisticWidget *statisticWidget;
+
+  /**
    * @return Current image view widget.
    */
   ImageViewWidget *currentWidget();
@@ -201,6 +207,11 @@ public slots:
    * Change to the widget.
    */
   void changeToWidget(QObject *widget);
+
+  /**
+   * Called when the top image widget is changed.
+   */
+  void currentChanged(int index);
 };
 
 #endif // MAINWINDOW_H
