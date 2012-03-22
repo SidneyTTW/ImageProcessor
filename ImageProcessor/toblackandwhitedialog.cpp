@@ -18,6 +18,7 @@ ToBlackAndWhiteDialog::ToBlackAndWhiteDialog(const MyImage& image,
   changing = false;
   single = true;
   black = true;
+  singleThreshold = 0;
 
   thresholdItem = new ThresholdItem();
   plot = new BasicStatisticPlot(
@@ -56,14 +57,6 @@ ToBlackAndWhiteDialog::ToBlackAndWhiteDialog(const MyImage& image,
           SIGNAL(textEdited(QString)),
           this,
           SLOT(multipleTextChanged(QString)));
-  connect(ui->singleButton,
-          SIGNAL(toggled(bool)),
-          this,
-          SLOT(changeToSingle(bool)));
-  connect(ui->multipleButton,
-          SIGNAL(toggled(bool)),
-          this,
-          SLOT(changeToMultiple(bool)));
   connect(ui->blackButton,
           SIGNAL(toggled(bool)),
           this,
@@ -76,17 +69,12 @@ ToBlackAndWhiteDialog::ToBlackAndWhiteDialog(const MyImage& image,
   resetPreview();
 }
 
-void ToBlackAndWhiteDialog::changeToSingle(bool selected)
+void ToBlackAndWhiteDialog::changeToSingle()
 {
-  if (!selected)
-    return;
   single = true;
-  ui->customButton->setEnabled(true);
-  ui->OTSUButton->setEnabled(true);
-  ui->maxEntropyButton->setEnabled(true);
-  ui->thresholdSpinBox->setEnabled(true);
-  ui->thresholdsEdit->setEnabled(false);
   marker->setLineStyle(QwtPlotMarker::VLine);
+  marker->setXValue(singleThreshold);
+  ui->thresholdSpinBox->setValue(singleThreshold);
   plot->canvas()->removeEventFilter(thresholdItem);
   QVector<int> thresholds;
   thresholds.push_back(singleThreshold);
@@ -101,16 +89,8 @@ void ToBlackAndWhiteDialog::changeToSingle(bool selected)
   resetPreview();
 }
 
-void ToBlackAndWhiteDialog::changeToMultiple(bool selected)
+void ToBlackAndWhiteDialog::changeToMultiple()
 {
-  if (!selected)
-    return;
-  single = false;
-  ui->customButton->setEnabled(false);
-  ui->OTSUButton->setEnabled(false);
-  ui->maxEntropyButton->setEnabled(false);
-  ui->thresholdSpinBox->setEnabled(false);
-  ui->thresholdsEdit->setEnabled(true);
   xPlotPicker->setEnabled(false);
   xPlotPicker->setRubberBand(QwtPicker::NoRubberBand);
   marker->setLineStyle(QwtPlotMarker::NoLine);
@@ -286,4 +266,12 @@ void ToBlackAndWhiteDialog::on_okPushButton_clicked()
 void ToBlackAndWhiteDialog::on_cancelPushButton_clicked()
 {
   reject();
+}
+
+void ToBlackAndWhiteDialog::on_tabWidget_currentChanged(int index)
+{
+  if (index == 0)
+    changeToSingle();
+  else if (index == 1)
+    changeToMultiple();
 }

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>533</width>
-    <height>404</height>
+    <width>600</width>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -26,103 +26,93 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0" colspan="2">
-            <widget class="QRadioButton" name="singleButton">
-             <property name="text">
-              <string>Single Threshold</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QWidget" name="widget_3" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QRadioButton" name="customButton">
-                <property name="text">
-                 <string>Custom</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="OTSUButton">
-                <property name="text">
-                 <string>OTSU</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="maxEntropyButton">
-                <property name="text">
-                 <string>Max Entropy</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Threshold:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="thresholdSpinBox">
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::PlusMinus</enum>
-             </property>
-             <property name="maximum">
-              <number>255</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QRadioButton" name="multipleButton">
-             <property name="text">
-              <string>Multiple Threshold</string>
-             </property>
-            </widget>
-           </item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="singleTab">
+          <attribute name="title">
+           <string>Single Threshold</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QRadioButton" name="customButton">
                <property name="text">
-                <string>Thresholds:</string>
+                <string>Custom</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="thresholdsEdit">
-               <property name="enabled">
-                <bool>false</bool>
+              <widget class="QRadioButton" name="OTSUButton">
+               <property name="text">
+                <string>OTSU</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="maxEntropyButton">
+               <property name="text">
+                <string>Max Entropy</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Threshold:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="thresholdSpinBox">
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::PlusMinus</enum>
+               </property>
+               <property name="maximum">
+                <number>255</number>
                </property>
               </widget>
              </item>
             </layout>
            </item>
           </layout>
-         </item>
-        </layout>
+         </widget>
+         <widget class="QWidget" name="multipleTab">
+          <attribute name="title">
+           <string>Multiple Threshold</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Thresholds:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="thresholdsEdit">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
        <item>
         <widget class="QWidget" name="widget" native="true">

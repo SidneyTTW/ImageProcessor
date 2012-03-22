@@ -92,22 +92,23 @@ private:
    */
   void resetPreview();
 
+  /**
+   * Change to single threshold.
+   */
+  void changeToSingle();
+
+  /**
+   * Change to multiple threshold.
+   */
+  void changeToMultiple();
+
 private slots:
+  void on_tabWidget_currentChanged(int index);
   void on_cancelPushButton_clicked();
   void on_okPushButton_clicked();
   void on_maxEntropyButton_toggled(bool checked);
   void on_OTSUButton_toggled(bool checked);
   void on_customButton_toggled(bool checked);
-
-  /**
-   * Slot to change to single threshold.
-   */
-  void changeToSingle(bool selected);
-
-  /**
-   * Slot to change to multiple threshold.
-   */
-  void changeToMultiple(bool selected);
 
   /**
    * Slot to change single threshold.
