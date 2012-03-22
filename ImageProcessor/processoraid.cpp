@@ -7,6 +7,7 @@
 #include "midnumberprocessor.h"
 #include "histogramequalizationprocessor.h"
 #include "penprocessor.h"
+#include "resizeprocessor.h"
 #include "reverseprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
@@ -28,6 +29,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   QVector<AbstractImageProcessorWithDialogOption *> result;
   result.push_back(new ToBlackAndWhiteProcessor());
   result.push_back(new ConvolutionProcessor());
+  result.push_back(new ResizeProcessor());
   return result;
 }
 

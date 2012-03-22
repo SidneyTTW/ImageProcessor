@@ -4,7 +4,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QWheelEvent>
-#include "borderlayout.h"f
+#include "borderlayout.h"
 
 ImageViewWidget::ImageViewWidget(QWidget *parent) :
     QWidget(parent)

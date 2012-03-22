@@ -186,11 +186,13 @@ public:
   static void reverse(QImage *image);
 
   /**
-   * @brief Change rgb tunel.
+   * Change rgb tunel.
    * The alpha will be remained.
    *
    * @param image The image.
-   * @param map The map.
+   * @param mapR The map of red.
+   * @param mapG The map of green.
+   * @param mapB The map of blue.
    * @param tunel The tunel to change.
    */
   static QImage *changeRGBWithMap(const QImage& image,
@@ -200,11 +202,13 @@ public:
                                   RGBAField tunel);
 
   /**
-   * @brief Change rgb tunel.
+   * Change rgb tunel.
    * The alpha will be remained.
    *
    * @param image The image.
-   * @param map The map.
+   * @param mapR The map of red.
+   * @param mapG The map of green.
+   * @param mapB The map of blue.
    * @param tunel The tunel to change.
    */
   static void changeRGBWithMap(QImage *image,
@@ -212,6 +216,32 @@ public:
                                int mapG[MAX_COLOR_VALUE],
                                int mapB[MAX_COLOR_VALUE],
                                RGBAField tunel);
+
+  /**
+   * Resize the image according to the given algorithm type.
+   *
+   * @param image The image.
+   * @param newWidth The new width.
+   * @param newHeight The new height.
+   * @param type The type of algorithm to use.
+   */
+  static QImage *resize(const QImage& image,
+                        int newWidth,
+                        int newHeight,
+                        ResizeAlgorithmType type);
+
+  /**
+   * Resize the image according to the given algorithm type.
+   *
+   * @param image The image.
+   * @param newWidth The new width.
+   * @param newHeight The new height.
+   * @param type The type of algorithm to use.
+   */
+  static void resize(QImage *image,
+                     int newWidth,
+                     int newHeight,
+                     ResizeAlgorithmType type);
 
   /**
    * Get the statistic of an image.
@@ -224,7 +254,7 @@ public:
 
 
   /**
-   * @brief Calculate the throsheld using OTSU.
+   * Calculate the throsheld using OTSU.
    *
    * @param image The image.
    * @param type The type of algorithm to use.
@@ -233,7 +263,7 @@ public:
 
 
   /**
-   * @brief Calculate the throsheld using max entropy.
+   * Calculate the throsheld using max entropy.
    *
    * @param image The image.
    * @param type The type of algorithm to use.
@@ -355,7 +385,7 @@ private:
    * @param y  The y position.
    * @return The offset from the beginning of data pointer.
    */
-  static inline void pixelOffset(int realWidth , int x, int y)
+  static inline int pixelOffset(int realWidth , int x, int y)
   {
     return realWidth * y + 4 * x;
   }

@@ -1,26 +1,26 @@
-#ifndef TOBLACKANDWHITEPROCESSOR_H
-#define TOBLACKANDWHITEPROCESSOR_H
+#ifndef RESIZEPROCESSOR_H
+#define RESIZEPROCESSOR_H
 
 #include "abstractimageprocessorwithdialogoption.h"
 
-#include <QVector>
+#include "imagealgorithm.h"
 
 /**
- * Class of processor to convert an image into black and white.
+ * Class of processor to resize an image.
  */
-class ToBlackAndWhiteProcessor : public AbstractImageProcessorWithDialogOption
+class ResizeProcessor : public AbstractImageProcessorWithDialogOption
 {
   Q_OBJECT
 public:
   /**
-   * Type of the threshold.
+   * Type of the size.
    */
-  enum ThresholdType {OTSU, MaxEntropy, Custom};
+  enum SizeType {Absolute, Relative};
 
   /**
    * Constructor.
    */
-  ToBlackAndWhiteProcessor();
+  ResizeProcessor();
 
   virtual Area::AreaType acceptableAreaType() const;
   virtual Area::AreaTypeFlag resultAreaType() const;
@@ -36,27 +36,33 @@ public:
 
 private:
   /**
-   * The thresholds.
+   * Type of the size.
    */
-  QVector<int> thresholds;
+  SizeType _sizeType;
 
   /**
-   * The type of the convertion.
+   * Type of the algorithm.
    */
-  ThresholdType type;
+  ImageAlgorithm::ResizeAlgorithmType _algorithmType;
 
   /**
-   * The start color.
+   * Width.
    */
-  int startColor;
+  double _width;
+
+  /**
+   * Height.
+   */
+  double _height;
 
 private slots:
   /**
    * Slot used to get the confirm.
    */
-  void confirm(ToBlackAndWhiteProcessor::ThresholdType type,
-               int startColor,
-               QVector<int> thresholds);
+  void confirm(ResizeProcessor::SizeType,
+               ImageAlgorithm::ResizeAlgorithmType,
+               double,
+               double);
 };
 
-#endif // TOBLACKANDWHITEPROCESSOR_H
+#endif // RESIZEPROCESSOR_H

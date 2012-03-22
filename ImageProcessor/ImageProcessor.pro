@@ -44,7 +44,9 @@ SOURCES += main.cpp\
     reverseprocessor.cpp \
     histogramequalizationprocessor.cpp \
     histogramequalizationoptionwidget.cpp \
-    basicstatisticwidget.cpp
+    basicstatisticwidget.cpp \
+    resizeprocessor.cpp \
+    resizedialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -84,7 +86,9 @@ HEADERS  += mainwindow.h \
     reverseprocessor.h \
     histogramequalizationprocessor.h \
     histogramequalizationoptionwidget.h \
-    basicstatisticwidget.h
+    basicstatisticwidget.h \
+    resizeprocessor.h \
+    resizedialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -92,7 +96,8 @@ FORMS    += mainwindow.ui \
     batchconvertiondialog.ui \
     convolutiondialog.ui \
     histogramequalizationoptionwidget.ui \
-    basicstatisticwidget.ui
+    basicstatisticwidget.ui \
+    resizedialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

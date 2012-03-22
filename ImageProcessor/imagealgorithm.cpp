@@ -488,6 +488,94 @@ void  ImageAlgorithm::changeRGBWithMap(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::resize(const QImage& image,
+                               int newWidth,
+                               int newHeight,
+                               ResizeAlgorithmType type)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(newWidth, newHeight, SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = resultImg->bytesPerLine();
+  unsigned char *backup2 = resultImgDataPtr;
+
+  for(int i = 0;i < newHeight;++i)
+  {
+    double originalY = 1.0 * i * (height - 1) / newHeight;
+    resultImgDataPtr = backup2 + realWidth2 * i;
+    for(int j = 0;j < newWidth;++j)
+    {
+      double originalX = 1.0 * j * (width - 1) / newWidth;
+      int floorX = qFloor(originalX);
+      int floorY = qFloor(originalY);
+      int tr = 0, tg = 0, tb = 0, ta = 0;
+      switch (type)
+      {
+      case NearestNeighbor:
+        getRGBA(imageDataPtr + pixelOffset(realWidth1, originalX, originalY),
+                tr, tg, tb, ta);
+        break;
+      case Bilinear:
+        {
+          int sr[4], sg[4], sb[4], sa[4];
+          getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                             floorX,
+                                             floorY),
+                  sr[0], sg[0], sb[0], sa[0]);
+          getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                             qCeil(originalX),
+                                             floorY),
+                  sr[1], sg[1], sb[1], sa[1]);
+          getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                             floorX,
+                                             qCeil(originalY)),
+                  sr[2], sg[2], sb[2], sa[2]);
+          getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                             qCeil(originalX),
+                                             qCeil(originalY)),
+                  sr[3], sg[3], sb[3], sa[3]);
+          double factors[4];
+          factors[0] = (1 - (originalX - floorX)) * (1 - (originalY - floorY));
+          factors[1] = (originalX - floorX) * (1 - (originalY - floorY));
+          factors[2] = (1 - (originalX - floorX)) * (originalY - floorY);
+          factors[3] = (originalX - floorX) * (originalY - floorY);
+          for (int k = 0;k < 4;++k)
+          {
+            tr += sr[k] * factors[k];
+            tg += sg[k] * factors[k];
+            tb += sb[k] * factors[k];
+            ta += sa[k] * factors[k];
+          }
+          break;
+        }
+      case Bicubic:
+        break;
+      }
+      setRGBA(resultImgDataPtr, tr, tg, tb, ta);
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::resize(QImage *image,
+                            int newWidth,
+                            int newHeight,
+                            ResizeAlgorithmType type)
+{
+  QImage *result = resize(*image, newWidth, newHeight, type);
+  if (result != NULL)
+  {
+    memcpy(image->bits(), result->bits(), result->byteCount());
+    delete result;
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {
