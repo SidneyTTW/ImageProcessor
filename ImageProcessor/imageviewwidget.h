@@ -2,7 +2,9 @@
 #define IMAGEVIEWWIDGET_H
 
 #include <QWidget>
+
 #include <QImage>
+#include <QLabel>
 #include <QScrollBar>
 
 /**
@@ -16,6 +18,11 @@ public:
    * Constructor.
    */
   explicit ImageViewWidget(QWidget *parent = 0);
+
+  /**
+   * Destructor.
+   */
+  ~ImageViewWidget();
 
   /**
    * Set the image to show.
@@ -32,14 +39,15 @@ public:
 
 protected:
   virtual void wheelEvent(QWheelEvent *event);
+  virtual void mouseMoveEvent(QMouseEvent *event);
   virtual void paintEvent(QPaintEvent *event);
   virtual void resizeEvent(QResizeEvent *event);
 
 private:
   /**
-   * A pixmap to store and show the image.
+   * The image.
    */
-  QPixmap pixmap;
+  QImage _image;
 
   /**
    * The horizon bar.
@@ -80,6 +88,11 @@ private:
    * Current height.
    */
   int ch;
+
+  /**
+   * The label to show the position and the RGBA.
+   */
+  QLabel *label;
 
   /**
    * Synchronous width and height.

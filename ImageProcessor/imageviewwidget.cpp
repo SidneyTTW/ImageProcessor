@@ -11,11 +11,13 @@ ImageViewWidget::ImageViewWidget(QWidget *parent) :
 {
   horizonBar = new QScrollBar(Qt::Horizontal);
   verticalBar = new QScrollBar(Qt::Vertical);
+  label = new QLabel();
   connect(horizonBar, SIGNAL(valueChanged(int)), this, SLOT(hBarChangedSlot(int)));
   connect(verticalBar, SIGNAL(valueChanged(int)), this, SLOT(vBarChangedSlot(int)));
   BorderLayout *layout = new BorderLayout();
   layout->addWidget(horizonBar, BorderLayout::South);
   layout->addWidget(verticalBar, BorderLayout::East);
+  layout->addWidget(label, BorderLayout::North);
   setLayout(layout);
 
   scaleX = 1.0;
@@ -25,15 +27,17 @@ ImageViewWidget::ImageViewWidget(QWidget *parent) :
   cw = 0;
   ch = 0;
 
+  setMouseTracking(true);
+
   synchronous();
 }
 
 void ImageViewWidget::setImage(const QImage &image)
 {
-  pixmap = QPixmap::fromImage(image);
+  _image = image;
 
-  ow = pixmap.width();
-  oh = pixmap.height();
+  ow = image.width();
+  oh = image.height();
 
   synchronous();
 
@@ -47,11 +51,11 @@ QPoint ImageViewWidget::toImagePosition(QPoint point)
   try
   {
     int w = width();
-    int h = height();
+    int h = height() - label->height();
     int sltx = 0;
     int slty = 0;
     int tltx = 0;
-    int tlty = 0;
+    int tlty = label->height();
     int iw = w;
     if (verticalBar->isVisible())
       iw = w - verticalBar->width();
@@ -127,7 +131,7 @@ void ImageViewWidget::clear()
   oh = 0;
   cw = 0;
   ch = 0;
-  pixmap = QPixmap();
+  _image = QImage();
   horizonBar->setVisible(false);
   verticalBar->setVisible(false);
 }
@@ -189,6 +193,24 @@ void ImageViewWidget::wheelEvent (QWheelEvent *event)
   }
 }
 
+void ImageViewWidget::mouseMoveEvent(QMouseEvent *event)
+{
+  QPoint pos = toImagePosition(event->pos());
+  if (pos.x() < 0 ||
+      pos.x() >= ow ||
+      pos.y() < 0 ||
+      pos.y() >= oh)
+    return;
+  QRgb rgb = _image.pixel(pos);
+  label->setText(tr("x: %1 y:%2 r:%3 g:%4 b:%5 a:%6").
+                 arg(pos.x()).
+                 arg(pos.y()).
+                 arg(qRed(rgb)).
+                 arg(qGreen(rgb)).
+                 arg(qBlue(rgb)).
+                 arg(qAlpha(rgb)));
+}
+
 void ImageViewWidget::paintEvent(QPaintEvent *event)
 {
   if (ow == 0 || oh == 0)
@@ -196,12 +218,12 @@ void ImageViewWidget::paintEvent(QPaintEvent *event)
   // Get the painter
   QPainter *painter = new QPainter(this);
   int w = width();
-  int h = height();
-  painter->fillRect(0, 0, w, h, QBrush(QColor(100, 100, 100)));
+  int h = height() - label->height();
+  painter->fillRect(0, label->height(), w, h, QBrush(QColor(100, 100, 100)));
   int sltx = 0;
   int slty = 0;
   int tltx = 0;
-  int tlty = 0;
+  int tlty = label->height();
   int iw = w;
   if (verticalBar->isVisible())
     iw = w - verticalBar->width();
@@ -228,9 +250,12 @@ void ImageViewWidget::paintEvent(QPaintEvent *event)
     ih = ch;
     tlty = (h - ih) / 2;
   }
-  painter->drawPixmap(tltx, tlty, iw, ih, pixmap,
-                      (int) (sltx / scaleX), (int) (slty / scaleY),
-                      (int) (iw / scaleX), (int) (ih / scaleY));
+  painter->drawImage(QRect(tltx, tlty, iw, ih),
+                     _image,
+                     QRect((int) (sltx / scaleX),
+                           (int) (slty / scaleY),
+                           (int) (iw / scaleX),
+                           (int) (ih / scaleY)));
 
   // End the paint and release the space
   painter->end();
@@ -250,4 +275,12 @@ void ImageViewWidget::hBarChangedSlot(int value)
 void ImageViewWidget::vBarChangedSlot(int value)
 {
   update();
+}
+
+ImageViewWidget::~ImageViewWidget()
+{
+  delete verticalBar;
+  delete horizonBar;
+  delete label;
+  delete layout();
 }

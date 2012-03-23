@@ -146,6 +146,8 @@ bool PenProcessor::eventFilter(QObject *object, QEvent *event)
     valid = true;
     break;
   case QEvent::MouseMove:
+    if (((QMouseEvent *) event)->buttons() != Qt::NoButton)
+      break;
     positions.push_back(
         imageViewer->toImagePosition(((QMouseEvent *) event)->pos()));
     emit optionChanged(this);
