@@ -65,7 +65,6 @@ ToBlackAndWhiteDialog::ToBlackAndWhiteDialog(const MyImage& image,
           SIGNAL(toggled(bool)),
           this,
           SLOT(startWithWhite(bool)));
-
   resetPreview();
 }
 
@@ -91,14 +90,15 @@ void ToBlackAndWhiteDialog::changeToSingle()
 
 void ToBlackAndWhiteDialog::changeToMultiple()
 {
+  single = false;
   xPlotPicker->setEnabled(false);
   xPlotPicker->setRubberBand(QwtPicker::NoRubberBand);
   marker->setLineStyle(QwtPlotMarker::NoLine);
   plot->canvas()->installEventFilter(thresholdItem);
   QString text;
-  QVector<int> thresholds = thresholdItem->getThresholds();
-  for (int i = 0;i < thresholds.size();++i)
-    text += tr("%1 ").arg(thresholds[i]);
+  _thresholds = thresholdItem->getThresholds();
+  for (int i = 0;i < _thresholds.size();++i)
+    text += tr("%1 ").arg(_thresholds[i]);
   changing = true;
   ui->thresholdsEdit->setText(text);
   changing = false;
