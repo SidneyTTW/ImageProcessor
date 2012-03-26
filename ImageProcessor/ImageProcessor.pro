@@ -38,15 +38,15 @@ SOURCES += main.cpp\
     penprocessor.cpp \
     processoraid.cpp \
     batchconvertiondialog.cpp \
-    convolutionprocessor.cpp \
-    convolutiondialog.cpp \
-    midnumberprocessor.cpp \
     reverseprocessor.cpp \
     histogramequalizationprocessor.cpp \
     histogramequalizationoptionwidget.cpp \
     basicstatisticwidget.cpp \
     resizeprocessor.cpp \
-    resizedialog.cpp
+    resizedialog.cpp \
+    filterprocessor.cpp \
+    filterdialog.cpp \
+    builtinconvolutiondialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -80,24 +80,25 @@ HEADERS  += mainwindow.h \
     penprocessor.h \
     processoraid.h \
     batchconvertiondialog.h \
-    convolutionprocessor.h \
-    convolutiondialog.h \
-    midnumberprocessor.h \
     reverseprocessor.h \
     histogramequalizationprocessor.h \
     histogramequalizationoptionwidget.h \
     basicstatisticwidget.h \
     resizeprocessor.h \
-    resizedialog.h
+    resizedialog.h \
+    filterprocessor.h \
+    filterdialog.h \
+    builtinconvolutiondialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
     toblackandwhitedialog.ui \
     batchconvertiondialog.ui \
-    convolutiondialog.ui \
     histogramequalizationoptionwidget.ui \
     basicstatisticwidget.ui \
-    resizedialog.ui
+    resizedialog.ui \
+    filterdialog.ui \
+    builtinconvolutiondialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

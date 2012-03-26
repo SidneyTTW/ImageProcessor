@@ -5,6 +5,29 @@
 #include "basicstatistic.h"
 
 /**
+ * Find the mid number in the array.
+ *
+ * @param array The array.
+ * @param count number of elements in the array.
+ * @return The mid number.
+ * @warning Will CHANGE the original array!
+ */
+inline int calculateMidNumber(int *array, int count)
+{
+  for (int i = 0;i < count / 2 + 1;++i)
+  {
+    for (int j = count - 1;j > i;--j)
+    if (array[j] > array[j - 1])
+    {
+      int tmp = array[j];
+      array[j] = array[i];
+      array[i] = tmp;
+    }
+  }
+  return array[count / 2];
+}
+
+/**
  * Algorithm of images, only supports QImage::Format_ARGB32.
  */
 class ImageAlgorithm
@@ -34,6 +57,8 @@ public:
    * The only format supported.
    */
   const static QImage::Format SUPPORTED_FORMAT = QImage::Format_ARGB32;
+
+  ImageAlgorithm();
 
   /**
    * @return Whether the image can be processed by this algorithm.
@@ -116,58 +141,22 @@ public:
                                      int startColor=0);
 
   /**
-   * Convolution.
-   * The alpha will be set to MAX_COLOR_VALUE
+   * Filt an image according to given filter.
    *
-   * @param image The image to convert.
-   * @param matrix The matrix.
-   * @param matrixWidth Width of the matrix.
-   * @param divisor The divisor.
-   * @param offset The offset.
+   * @param image The image to filt.
+   * @param filter The filter.
    */
-  static QImage *convolution(const QImage& image,
-                             const QVector<int>& matrix,
-                             int matrixWidth,
-                             int divisor,
-                             int offset);
+  template <class T>
+  static QImage *filtImage(const QImage& image, T *filter);
 
   /**
-   * Convolution.
-   * The alpha will be set to MAX_COLOR_VALUE
+   * Filt an image according to given filter.
    *
-   * @param image The image to convert.
-   * @param matrix The matrix.
-   * @param matrixWidth Width of the matrix.
-   * @param divisor The divisor.
-   * @param offset The offset.
+   * @param image The image to filt.
+   * @param filter The filter.
    */
-  static void convolution(QImage *image,
-                          const QVector<int>& matrix,
-                          int matrixWidth,
-                          int divisor,
-                          int offset);
-
-  /**
-   * Filter using mid number.
-   * The alpha will be set to MAX_COLOR_VALUE
-   *
-   * @param image The image to convert.
-   * @param matrixWidth Width of the matrix.
-   * @param matrixHeight Height of the matrix.
-   */
-  static QImage *midNumber(const QImage& image,
-                           int matrixWidth,
-                           int matrixHeight);
-
-  /**
-   * Filter using mid number.
-   * The alpha will be set to MAX_COLOR_VALUE
-   *
-   * @param image The image to convert.
-   * @param matrixWidth Width of the matrix.
-   * @param matrixHeight Height of the matrix.
-   */
-  static void midNumber(QImage *image, int matrixWidth, int matrixHeight);
+  template <class T>
+  static void filtImage(QImage *image, T *filter);
 
   /**
    * Reverse the color.
@@ -276,6 +265,234 @@ public:
    * @param result Pointer of an array(size is (2k+1)(2k+1)).
    */
   static void gaussCore(int k, float d,int *result);
+
+  /**
+   * Abstract class of filter.
+   * Only stores the width and height.
+   * I didn't use virtual function becuase of efficiency.
+   * I'm going to use template function which can be optimized by the compiler.
+   */
+  class AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     */
+    AbstractFilter(int width, int height) :
+        _width(width),
+        _height(height)
+    {
+    }
+
+    virtual QImage *filt(const QImage&image)=0;
+
+    virtual void filt(QImage *image)=0;
+
+    /**
+     * Width of the matrix.
+     */
+    int _width;
+
+    /**
+     * height of the matrix.
+     */
+    int _height;
+  };
+
+  /**
+   * Class of filter of convolution.
+   */
+  class ConvolutionFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param matrix The matrix.
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     * @param divisor The divisor.
+     * @param offset The offset.
+     */
+    ConvolutionFilter(const int *matrix,
+                      int width,
+                      int height,
+                      int divisor,
+                      int offset) :
+      AbstractFilter(width, height),
+      _divisor(divisor),
+      _offset(offset)
+    {
+      _matrix = new int[width * height];
+      memcpy(_matrix, matrix, width * height * 4);
+    }
+
+    /**
+     * Destructor.
+     */
+    ~ConvolutionFilter()
+    {
+      delete [] _matrix;
+    }
+
+    virtual QImage *filt(const QImage&image)
+    {
+      return filtImage<ConvolutionFilter>(image, this);
+    }
+
+    virtual void filt(QImage *image)
+    {
+      filtImage<ConvolutionFilter>(image, this);
+    }
+
+    /**
+     * Calculate the RGBA.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param dataPtrPtr Pointer of the pointers of original image data.
+     * @param n Number of pointers.
+     * @param r Red.
+     * @param g Green.
+     * @param b Blue.
+     * @param a Alpha.
+     */
+    inline void calculateRGBA(const unsigned char **dataPtrPtr,
+                              int n,
+                              int& r,
+                              int& g,
+                              int& b,
+                              int& a)
+    {
+      r = 0;
+      g = 0;
+      b = 0;
+      a = MAX_COLOR_VALUE;
+      int sr, sg, sb, sa;
+      for (int i = 0;i < n;++i)
+      {
+        if (dataPtrPtr[i] == NULL)
+          continue;
+        getRGBA(dataPtrPtr[i], sr, sg, sb, sa);
+        r += _matrix[i] * sr;
+        g += _matrix[i] * sg;
+        b += _matrix[i] * sb;
+      }
+      r = r / _divisor + _offset;
+      g = g / _divisor + _offset;
+      b = b / _divisor + _offset;
+    }
+
+  private:
+    /**
+     * The matrix.
+     */
+    int *_matrix;
+
+    /**
+     * The divisor.
+     */
+    int _divisor;
+
+    /**
+     * The offset.
+     */
+    int _offset;
+  };
+
+  /**
+   * Class of filter of median.
+   */
+  class MedianFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     */
+    MedianFilter(int width, int height) :
+        AbstractFilter(width, height)
+    {
+      arrayR = new int[width * height];
+      arrayG = new int[width * height];
+      arrayB = new int[width * height];
+    }
+
+    ~MedianFilter()
+    {
+      delete [] arrayR;
+      delete [] arrayG;
+      delete [] arrayB;
+    }
+
+    virtual QImage *filt(const QImage&image)
+    {
+      return filtImage<MedianFilter>(image, this);
+    }
+
+    virtual void filt(QImage *image)
+    {
+      filtImage<MedianFilter>(image, this);
+    }
+
+    /**
+     * Calculate the RGBA.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param dataPtrPtr Pointer of the pointers of original image data.
+     * @param n Number of pointers.
+     * @param r Red.
+     * @param g Green.
+     * @param b Blue.
+     * @param a Alpha.
+     */
+    inline void calculateRGBA(const unsigned char **dataPtrPtr,
+                              int n,
+                              int& r,
+                              int& g,
+                              int& b,
+                              int& a)
+    {
+      a = MAX_COLOR_VALUE;
+      int sr, sg, sb, sa;
+      count = 0;
+      for (int i = 0;i < n;++i)
+      {
+        if (dataPtrPtr[i] == NULL)
+          continue;
+        getRGBA(dataPtrPtr[i], sr, sg, sb, sa);
+        arrayR[count] = sr;
+        arrayG[count] = sg;
+        arrayB[count] = sb;
+        ++count;
+      }
+      r = calculateMidNumber(arrayR, count);
+      g = calculateMidNumber(arrayG, count);
+      b = calculateMidNumber(arrayB, count);
+    }
+
+  private:
+    /**
+     * Array to store the red values.
+     */
+    int *arrayR;
+
+    /**
+     * Array to store the green values.
+     */
+    int *arrayG;
+
+    /**
+     * Array to store the blue values.
+     */
+    int *arrayB;
+
+    /**
+     * Count of valid numbers.
+     */
+    int count;
+  };
 
 private:
   /**
@@ -397,5 +614,86 @@ private:
     return realWidth * y + 4 * x;
   }
 };
+
+template <class T>
+QImage *ImageAlgorithm::filtImage(const QImage& image, T *filter)
+{
+  if (filter == NULL || !validType(image))
+    return NULL;
+  if (filter->_width % 2 != 1 || filter->_height % 2 != 1)
+    return NULL;
+  int matrixWidth = filter->_width;
+  int matrixHeight = filter->_height;
+  int borderWidth = matrixWidth / 2;
+  int borderHeight = matrixHeight / 2;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *filtedImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *filtedImgDataPtr = filtedImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = filtedImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = filtedImgDataPtr;
+
+  const unsigned char **dataPtrPtr =
+      new const unsigned char *[matrixWidth * matrixHeight];
+  int *offsets = new int[matrixWidth * matrixHeight];
+
+  for (int i = 0;i < matrixWidth;++i)
+    for (int j = 0;j < matrixHeight;++j)
+      offsets[i + matrixWidth * j] = 4 * (i - borderWidth) +
+                                     realWidth1 * (j - borderHeight);
+
+  memcpy(filtedImgDataPtr, imageDataPtr, image.byteCount());
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    filtedImgDataPtr = backup2 + realWidth2 * i;
+    for (int j = 0;j < width;++j)
+    {
+      int tr, tg, tb, ta;
+      for (int k = 0;k < matrixHeight;++k)
+      {
+        for (int l = 0;l < matrixWidth;++l)
+        {
+          int index = k * matrixWidth + l;
+          if (i + k - borderHeight < 0 ||
+              i + k - borderHeight >= height ||
+              j + l - borderWidth < 0 ||
+              j + l - borderWidth >= width)
+          {
+            dataPtrPtr[index] = NULL;
+            continue;
+          }
+          dataPtrPtr[index] = imageDataPtr + offsets[index];
+        }
+      }
+      filter->calculateRGBA(dataPtrPtr, matrixWidth * matrixHeight, tr, tg, tb, ta);
+      tr = qBound(0, tr, MAX_COLOR_VALUE);
+      tg = qBound(0, tg, MAX_COLOR_VALUE);
+      tb = qBound(0, tb, MAX_COLOR_VALUE);
+      ta = qBound(0, ta, MAX_COLOR_VALUE);
+      setRGBA(filtedImgDataPtr, tr, tg, tb, ta);
+      imageDataPtr += 4;
+      filtedImgDataPtr += 4;
+    }
+  }
+  delete [] offsets;
+  delete [] dataPtrPtr;
+  return filtedImg;
+}
+
+template <class T>
+void ImageAlgorithm::filtImage(QImage *image, T *filter)
+{
+  QImage *result = filtImage<T>(*image, filter);
+  if (result != NULL)
+  {
+    memcpy(image->bits(), result->bits(), result->byteCount());
+    delete result;
+  }
+}
 
 #endif // IMAGEALGORITHM_H

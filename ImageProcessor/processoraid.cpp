@@ -2,9 +2,8 @@
 
 #include <QFile>
 #include <QTextStream>
-#include "convolutionprocessor.h"
 #include "drawlineprocessor.h"
-#include "midnumberprocessor.h"
+#include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
 #include "penprocessor.h"
 #include "resizeprocessor.h"
@@ -18,7 +17,6 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new DrawLineProcessor());
   result.push_back(new PenProcessor());
   result.push_back(new ToGrayProcessor());
-  result.push_back(new MidNumberProcessor());
   result.push_back(new ReverseProcessor());
   result.push_back(new HistogramEqualizationProcessor());
   return result;
@@ -28,8 +26,8 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
 {
   QVector<AbstractImageProcessorWithDialogOption *> result;
   result.push_back(new ToBlackAndWhiteProcessor());
-  result.push_back(new ConvolutionProcessor());
   result.push_back(new ResizeProcessor());
+  result.push_back(new FilterProcessor());
   return result;
 }
 

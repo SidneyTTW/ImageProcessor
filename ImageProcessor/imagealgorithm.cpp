@@ -2,6 +2,12 @@
 
 #include <qmath.h>
 
+ImageAlgorithm::ImageAlgorithm()
+{
+  ImageAlgorithm::filtImage<MedianFilter>(QImage(), NULL);
+  ImageAlgorithm::filtImage<ConvolutionFilter>(QImage(), NULL);
+}
+
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.
 QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
@@ -155,202 +161,6 @@ void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
               MAX_COLOR_VALUE);
       imageDataPtr += 4;
     }
-  }
-}
-
-QImage *ImageAlgorithm::convolution(const QImage& image,
-                                    const QVector<int>& matrix,
-                                    int matrixWidth,
-                                    int divisor,
-                                    int offset)
-{
-  if (!validType(image))
-    return NULL;
-  if (matrixWidth % 2 != 1 ||
-      matrix.size() % matrixWidth != 0 ||
-      (matrix.size() / matrixWidth) % 2 != 1)
-    return NULL;
-  int matrixHeight = matrix.size() / matrixWidth;
-  int borderWidth = matrixWidth / 2;
-  int borderHeight = matrixHeight / 2;
-  int width = image.width();
-  int height = image.height();
-  const unsigned char *imageDataPtr = image.bits();
-  QImage *convolutionImg = new QImage(width, height, SUPPORTED_FORMAT);
-  unsigned char *convolutionImgDataPtr = convolutionImg->bits();
-  int realWidth1 = image.bytesPerLine();
-  int realWidth2 = convolutionImg->bytesPerLine();
-  const unsigned char *backup1 = imageDataPtr;
-  unsigned char *backup2 = convolutionImgDataPtr;
-
-  const int *factors = matrix.data();
-  int *offsets = new int[matrix.size()];
-  for (int i = 0;i < matrixWidth;++i)
-    for (int j = 0;j < matrixHeight;++j)
-      offsets[i + matrixWidth * j] = 4 * (i - borderWidth) +
-                                     realWidth1 * (j - borderHeight);
-
-  memcpy(convolutionImgDataPtr, imageDataPtr, image.byteCount());
-
-  for(int i = 0;i < height;++i)
-  {
-    imageDataPtr = backup1 + realWidth1 * i;
-    convolutionImgDataPtr = backup2 + realWidth2 * i;
-    for (int j = 0;j < width;++j)
-    {
-      int sr, sg, sb, sa;
-      int tr = 0, tg = 0, tb = 0;
-      for (int k = 0;k < matrixHeight;++k)
-      {
-        for (int l = 0;l < matrixWidth;++l)
-        {
-          if (i + k - borderHeight < 0 ||
-              i + k - borderHeight >= height ||
-              j + l - borderWidth < 0 ||
-              j + l - borderWidth >= width)
-            continue;
-          int index = k * matrixWidth + l;
-          getRGBA(imageDataPtr + offsets[index], sr, sg, sb, sa);
-          tr += factors[index] * sr;
-          tg += factors[index] * sg;
-          tb += factors[index] * sb;
-        }
-      }
-      tr = qBound(0, tr / divisor + offset, MAX_COLOR_VALUE);
-      tg = qBound(0, tg / divisor + offset, MAX_COLOR_VALUE);
-      tb = qBound(0, tb / divisor + offset, MAX_COLOR_VALUE);
-      setRGBA(convolutionImgDataPtr, tr, tg, tb, MAX_COLOR_VALUE);
-      imageDataPtr += 4;
-      convolutionImgDataPtr += 4;
-    }
-  }
-  return convolutionImg;
-}
-
-void ImageAlgorithm::convolution(QImage *image,
-                                 const QVector<int>& matrix,
-                                 int matrixWidth,
-                                 int divisor,
-                                 int offset)
-{
-  QImage *result = convolution(*image, matrix, matrixWidth, divisor, offset);
-  if (result != NULL)
-  {
-    memcpy(image->bits(), result->bits(), result->byteCount());
-    delete result;
-  }
-}
-
-/**
- * Find the mid number in the array.
- *
- * @param array The array.
- * @param count number of elements in the array.
- * @return The mid number.
- * @warning Will CHANGE the original array!
- */
-inline int calculateMidNumber(int *array, int count)
-{
-  for (int i = 0;i < count / 2 + 1;++i)
-  {
-    for (int j = count - 1;j > i;--j)
-    if (array[j] > array[j - 1])
-    {
-      int tmp = array[j];
-      array[j] = array[i];
-      array[i] = tmp;
-    }
-  }
-  return array[count / 2];
-}
-
-QImage *ImageAlgorithm::midNumber(const QImage& image,
-                                  int matrixWidth,
-                                  int matrixHeight)
-{
-  if (!validType(image))
-    return NULL;
-  if (matrixWidth % 2 != 1 || matrixHeight % 2 != 1)
-    return NULL;
-  int borderWidth = matrixWidth / 2;
-  int borderHeight = matrixHeight / 2;
-  int width = image.width();
-  int height = image.height();
-  const unsigned char *imageDataPtr = image.bits();
-  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
-  unsigned char *resultImgDataPtr = resultImg->bits();
-  int realWidth1 = image.bytesPerLine();
-  int realWidth2 = resultImg->bytesPerLine();
-  const unsigned char *backup1 = imageDataPtr;
-  unsigned char *backup2 = resultImgDataPtr;
-
-  int *valuesR = new int[matrixWidth * matrixHeight];
-  int *valuesG = new int[matrixWidth * matrixHeight];
-  int *valuesB = new int[matrixWidth * matrixHeight];
-  int *offsets = new int[matrixWidth * matrixHeight];
-  int count;
-  for (int i = 0;i < matrixWidth;++i)
-    for (int j = 0;j < matrixHeight;++j)
-      offsets[i + matrixWidth * j] = 4 * (i - borderWidth) +
-                                     realWidth1 * (j - borderHeight);
-
-  memcpy(resultImgDataPtr, imageDataPtr, image.byteCount());
-
-  for(int i = 0;i < height;++i)
-  {
-    imageDataPtr = backup1 + realWidth1 * i;
-    resultImgDataPtr = backup2 + realWidth2 * i;
-    for (int j = 0;j < width;++j)
-    {
-      int sr, sg, sb, sa;
-      int tr = 0, tg = 0, tb = 0;
-      count = 0;
-      for (int k = 0;k < matrixHeight;++k)
-      {
-        for (int l = 0;l < matrixWidth;++l)
-        {
-          if (i + k - borderHeight < 0 ||
-              i + k - borderHeight >= height ||
-              j + l - borderWidth < 0 ||
-              j + l - borderWidth >= width)
-            continue;
-          int index = k * matrixWidth + l;
-          getRGBA(imageDataPtr + offsets[index], sr, sg, sb, sa);
-          valuesR[count] = sr;
-          valuesG[count] = sg;
-          valuesB[count] = sb;
-          ++count;
-        }
-      }
-      tr = qBound(0,
-                  calculateMidNumber(valuesR, count),
-                  MAX_COLOR_VALUE);
-      tg = qBound(0,
-                  calculateMidNumber(valuesG, count),
-                  MAX_COLOR_VALUE);
-      tb = qBound(0,
-                  calculateMidNumber(valuesB, count),
-                  MAX_COLOR_VALUE);
-      setRGBA(resultImgDataPtr, tr, tg, tb, MAX_COLOR_VALUE);
-      imageDataPtr += 4;
-      resultImgDataPtr += 4;
-    }
-  }
-  delete [] valuesR;
-  delete [] valuesG;
-  delete [] valuesB;
-  return resultImg;
-}
-
-void ImageAlgorithm::midNumber(QImage *image,
-                               int matrixWidth,
-                               int matrixHeight)
-{
-  QImage *result = midNumber(*image, matrixWidth, matrixHeight);
-  if (result != NULL)
-  {
-    memcpy(image->bits(), result->bits(), result->byteCount());
-    delete result;
   }
 }
 
@@ -706,11 +516,11 @@ int ImageAlgorithm::maxEntropy(const QImage& image,
 void ImageAlgorithm::gaussCore(int k, float d,int *result)
 {
   float *ftmp = new float[(2 * k + 1) * (2 * k + 1)];
-  for(int i = 0;i < k + 1;++i)               //取模板大小(2N+1) (2N+1)的右下角部分
+  for(int i = 0;i < k + 1;++i)               //取模板大小(2k+1) (2k+1)的右下角部分
   {
     for(int j = 0;j < k + 1;++j)
     {
-      float tmp = (i * i + j * j) / d;        // m_b2表示平滑尺度gauss模板
+      float tmp = (i * i + j * j) / d;        // d表示平滑尺度gauss模板
       ftmp[i * (k + 1) + j] = (float)(1.0 / qExp(tmp / 2));
     }
   }
