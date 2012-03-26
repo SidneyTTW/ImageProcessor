@@ -11,6 +11,8 @@ BasicStatisticWidget::BasicStatisticWidget(QWidget *parent) :
 {
   ui->setupUi(this);
   plot = new BasicStatisticPlot(BasicStatistic(0, 0));
+  zoomer = new QwtPlotZoomer(plot->canvas());
+  zoomer->setZoomBase();
 
   ui->dockWidgetContents->layout()->addWidget(plot);
 
@@ -65,10 +67,12 @@ void BasicStatisticWidget::updateStatistics(bool)
     type = ImageAlgorithm::Average;
   BasicStatistic statistic = ImageAlgorithm::getStatistic(_image, type);
   plot->setStatistic(statistic);
+  zoomer->setZoomBase();
 }
 
 BasicStatisticWidget::~BasicStatisticWidget()
 {
   delete ui;
+  delete zoomer;
   delete plot;
 }

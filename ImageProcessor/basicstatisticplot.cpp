@@ -69,11 +69,16 @@ void BasicStatisticPlot::init()
 
 void BasicStatisticPlot::setStatistic(BasicStatistic statistic)
 {
+  int maxY = 0;
   for (int i = 0;i < 3;++i)
   {
     QVector<QPointF> values;
     for (int j = 0;j <= MAX_COLOR_VALUE;++j)
+    {
       values.append(QPointF(j, statistic.counts[i][j]));
+      if (statistic.counts[i][j] > maxY)
+        maxY = statistic.counts[i][j];
+    }
     lineCharts[i]->setValues(values);
   }
   QVector<QwtIntervalSample> samples;
@@ -82,8 +87,12 @@ void BasicStatisticPlot::setStatistic(BasicStatistic statistic)
     QwtInterval interval(i - 0.4, i + 0.4);
     interval.setBorderFlags(QwtInterval::ExcludeMaximum);
     samples.push_back(QwtIntervalSample(statistic.counts[3][i], interval));
+    if (statistic.counts[3][i] > maxY)
+      maxY = statistic.counts[3][i];
   }
   grayHistogram->setSamples(samples);
+  setAxisScale(QwtPlot::yLeft, 0, maxY * 1.1);
+  setAxisScale(QwtPlot::xBottom, 0, MAX_COLOR_VALUE);
   replot();
 }
 

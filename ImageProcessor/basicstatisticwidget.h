@@ -4,6 +4,7 @@
 #include <QDockWidget>
 
 #include <QImage>
+#include <qwt_plot_zoomer.h>
 
 namespace Ui {
   class BasicStatisticWidget;
@@ -56,6 +57,11 @@ private:
    * The plot.
    */
   BasicStatisticPlot *plot;
+
+  /**
+   * The zoomer.
+   */
+  QwtPlotZoomer *zoomer;
 
   /**
    * The image.
