@@ -1,6 +1,7 @@
 #ifndef AREA_H
 #define AREA_H
 
+#include <QPainter>
 #include <QPolygon>
 #include <QRect>
 #include "ellipse.h"
@@ -73,6 +74,16 @@ public:
    * @return Type the type.
    */
   AreaTypeFlag getType();
+
+  /**
+   * Paint the area.
+   *
+   * @param painter The painter.
+   * @param brush The brush.
+   * @param width The width of the area.
+   * @param height The height of the area.
+   */
+  void paint(QPainter *painter, int width, int height);
 
 private:
   /**
