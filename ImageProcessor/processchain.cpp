@@ -39,7 +39,8 @@ void ProcessChain::addProcessorAt(AbstractImageProcessor *processor, int index)
     // Delete the things
     while (itr1 != processorList.end())
     {
-      recycledProcessorList.append(*itr1);
+      if (*itr1 != NULL)
+        recycledProcessorList.append(*itr1);
       delete *itr2;
       itr1 = processorList.erase(itr1);
       itr2 = imageList.erase(itr2);
@@ -59,7 +60,8 @@ void ProcessChain::maintainLists()
   QList<MyImage *>::Iterator itr2 = imageList.begin();
   while (processorList.size() > _limit)
   {
-    recycledProcessorList.append(*itr1);
+    if (*itr1 != NULL)
+      recycledProcessorList.append(*itr1);
     delete *itr2;
     itr1 = processorList.erase(itr1);
     itr2 = imageList.erase(itr2);
@@ -78,7 +80,8 @@ void ProcessChain::compress()
   QList<MyImage *>::Iterator itr2 = imageList.begin();
   while (processorList.size() > 1)
   {
-    recycledProcessorList.append(*itr1);
+    if (*itr1 != NULL)
+      recycledProcessorList.append(*itr1);
     delete *itr2;
     itr1 = processorList.erase(itr1);
     itr2 = imageList.erase(itr2);
