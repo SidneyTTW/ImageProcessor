@@ -1,10 +1,10 @@
 #include "drawlineprocessor.h"
 
 #include <QEvent>
-#include <QMouseEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include <QPainter>
 #include <QSpinBox>
-#include "imageviewwidget.h"
 
 DrawLineProcessor::DrawLineProcessor() :
     _width(1),
@@ -140,19 +140,24 @@ AbstractImageProcessor *DrawLineProcessor::fromString(const QString& str) const
 
 bool DrawLineProcessor::eventFilter(QObject *object, QEvent *event)
 {
-  ImageViewWidget *imageViewer = (ImageViewWidget *) object;
   switch (event->type())
   {
-  case QEvent::MouseButtonPress:
-    startPosition = imageViewer->toImagePosition(((QMouseEvent *) event)->pos());
-    endPosition = startPosition;
-    valid = true;
-    break;
-  case QEvent::MouseMove:
-    endPosition = imageViewer->toImagePosition(((QMouseEvent *) event)->pos());
-    emit optionChanged(this);
-    break;
-  case QEvent::MouseButtonRelease:
+  case QEvent::GraphicsSceneMousePress:
+    {
+      QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
+      startPosition = QPoint(pos.x(), pos.y());
+      endPosition = startPosition;
+      valid = true;
+      break;
+    }
+  case QEvent::GraphicsSceneMouseMove:
+    {
+      QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
+      endPosition = QPoint(pos.x(), pos.y());
+      emit optionChanged(this);
+      break;
+    }
+  case QEvent::GraphicsSceneMouseRelease:
     {
       DrawLineProcessor *newProcessor = new DrawLineProcessor();
       newProcessor->_width = _width;

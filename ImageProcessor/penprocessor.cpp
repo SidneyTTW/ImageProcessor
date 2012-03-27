@@ -1,9 +1,10 @@
 #include "penprocessor.h"
+
 #include <QEvent>
-#include <QMouseEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include <QPainter>
 #include <QSpinBox>
-#include "imageviewwidget.h"
 
 PenProcessor::PenProcessor() :
     _width(1),
@@ -136,23 +137,26 @@ AbstractImageProcessor *PenProcessor::fromString(const QString& str) const
 
 bool PenProcessor::eventFilter(QObject *object, QEvent *event)
 {
-  ImageViewWidget *imageViewer = (ImageViewWidget *) object;
   switch (event->type())
   {
-  case QEvent::MouseButtonPress:
-    positions.clear();
-    positions.push_back(
-        imageViewer->toImagePosition(((QMouseEvent *) event)->pos()));
-    valid = true;
-    break;
-  case QEvent::MouseMove:
-    if (((QMouseEvent *) event)->buttons() == Qt::NoButton)
+  case QEvent::GraphicsSceneMousePress:
+    {
+      QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
+      positions.clear();
+      positions.push_back(QPoint(pos.x(), pos.y()));
+      valid = true;
       break;
-    positions.push_back(
-        imageViewer->toImagePosition(((QMouseEvent *) event)->pos()));
-    emit optionChanged(this);
-    break;
-  case QEvent::MouseButtonRelease:
+    }
+  case QEvent::GraphicsSceneMouseMove:
+    {
+      QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
+      if (((QGraphicsSceneMouseEvent *) event)->buttons() == Qt::NoButton)
+        break;
+      positions.push_back(QPoint(pos.x(), pos.y()));
+      emit optionChanged(this);
+      break;
+    }
+  case QEvent::GraphicsSceneMouseRelease:
     {
       PenProcessor *newProcessor = new PenProcessor();
       newProcessor->_width = _width;

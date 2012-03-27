@@ -3,9 +3,15 @@
 
 #include <QWidget>
 
+#include <QGraphicsView>
 #include <QImage>
 #include <QLabel>
 #include <QScrollBar>
+#include <QWheelEvent>
+#include "area.h"
+
+class ImageItem;
+class MyView;
 
 /**
  * Class of widget to show an image.
@@ -30,64 +36,25 @@ public:
   void setImage(const QImage& image);
 
   /**
-   * Convert the given position to the position in the image.
-   *
-   * @param point The given position.
-   * @return The position in the image.
+   * Set the selected area.
    */
-  QPoint toImagePosition(QPoint point);
+  void setArea(const Area& area);
+
+  void installEventFilter(QObject *object)
+  {scene->installEventFilter(object);}
+
+  void removeEventFilter(QObject *object)
+  {scene->removeEventFilter(object);}
+
 
 protected:
-  virtual void wheelEvent(QWheelEvent *event);
-  virtual void mouseMoveEvent(QMouseEvent *event);
-  virtual void paintEvent(QPaintEvent *event);
-  virtual void resizeEvent(QResizeEvent *event);
+  virtual bool eventFilter(QObject *object, QEvent *event);
 
 private:
   /**
-   * The image.
+   * The image item.
    */
-  QImage _image;
-
-  /**
-   * The horizon bar.
-   */
-  QScrollBar *horizonBar;
-
-  /**
-   * The vertical bar.
-   */
-  QScrollBar *verticalBar;
-
-  /**
-   * The scale in X direction.
-   */
-  double scaleX;
-
-  /**
-   * The scale in Y direction.
-   */
-  double scaleY;
-
-  /**
-   * Original width.
-   */
-  int ow;
-
-  /**
-   * Original height.
-   */
-  int oh;
-
-  /**
-   * Current width.
-   */
-  int cw;
-
-  /**
-   * Current height.
-   */
-  int ch;
+  ImageItem *imageItem;
 
   /**
    * The label to show the position and the RGBA.
@@ -95,22 +62,18 @@ private:
   QLabel *label;
 
   /**
-   * Synchronous width and height.
+   * The graphics scene to hold the image and the selected area.
    */
-  void synchronous();
+  QGraphicsScene *scene;
 
   /**
-   * Current height.
+   * The graphics view to hold the scene.
    */
-  void resetScrollBars();
+  MyView *view;
 
 public slots:
-  void hBarChangedSlot(int value);
-  void vBarChangedSlot(int value);
   void zoomIn();
   void zoomOut();
-  void resume();
-  void clear();
 
 signals:
   /**

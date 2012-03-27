@@ -57,6 +57,8 @@ public:
           }
           break;
         }
+      default:
+        break;
       }
     }
   }
