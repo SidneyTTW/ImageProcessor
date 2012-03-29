@@ -17,7 +17,6 @@
 #include "processoraid.h"
 #include "simpleoptioncontainerwidget.h"
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -56,7 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ImageProcessorWithSimpleOptionAction *action =
         new ImageProcessorWithSimpleOptionAction(processor, this);
     action->setCheckable(true);
-    //action->setShortcut(QKeySequence::Open);
     action->setStatusTip(processor->name());
     action->setText(processor->name());
     simpleActions.append(action);
@@ -75,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent) :
             SLOT(addComplexProcessor(AbstractImageProcessor*)));
     ImageProcessorWithComplexOptionAction *action =
         new ImageProcessorWithComplexOptionAction(processor, this);
-    //action->setShortcut(QKeySequence::Open);
     action->setStatusTip(processor->name());
     action->setText(processor->name());
     complexActions.append(action);
@@ -347,6 +344,7 @@ void MainWindow::createNewImage(MyImage::ImageTypeFlag type,
   static int newImageCount = 0;
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
+  statisticWidget->setBoundedImageView(widget);
   QImage i(width, height, QImage::Format_ARGB32);
   if (type == MyImage::Colored)
     i.fill(qRgba(255, 255, 255, 0));
@@ -377,6 +375,7 @@ void MainWindow::open()
     return;
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
+  statisticWidget->setBoundedImageView(widget);
   MyImage *image = new MyImage(QImage(path).
                                convertToFormat(QImage::Format_ARGB32),
                                MyImage::Colored);
@@ -387,7 +386,6 @@ void MainWindow::open()
   actions.insert(widget, action);
   ui->stackedWidget->addWidget(widget);
   ui->stackedWidget->setCurrentWidget(widget);
-  statisticWidget->setBoundedImageView(widget);
 }
 
 void MainWindow::saveAs()
