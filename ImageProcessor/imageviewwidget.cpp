@@ -28,6 +28,12 @@ public:
   inline void setArea(const Area& area)
   {_area = area;}
 
+  /**
+   * @return The image of the item.
+   */
+  inline Area getArea() const
+  {return _area;}
+
   virtual QRectF boundingRect() const
   {return QRectF(0, 0, _image.width(), _image.height());}
 
@@ -50,6 +56,9 @@ public:
                       _image.height(),
                       QColor(255, 255, 255));
     painter->drawImage(0, 0, _image);
+    QPen pen(QColor(100, 100, 100));
+    pen.setStyle(Qt::DashLine);
+    painter->setPen(pen);
     _area.paint(painter, _image.width(), _image.height());
   }
 
@@ -109,7 +118,6 @@ ImageViewWidget::ImageViewWidget(QWidget *parent) :
   layout->addWidget(label, BorderLayout::North);
   layout->addWidget(view, BorderLayout::Center);
   setLayout(layout);
-
   view->setMouseTracking(true);
 }
 
@@ -124,6 +132,11 @@ void ImageViewWidget::setArea(const Area& area)
 {
   imageItem->setArea(area);
   update();
+}
+
+Area ImageViewWidget::getArea() const
+{
+  return imageItem->getArea();
 }
 
 void ImageViewWidget::zoomIn()

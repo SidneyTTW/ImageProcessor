@@ -32,24 +32,6 @@ public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
-  /**
-   * Set current selected area.
-   *
-   * @param area The area.
-   */
-  inline void setArea(Area area)
-  {
-    _area = area;
-  }
-
-  /**
-   * @return Current selected area.
-   */
-  inline Area getArea()
-  {
-    return _area;
-  }
-
   virtual QColor getCurrentColor() const;
   virtual QColor getBackgroundColor() const;
 
@@ -87,11 +69,6 @@ private:
    * A widget which contains option widget.
    */
   SimpleOptionContainerWidget *simpleOptionContainerWidget;
-
-  /**
-   * Current selected area.
-   */
-  Area _area;
 
   /**
    * Disconnect all the processor and the image.
@@ -132,6 +109,11 @@ private:
    * @return Current process chain.
    */
   ProcessChain *currentChain();
+
+  /**
+   * Enable/disable actions.
+   */
+  void enableDisableActions();
 
 private slots:
   /**

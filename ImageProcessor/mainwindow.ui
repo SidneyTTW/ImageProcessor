@@ -92,6 +92,7 @@
     <addaction name="saveAsAction"/>
     <addaction name="openChainAction"/>
     <addaction name="saveChainAction"/>
+    <addaction name="separator"/>
     <addaction name="batchConvertionAction"/>
    </widget>
    <widget class="QMenu" name="windowMenu">

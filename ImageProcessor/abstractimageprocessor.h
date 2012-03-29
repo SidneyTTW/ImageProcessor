@@ -28,7 +28,7 @@ public:
    *
    * @return Whether the type can be accepted.
    */
-  bool inline canAccept(MyImage::ImageTypeFlag type) const
+  bool inline canAcceptImage(MyImage::ImageTypeFlag type) const
   {
     MyImage::ImageType acceptable = acceptableType();
     return acceptable.testFlag(type);

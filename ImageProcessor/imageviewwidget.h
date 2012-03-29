@@ -40,9 +40,24 @@ public:
    */
   void setArea(const Area& area);
 
+  /**
+   * @return The selected area.
+   */
+  Area getArea() const;
+
+  /**
+   * Insert the event filter to the scene instead of "this".
+   *
+   * @warning It's not a virtual void.
+   */
   void installEventFilter(QObject *object)
   {scene->installEventFilter(object);}
 
+  /**
+   * Remove the event filter from the scene instead of "this".
+   *
+   * @warning It's not a virtual void.
+   */
   void removeEventFilter(QObject *object)
   {scene->removeEventFilter(object);}
 
@@ -72,7 +87,14 @@ private:
   MyView *view;
 
 public slots:
+  /**
+   * Zoom in.
+   */
   void zoomIn();
+
+  /**
+   * Zoom out.
+   */
   void zoomOut();
 
 signals:

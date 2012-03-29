@@ -107,6 +107,12 @@ public:
   }
 
   /**
+   * @return Whether the process chain has previous image.
+   */
+  inline bool hasPrevious() const
+  {return _currentIndex >= 0;}
+
+  /**
    * Move to the previous image.
    */
   inline void previous()
@@ -114,6 +120,12 @@ public:
     if (_currentIndex >= 0)
       --_currentIndex;
   }
+
+  /**
+   * @return Whether the process chain has previous image.
+   */
+  inline bool hasNext() const
+  {return _currentIndex < processorList.size() - 1;}
 
   /**
    * Move to the next image.

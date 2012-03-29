@@ -19,8 +19,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    _area(Area())
+    ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
 
@@ -110,11 +109,13 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->windowMenu->addAction(ui->colorDockWidget->toggleViewAction());
   ui->windowMenu->addAction(ui->mainToolBar->toggleViewAction());
   ui->windowMenu->addAction(statisticWidget->toggleViewAction());
+  ui->windowMenu->addSeparator();
 
   connect(ui->stackedWidget,
           SIGNAL(currentChanged(int)),
           this,
           SLOT(currentChanged(int)));
+  enableDisableActions();
 }
 
 QColor MainWindow::getCurrentColor() const
@@ -139,10 +140,10 @@ void MainWindow::complexActionSelected(QObject *action)
   ProcessChain *processChain = currentChain();
   if (widget == NULL || processChain == NULL)
     return;
-
   QDialog *dialog = ((ImageProcessorWithComplexOptionAction *)action)->
                     getConfiguarionInstance()->
-                    getOptionDialog(Area(), *processChain->getCurrentImage());
+                    getOptionDialog(widget->getArea(),
+                                    *processChain->getCurrentImage());
   if (dialog != NULL)
     dialog->exec();
 }
@@ -216,6 +217,50 @@ ProcessChain *MainWindow::currentChain()
   return processChains.value(currentWidget());
 }
 
+void MainWindow::enableDisableActions()
+{
+  ImageProcessorWithComplexOptionAction *action;
+  ImageViewWidget *widget = currentWidget();
+  ProcessChain *processChain = currentChain();
+  bool haveWidget = widget != NULL;
+  Area::AreaTypeFlag areaType;
+  MyImage::ImageTypeFlag imageType;
+  if (haveWidget)
+  {
+    areaType = widget->getArea().getType();
+    imageType = processChain->getCurrentImage()->getType();
+  }
+  foreach (action, complexActions)
+  {
+    if (!haveWidget)
+    {
+      action->setEnabled(false);
+      continue;
+    }
+    AbstractImageProcessorWithDialogOption *processor =
+        action->getConfiguarionInstance();
+    if (!processor->canAcceptArea(areaType))
+    {
+      action->setEnabled(false);
+      continue;
+    }
+    if (!processor->canAcceptImage(imageType))
+    {
+      action->setEnabled(false);
+      continue;
+    }
+    action->setEnabled(true);
+  }
+  ui->undoAction->setEnabled(processChain == NULL ?
+                             false :
+                             processChain->hasPrevious());
+  ui->redoAction->setEnabled(processChain == NULL ?
+                             false :
+                             processChain->hasNext());
+  ui->saveAsAction->setEnabled(processChain != NULL);
+  ui->saveChainAction->setEnabled(processChain != NULL);
+}
+
 void MainWindow::simpleOptionChanged(AbstractImageProcessorWithSimpleOption *
                                      processor)
 {
@@ -237,7 +282,7 @@ void MainWindow::undo()
   processChain->previous();
   disconnectAll();
   widget->setImage(processChain->getCurrentImage()->getImage());
-  update();
+  enableDisableActions();
 }
 
 void MainWindow::redo()
@@ -249,7 +294,7 @@ void MainWindow::redo()
   processChain->next();
   disconnectAll();
   widget->setImage(processChain->getCurrentImage()->getImage());
-  update();
+  enableDisableActions();
 }
 
 void MainWindow::addSimpleProcessor(AbstractImageProcessor * processor)
@@ -277,7 +322,7 @@ void MainWindow::addProcessor(AbstractImageProcessor *processor)
   }
   processChain->addProcessorAtCurrentPosition(processor);
   widget->setImage(processChain->getCurrentImage()->getImage());
-  update();
+  enableDisableActions();
 }
 
 void MainWindow::open()
@@ -380,6 +425,7 @@ void MainWindow::currentChanged(int index)
     return;
   }
   statisticWidget->setImage(processChain->getCurrentImage()->getImage());
+  enableDisableActions();
 }
 
 MainWindow::~MainWindow()
@@ -416,4 +462,5 @@ void MainWindow::on_compressButton_clicked()
   if (processChain == NULL)
     return;
   processChain->compress();
+  enableDisableActions();
 }

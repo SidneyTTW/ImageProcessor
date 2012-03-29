@@ -28,7 +28,7 @@ public:
    *
    * @return Whether the type can be accepted.
    */
-  bool inline canAccept(Area::AreaTypeFlag type) const
+  bool inline canAcceptArea(Area::AreaTypeFlag type) const
   {
     Area::AreaType acceptable = acceptableAreaType();
     return acceptable.testFlag(type);
