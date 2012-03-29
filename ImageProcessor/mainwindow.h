@@ -10,6 +10,7 @@
 
 #include "abstractcolorchooser.h"
 #include "area.h"
+#include "myimage.h"
 
 class AbstractImageProcessor;
 class AbstractImageProcessorWithSimpleOption;
@@ -159,6 +160,16 @@ public slots:
    * Add a processor.
    */
   void addProcessor(AbstractImageProcessor *processor);
+
+  /**
+   * New.
+   */
+  void newFile();
+
+  /**
+   * Slot used to create a new image.
+   */
+  void createNewImage(MyImage::ImageTypeFlag type, int width, int height);
 
   /**
    * Open.

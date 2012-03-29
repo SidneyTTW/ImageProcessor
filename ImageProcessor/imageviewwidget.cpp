@@ -13,6 +13,14 @@ class ImageItem : public QGraphicsItem
 {
 public:
   /**
+   * Constructor.
+   */
+  ImageItem() : QGraphicsItem()
+  {
+    bgBrush = QBrush(QPixmap(":/images/bg_pattern.png"));
+  }
+
+  /**
    * Set the image of the item.
    *
    * @param image The image.
@@ -50,13 +58,9 @@ public:
                      const QStyleOptionGraphicsItem *,
                      QWidget *)
   {
-    painter->fillRect(0,
-                      0,
-                      _image.width(),
-                      _image.height(),
-                      QColor(255, 255, 255));
+    painter->fillRect(0, 0, _image.width(), _image.height(), bgBrush);
     painter->drawImage(0, 0, _image);
-    QPen pen(QColor(100, 100, 100));
+    QPen pen(QColor(150, 150, 150));
     pen.setStyle(Qt::DashLine);
     painter->setPen(pen);
     _area.paint(painter, _image.width(), _image.height());
@@ -72,6 +76,11 @@ private:
    * The area.
    */
   Area _area;
+
+  /**
+   * Brush of the background.
+   */
+  QBrush bgBrush;
 };
 
 /**
@@ -84,7 +93,10 @@ public:
   /**
    * Constructor.
    */
-  MyView(QGraphicsScene *scene) : QGraphicsView(scene) {}
+  MyView(QGraphicsScene *scene) : QGraphicsView(scene)
+  {
+    setBackgroundBrush(QBrush(QColor(100, 100, 100)));
+  }
 
 protected:
   virtual void wheelEvent(QWheelEvent *event)

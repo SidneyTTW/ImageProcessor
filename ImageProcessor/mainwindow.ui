@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Image Processor</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -88,6 +88,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="newAction"/>
     <addaction name="openAction"/>
     <addaction name="saveAsAction"/>
     <addaction name="openChainAction"/>
@@ -182,6 +183,11 @@
   <action name="batchConvertionAction">
    <property name="text">
     <string>Batch Convertion</string>
+   </property>
+  </action>
+  <action name="newAction">
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>

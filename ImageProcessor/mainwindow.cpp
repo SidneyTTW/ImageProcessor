@@ -4,18 +4,19 @@
 #include <QAction>
 #include <QDialog>
 #include <QFileDialog>
-#include "colorchooser.h"
 #include "abstractimageprocessorwithsimpleoption.h"
 #include "abstractimageprocessorwithdialogoption.h"
+#include "batchconvertiondialog.h"
 #include "basicstatisticwidget.h"
+#include "colorchooser.h"
 #include "imageprocessorwithsimpleoptionaction.h"
 #include "imageprocessorwithcomplexoptionaction.h"
 #include "imageviewwidget.h"
+#include "newfiledialog.h"
 #include "processchain.h"
-#include "simpleoptioncontainerwidget.h"
 #include "processoraid.h"
+#include "simpleoptioncontainerwidget.h"
 
-#include "batchconvertiondialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   while (ui->stackedWidget->currentWidget())
     ui->stackedWidget->removeWidget(ui->stackedWidget->currentWidget());
+  ui->newAction->setShortcut(QKeySequence::New);
   ui->openAction->setShortcut(QKeySequence::Open);
   QList<QKeySequence> keyList;
   keyList.push_back(QKeySequence::Save);
@@ -94,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   connect(ui->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
   connect(ui->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+  connect(ui->newAction, SIGNAL(triggered()), this, SLOT(newFile()));
   connect(ui->openAction, SIGNAL(triggered()), this, SLOT(open()));
   connect(ui->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
   connect(ui->openChainAction, SIGNAL(triggered()), this, SLOT(openChain()));
@@ -259,6 +262,7 @@ void MainWindow::enableDisableActions()
                              processChain->hasNext());
   ui->saveAsAction->setEnabled(processChain != NULL);
   ui->saveChainAction->setEnabled(processChain != NULL);
+  ui->openChainAction->setEnabled(processChain != NULL);
 }
 
 void MainWindow::simpleOptionChanged(AbstractImageProcessorWithSimpleOption *
@@ -325,6 +329,43 @@ void MainWindow::addProcessor(AbstractImageProcessor *processor)
   enableDisableActions();
 }
 
+void MainWindow::newFile()
+{
+  NewFileDialog *d = new NewFileDialog(this);
+  connect(d,
+          SIGNAL(confirmed(MyImage::ImageTypeFlag,int,int)),
+          this,
+          SLOT(createNewImage(MyImage::ImageTypeFlag,int,int)));
+  d->exec();
+  delete d;
+}
+
+void MainWindow::createNewImage(MyImage::ImageTypeFlag type,
+                                int width,
+                                int height)
+{
+  static int newImageCount = 0;
+  disconnectAll();
+  ImageViewWidget *widget = new ImageViewWidget();
+  QImage i(width, height, QImage::Format_ARGB32);
+  if (type == MyImage::Colored)
+    i.fill(qRgba(255, 255, 255, 0));
+  else
+    i.fill(qRgb(255, 255, 255));
+  MyImage *image = new MyImage(i, type);
+  QAction *action = ui->windowMenu->addAction
+                    (tr("untitled%1").arg(newImageCount),
+                     signalMapper3,
+                     SLOT(map()));
+  signalMapper3->setMapping(action, (QObject *)widget);
+  widget->setImage(image->getImage());
+  processChains.insert(widget, new ProcessChain(image));
+  actions.insert(widget, action);
+  ui->stackedWidget->addWidget(widget);
+  ui->stackedWidget->setCurrentWidget(widget);
+  ++newImageCount;
+}
+
 void MainWindow::open()
 {
   QString path =
@@ -351,8 +392,9 @@ void MainWindow::open()
 
 void MainWindow::saveAs()
 {
+  ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
-  if (processChain == NULL)
+  if (widget == NULL || processChain == NULL)
     return;
   QString path =
       QFileDialog::
@@ -363,6 +405,12 @@ void MainWindow::saveAs()
   if (path.isEmpty())
     return;
   processChain->getCurrentImage()->save(path);
+  QAction *action = actions.value(widget, NULL);
+  if (action != NULL)
+  {
+    action->setText(path);
+    setWindowTitle(tr("Image Processor--%1").arg(action->text()));
+  }
 }
 
 void MainWindow::openChain()
@@ -390,6 +438,7 @@ void MainWindow::openChain()
 
 void MainWindow::saveChain()
 {
+  ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
   if (processChain == NULL)
     return;
@@ -418,14 +467,18 @@ void MainWindow::changeToWidget(QObject *widget)
 
 void MainWindow::currentChanged(int index)
 {
+  ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
-  if (processChain == NULL)
+  if (widget == currentWidget() || processChain == NULL)
   {
     statisticWidget->setImage(QImage());
     return;
   }
   statisticWidget->setImage(processChain->getCurrentImage()->getImage());
   enableDisableActions();
+  QAction *action = actions.value(widget, NULL);
+  if (action != NULL)
+    setWindowTitle(tr("Image Processor--%1").arg(action->text()));
 }
 
 MainWindow::~MainWindow()

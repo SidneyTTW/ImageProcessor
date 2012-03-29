@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     resizedialog.cpp \
     filterprocessor.cpp \
     filterdialog.cpp \
-    builtinconvolutiondialog.cpp
+    builtinconvolutiondialog.cpp \
+    newfiledialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -88,7 +89,8 @@ HEADERS  += mainwindow.h \
     resizedialog.h \
     filterprocessor.h \
     filterdialog.h \
-    builtinconvolutiondialog.h
+    builtinconvolutiondialog.h \
+    newfiledialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -98,7 +100,11 @@ FORMS    += mainwindow.ui \
     basicstatisticwidget.ui \
     resizedialog.ui \
     filterdialog.ui \
-    builtinconvolutiondialog.ui
+    builtinconvolutiondialog.ui \
+    newfiledialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
+
+RESOURCES += \
+    images.qrc
