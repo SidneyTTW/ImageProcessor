@@ -136,6 +136,7 @@ ImageViewWidget::ImageViewWidget(QWidget *parent) :
 void ImageViewWidget::setImage(const QImage &image)
 {
   imageItem->setImage(image);
+  view->setSceneRect(0, 0, image.width(), image.height());
   view->viewport()->update();
   emit imageChanged(image);
 }

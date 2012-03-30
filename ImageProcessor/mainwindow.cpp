@@ -362,6 +362,7 @@ void MainWindow::createNewImage(MyImage::ImageTypeFlag type,
   ui->stackedWidget->addWidget(widget);
   ui->stackedWidget->setCurrentWidget(widget);
   ++newImageCount;
+  enableDisableActions();
 }
 
 void MainWindow::open()
@@ -386,6 +387,7 @@ void MainWindow::open()
   actions.insert(widget, action);
   ui->stackedWidget->addWidget(widget);
   ui->stackedWidget->setCurrentWidget(widget);
+  enableDisableActions();
 }
 
 void MainWindow::saveAs()

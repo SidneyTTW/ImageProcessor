@@ -92,6 +92,7 @@ void BasicStatisticPlot::setStatistic(BasicStatistic statistic)
   }
   grayHistogram->setSamples(samples);
   setAxisScale(QwtPlot::yLeft, 0, maxY * 1.1);
+  setAxisScale(QwtPlot::yRight, 0, maxY * 1.1);
   setAxisScale(QwtPlot::xBottom, 0, MAX_COLOR_VALUE);
   replot();
 }
