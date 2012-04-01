@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include "abstractimageprocessorwithsimpleoption.h"
 #include "abstractimageprocessorwithdialogoption.h"
+#include "areachooser.h"
 #include "batchconvertiondialog.h"
 #include "basicstatisticwidget.h"
 #include "colorchooser.h"
@@ -34,6 +35,19 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->undoAction->setShortcut(QKeySequence::Undo);
   ui->redoAction->setShortcut(QKeySequence::Redo);
 
+  rectangleAction = new QAction("Rectangle", this);
+  rectangleAction->setCheckable(true);
+  connect(rectangleAction, SIGNAL(triggered()), this, SLOT(chooseRectangle()));
+  ui->mainToolBar->addAction(rectangleAction);
+  polygonAction = new QAction("Polygon", this);
+  polygonAction->setCheckable(true);
+  connect(polygonAction, SIGNAL(triggered()), this, SLOT(choosePolygon()));
+  ui->mainToolBar->addAction(polygonAction);
+  ellipseAction = new QAction("Ellipse", this);
+  ellipseAction->setCheckable(true);
+  connect(ellipseAction, SIGNAL(triggered()), this, SLOT(chooseEllipse()));
+  ui->mainToolBar->addAction(ellipseAction);
+
   signalMapper1 = new QSignalMapper();
   signalMapper2 = new QSignalMapper();
   signalMapper3 = new QSignalMapper();
@@ -61,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(action, SIGNAL(triggered()), signalMapper1, SLOT(map()));
     signalMapper1->setMapping(action, (QObject *)action);
     ui->mainToolBar->addAction(action);
+
+    areaChooser = new AreaChooser();
   }
   QVector<AbstractImageProcessorWithDialogOption *> complexOptions =
       ProcessorAid::complexOptions();
@@ -163,6 +179,7 @@ void MainWindow::disconnectAll()
   if (widget == NULL || processChain == NULL)
     return;
   widget->setImage(processChain->getCurrentImage()->getImage());
+  areaChooser->detach();
   update();
 }
 
@@ -179,6 +196,10 @@ void MainWindow::disconnectAllExcept(ImageProcessorWithSimpleOptionAction *
     if (widget != NULL)
       widget->removeEventFilter(simpleActions[i]->getConfiguarionInstance());
   }
+  areaChooser->detach();
+  rectangleAction->setChecked(false);
+  polygonAction->setChecked(false);
+  ellipseAction->setChecked(false);
 }
 
 void MainWindow::connectSimpleAction(ImageProcessorWithSimpleOptionAction *
@@ -345,6 +366,7 @@ void MainWindow::createNewImage(MyImage::ImageTypeFlag type,
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
   statisticWidget->setBoundedImageView(widget);
+  connect(widget, SIGNAL(areaChanged(Area)), this, SLOT(areaChanged(Area)));
   QImage i(width, height, QImage::Format_ARGB32);
   if (type == MyImage::Colored)
     i.fill(qRgba(255, 255, 255, 0));
@@ -377,6 +399,7 @@ void MainWindow::open()
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
   statisticWidget->setBoundedImageView(widget);
+  connect(widget, SIGNAL(areaChanged(Area)), this, SLOT(areaChanged(Area)));
   MyImage *image = new MyImage(QImage(path).
                                convertToFormat(QImage::Format_ARGB32),
                                MyImage::Colored);
@@ -388,6 +411,7 @@ void MainWindow::open()
   ui->stackedWidget->addWidget(widget);
   ui->stackedWidget->setCurrentWidget(widget);
   enableDisableActions();
+  setWindowTitle(tr("Image Processor--%1").arg(action->text()));
 }
 
 void MainWindow::saveAs()
@@ -438,7 +462,6 @@ void MainWindow::openChain()
 
 void MainWindow::saveChain()
 {
-  ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
   if (processChain == NULL)
     return;
@@ -469,16 +492,68 @@ void MainWindow::currentChanged(int index)
 {
   ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
-  if (widget == currentWidget() || processChain == NULL)
+  if (widget == NULL || processChain == NULL)
   {
     statisticWidget->setImage(QImage());
     return;
   }
-  statisticWidget->setImage(processChain->getCurrentImage()->getImage());
   enableDisableActions();
   QAction *action = actions.value(widget, NULL);
   if (action != NULL)
     setWindowTitle(tr("Image Processor--%1").arg(action->text()));
+  if (rectangleAction->isChecked() ||
+      polygonAction->isChecked() ||
+      ellipseAction->isChecked())
+    areaChooser->attach(widget);
+  else
+    areaChooser->detach();
+}
+
+void MainWindow::choosePolygon()
+{
+  disconnectAll();
+  rectangleAction->setChecked(false);
+  ellipseAction->setChecked(false);
+  if (polygonAction->isChecked())
+  {
+    areaChooser->setType(AreaChooser::TypePolygon);
+    ImageViewWidget *widget = currentWidget();
+    if (widget != NULL)
+      areaChooser->attach(widget);
+  }
+}
+
+void MainWindow::chooseRectangle()
+{
+  disconnectAll();
+  polygonAction->setChecked(false);
+  ellipseAction->setChecked(false);
+  if (rectangleAction->isChecked())
+  {
+    areaChooser->setType(AreaChooser::TypeRectangle);
+    ImageViewWidget *widget = currentWidget();
+    if (widget != NULL)
+      areaChooser->attach(widget);
+  }
+}
+
+void MainWindow::chooseEllipse()
+{
+  disconnectAll();
+  rectangleAction->setChecked(false);
+  polygonAction->setChecked(false);
+  if (ellipseAction->isChecked())
+  {
+    areaChooser->setType(AreaChooser::TypeEllipse);
+    ImageViewWidget *widget = currentWidget();
+    if (widget != NULL)
+      areaChooser->attach(widget);
+  }
+}
+
+void MainWindow::areaChanged(const Area& area)
+{
+  enableDisableActions();
 }
 
 MainWindow::~MainWindow()
@@ -500,6 +575,7 @@ void MainWindow::on_closeButton_clicked()
   ProcessChain *processChain = currentChain();
   if (widget == NULL || processChain == NULL)
     return;
+  areaChooser->detach();
   processChains.remove(widget);
   QAction *action = actions.value(widget, NULL);
   actions.remove(widget);

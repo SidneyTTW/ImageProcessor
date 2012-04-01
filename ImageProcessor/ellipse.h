@@ -34,21 +34,24 @@ public:
   /**
    * @return The center.
    */
-  inline QPoint getCenter() {
+  inline QPoint getCenter() const
+  {
     return _center;
   }
 
   /**
    * @return The dx.
    */
-  inline int getDx() {
+  inline int getDx() const
+  {
     return _dx;
   }
 
   /**
    * @return The dy.
    */
-  inline int getDy() {
+  inline int getDy() const
+  {
     return _dy;
   }
 

@@ -14,6 +14,7 @@
 
 class AbstractImageProcessor;
 class AbstractImageProcessorWithSimpleOption;
+class AreaChooser;
 class BasicStatisticWidget;
 class ImageProcessorWithComplexOptionAction;
 class ImageProcessorWithSimpleOptionAction;
@@ -97,9 +98,29 @@ private:
   QMap <ImageViewWidget *, QAction *> actions;
 
   /**
+   * Called to choose rectangle area.
+   */
+  QAction *rectangleAction;
+
+  /**
+   * Called to choose polygon area.
+   */
+  QAction *polygonAction;
+
+  /**
+   * Called to choose ellipse area.
+   */
+  QAction *ellipseAction;
+
+  /**
    * A dock widget to show statistics.
    */
   BasicStatisticWidget *statisticWidget;
+
+  /**
+   * An object to choose area.
+   */
+  AreaChooser *areaChooser;
 
   /**
    * @return Current image view widget.
@@ -117,11 +138,12 @@ private:
   void enableDisableActions();
 
 private slots:
+  void on_compressButton_clicked();
+  void on_closeButton_clicked();
+
   /**
    * Slot used to accept the selection of simple actions.
    */
-  void on_compressButton_clicked();
-  void on_closeButton_clicked();
   void simpleActionSelected(QObject *action);
 
   /**
@@ -205,6 +227,26 @@ public slots:
    * Called when the top image widget is changed.
    */
   void currentChanged(int index);
+
+  /**
+   * Called to choose polygon area.
+   */
+  void choosePolygon();
+
+  /**
+   * Called to choose rectangle area.
+   */
+  void chooseRectangle();
+
+  /**
+   * Called to choose ellipse area.
+   */
+  void chooseEllipse();
+
+  /**
+   * Called when the area has been changed.
+   */
+  void areaChanged(const Area& area);
 };
 
 #endif // MAINWINDOW_H

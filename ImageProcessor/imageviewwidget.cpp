@@ -29,15 +29,15 @@ public:
   {_image = image;}
 
   /**
-   * Set the image of the item.
+   * Set the area of the item.
    *
-   * @param image The image.
+   * @param area The area.
    */
   inline void setArea(const Area& area)
   {_area = area;}
 
   /**
-   * @return The image of the item.
+   * @return The area of the item.
    */
   inline Area getArea() const
   {return _area;}
@@ -144,7 +144,8 @@ void ImageViewWidget::setImage(const QImage &image)
 void ImageViewWidget::setArea(const Area& area)
 {
   imageItem->setArea(area);
-  update();
+  view->viewport()->update();
+  emit areaChanged(area);
 }
 
 Area ImageViewWidget::getArea() const

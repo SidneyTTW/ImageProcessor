@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     filterprocessor.cpp \
     filterdialog.cpp \
     builtinconvolutiondialog.cpp \
-    newfiledialog.cpp
+    newfiledialog.cpp \
+    areachooser.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -90,7 +91,8 @@ HEADERS  += mainwindow.h \
     filterprocessor.h \
     filterdialog.h \
     builtinconvolutiondialog.h \
-    newfiledialog.h
+    newfiledialog.h \
+    areachooser.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \

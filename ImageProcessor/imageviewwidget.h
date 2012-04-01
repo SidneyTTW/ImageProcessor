@@ -61,6 +61,11 @@ public:
   void removeEventFilter(QObject *object)
   {scene->removeEventFilter(object);}
 
+  /**
+   * @return The graphics scene to hold the image and the selected area.
+   */
+  const QGraphicsScene *getScene() const
+  {return scene;}
 
 protected:
   virtual bool eventFilter(QObject *object, QEvent *event);
@@ -102,6 +107,11 @@ signals:
    * Signal emitted when the image is changed.
    */
   void imageChanged(const QImage& image);
+
+  /**
+   * Signal emitted when the area is changed.
+   */
+  void areaChanged(const Area& area);
 };
 
 #endif // IMAGEVIEWWIDGET_H
