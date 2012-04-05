@@ -55,11 +55,17 @@ private:
    */
   double _height;
 
+  /**
+   * The area to filt.
+   */
+  Area _area;
+
 private slots:
   /**
    * Slot used to get the confirm.
    */
   void confirm(ResizeProcessor::SizeType,
+               Area area,
                ImageAlgorithm::ResizeAlgorithmType,
                double,
                double);

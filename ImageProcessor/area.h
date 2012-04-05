@@ -121,6 +121,12 @@ public:
     }
   }
 
+  /**
+   * @return The rectangle.
+   */
+  inline QRect getRectangle() const
+  {return _rectangle;}
+
 private:
   /**
    * The main type of the area, should be one of Rectangle, Polygon, Ellipse, Empty.

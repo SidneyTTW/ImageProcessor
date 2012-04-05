@@ -1,27 +1,45 @@
 #include "resizedialog.h"
 #include "ui_resizedialog.h"
 
-ResizeDialog::ResizeDialog(const QImage& image, QWidget *parent) :
+ResizeDialog::ResizeDialog(const QImage& image, const Area& area, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ResizeDialog),
-    _image(image)
+    _image(image),
+    _area(area)
 {
   ui->setupUi(this);
   changingByCode = true;
-  ui->widthSpinBox->setValue(image.width());
-  ui->heightSpinBox->setValue(image.height());
+  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  {
+    QRect rect = area.getRectangle();
+    ui->widthSpinBox->setValue(rect.width());
+    ui->heightSpinBox->setValue(rect.height());
+  }
+  else
+  {
+    ui->widthSpinBox->setValue(image.width());
+    ui->heightSpinBox->setValue(image.height());
+  }
   changingByCode = false;
   resetPreview();
 }
 
 void ResizeDialog::resetPreview()
 {
-  int width = ui->absoluteButton->isChecked() ?
-              ui->widthSpinBox->value() :
-              _image.width() * ui->widthRateSpinBox->value();
-  int height = ui->absoluteButton->isChecked() ?
-               ui->heightSpinBox->value() :
-               _image.height() * ui->heightRateSpinBox->value();
+  int widthFrom = _image.width();
+  int heightFrom = _image.height();
+  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  {
+    QRect rect = _area.getRectangle();
+    widthFrom = rect.width();
+    heightFrom = rect.height();
+  }
+  int widthTo = ui->absoluteButton->isChecked() ?
+                ui->widthSpinBox->value() :
+                widthFrom * ui->widthRateSpinBox->value();
+  int heightTo = ui->absoluteButton->isChecked() ?
+                 ui->heightSpinBox->value() :
+                 heightFrom * ui->heightRateSpinBox->value();
   ImageAlgorithm::ResizeAlgorithmType type;
   if (ui->nearestButton->isChecked())
     type = ImageAlgorithm::NearestNeighbor;
@@ -29,7 +47,7 @@ void ResizeDialog::resetPreview()
     type = ImageAlgorithm::Bilinear;
   else
     type = ImageAlgorithm::Bicubic;
-  QImage *image = ImageAlgorithm::resize(_image, width, height, type);
+  QImage *image = ImageAlgorithm::resize(_image, _area, widthTo, heightTo, type);
   ui->imageViewerWidget->setImage(*image);
   delete image;
 }
@@ -77,7 +95,10 @@ void ResizeDialog::on_widthSpinBox_valueChanged(int value)
   if (changingByCode)
     return;
   changingByCode = true;
-  ui->widthRateSpinBox->setValue(1.0 * value / _image.width());
+  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    ui->widthRateSpinBox->setValue(1.0 * value / _area.getRectangle().width());
+  else
+    ui->widthRateSpinBox->setValue(1.0 * value / _image.width());
   changingByCode = false;
   resetPreview();
 }
@@ -87,7 +108,10 @@ void ResizeDialog::on_heightSpinBox_valueChanged(int value)
   if (changingByCode)
     return;
   changingByCode = true;
-  ui->heightRateSpinBox->setValue(1.0 * value / _image.height());
+  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    ui->heightRateSpinBox->setValue(1.0 * value / _area.getRectangle().height());
+  else
+    ui->heightRateSpinBox->setValue(1.0 * value / _image.height());
   changingByCode = false;
   resetPreview();
 }
@@ -97,7 +121,10 @@ void ResizeDialog::on_widthRateSpinBox_valueChanged(double value)
   if (changingByCode)
     return;
   changingByCode = true;
-  ui->widthSpinBox->setValue(value * _image.width());
+  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    ui->widthSpinBox->setValue(value * _area.getRectangle().width());
+  else
+    ui->widthSpinBox->setValue(value * _image.width());
   changingByCode = false;
   resetPreview();
 }
@@ -107,7 +134,10 @@ void ResizeDialog::on_heightRateSpinBox_valueChanged(double value)
   if (changingByCode)
     return;
   changingByCode = true;
-  ui->heightSpinBox->setValue(value * _image.height());
+  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    ui->heightSpinBox->setValue(value * _area.getRectangle().height());
+  else
+    ui->heightSpinBox->setValue(value * _image.height());
   changingByCode = false;
   resetPreview();
 }
@@ -130,7 +160,7 @@ void ResizeDialog::on_okPushButton_clicked()
   double height = ui->absoluteButton->isChecked() ?
                   ui->heightSpinBox->value() :
                   ui->heightRateSpinBox->value();
-  emit confirm(sizeType, algorithmType, width, height);
+  emit confirm(sizeType, _area, algorithmType, width, height);
   accept();
 }
 

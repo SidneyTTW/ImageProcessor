@@ -19,7 +19,7 @@ public:
   /**
    * Constructor.
    */
-  explicit ResizeDialog(const QImage& image, QWidget *parent = 0);
+  explicit ResizeDialog(const QImage& image, const Area& area, QWidget *parent = 0);
 
   /**
    * Destructor.
@@ -44,11 +44,17 @@ private:
    */
   void resetPreview();
 
+  /**
+   * The area to filt.
+   */
+  Area _area;
+
 signals:
   /**
    * Signal emitted when the option is confirmed.
    */
   void confirm(ResizeProcessor::SizeType sizeType,
+               Area area,
                ImageAlgorithm::ResizeAlgorithmType algorithmType,
                double width,
                double height);

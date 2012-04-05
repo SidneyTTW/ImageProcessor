@@ -2,7 +2,6 @@
 
 #include <qmath.h>
 
-
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.
 QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
@@ -294,6 +293,7 @@ void  ImageAlgorithm::changeRGBWithMap(QImage *image,
 }
 
 QImage *ImageAlgorithm::resize(const QImage& image,
+                               Area area,
                                int newWidth,
                                int newHeight,
                                ResizeAlgorithmType type)
@@ -302,20 +302,62 @@ QImage *ImageAlgorithm::resize(const QImage& image,
     return NULL;
   int width = image.width();
   int height = image.height();
+  int resultImageWidth = newWidth;
+  int resultImageHeight = newHeight;
+  QRect rect = area.getRectangle();
+  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  {
+    resultImageWidth = qMax(newWidth + rect.left(), width);
+    resultImageHeight = qMax(newHeight + rect.top(), height);
+  }
   const unsigned char *imageDataPtr = image.bits();
-  QImage *resultImg = new QImage(newWidth, newHeight, SUPPORTED_FORMAT);
+  QImage *resultImg = new QImage(resultImageWidth,
+                                 resultImageHeight,
+                                 SUPPORTED_FORMAT);
   unsigned char *resultImgDataPtr = resultImg->bits();
   int realWidth1 = image.bytesPerLine();
   int realWidth2 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
   unsigned char *backup2 = resultImgDataPtr;
 
-  for(int i = 0;i < newHeight;++i)
+  memset(resultImgDataPtr, 0, resultImageWidth * resultImageHeight);
+
+  for (int i = 0;i < qMin(height, resultImageHeight);++i)
+  {
+    imageDataPtr = backup1 + i * realWidth1;
+    resultImgDataPtr = backup2 + i * realWidth2;
+    for (int j = 0;j < qMin(width, resultImageWidth);++j)
+    {
+      memcpy(resultImgDataPtr, imageDataPtr, 4);
+      imageDataPtr += 4;
+      resultImgDataPtr += 4;
+    }
+  }
+
+  imageDataPtr = backup1;
+
+  int xFrom = 0;
+  int yFrom = 0;
+  int xTo = resultImageWidth;
+  int yTo = resultImageHeight;
+  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  {
+    xFrom = rect.left();
+    yFrom = rect.top();
+    xTo = xFrom + newWidth;
+    yTo = yFrom + newHeight;
+  }
+  for(int i = yFrom;i < yTo;++i)
   {
     double originalY = 1.0 * i * (height - 1) / newHeight;
-    resultImgDataPtr = backup2 + realWidth2 * i;
-    for(int j = 0;j < newWidth;++j)
+    if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+      originalY = rect.top() + 1.0 * (i - rect.top()) * (rect.height() - 1) / newHeight;
+    resultImgDataPtr = backup2 + realWidth2 * i + 4 * xFrom;
+    for(int j = xFrom;j < xTo;++j)
     {
       double originalX = 1.0 * j * (width - 1) / newWidth;
+      if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+        originalX = rect.left() + 1.0 * (j - rect.left()) * (rect.width() - 1) / newWidth;
       int floorX = qFloor(originalX);
       int floorY = qFloor(originalY);
       int tr = 0, tg = 0, tb = 0, ta = 0;
@@ -369,14 +411,15 @@ QImage *ImageAlgorithm::resize(const QImage& image,
 }
 
 void ImageAlgorithm::resize(QImage *image,
+                            Area area,
                             int newWidth,
                             int newHeight,
                             ResizeAlgorithmType type)
 {
-  QImage *result = resize(*image, newWidth, newHeight, type);
+  QImage *result = resize(*image, area, newWidth, newHeight, type);
   if (result != NULL)
   {
-    memcpy(image->bits(), result->bits(), result->byteCount());
+    *result = *result;
     delete result;
   }
 }

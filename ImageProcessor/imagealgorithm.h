@@ -209,11 +209,13 @@ public:
    * Resize the image according to the given algorithm type.
    *
    * @param image The image.
+   * @param area The area.
    * @param newWidth The new width.
    * @param newHeight The new height.
    * @param type The type of algorithm to use.
    */
   static QImage *resize(const QImage& image,
+                        Area area,
                         int newWidth,
                         int newHeight,
                         ResizeAlgorithmType type);
@@ -222,11 +224,13 @@ public:
    * Resize the image according to the given algorithm type.
    *
    * @param image The image.
+   * @param area The area.
    * @param newWidth The new width.
    * @param newHeight The new height.
    * @param type The type of algorithm to use.
    */
   static void resize(QImage *image,
+                     Area area,
                      int newWidth,
                      int newHeight,
                      ResizeAlgorithmType type);
