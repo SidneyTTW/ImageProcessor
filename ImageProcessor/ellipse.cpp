@@ -18,8 +18,8 @@ bool Ellipse::isIn(const QPoint& point) const
 {
   int fakeR = qMax(_dx, _dy);
 
-  int dx = point.x() - _dx;
-  int dy = point.y() - _dy;
+  int dx = point.x() - _center.x();
+  int dy = point.y() - _center.y();
 
   int fakeDx = dx * fakeR / _dx;
   int fakeDy = dy * fakeR / _dy;
