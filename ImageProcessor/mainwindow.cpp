@@ -330,6 +330,9 @@ void MainWindow::addSimpleProcessor(AbstractImageProcessor * processor)
 void MainWindow::addComplexProcessor(AbstractImageProcessor * processor)
 {
   addProcessor(processor);
+  ImageViewWidget *widget = currentWidget();
+  if (widget != NULL)
+    widget->setArea(((AbstractImageProcessorWithDialogOption *) processor)->resultArea());
   disconnectAll();
 }
 

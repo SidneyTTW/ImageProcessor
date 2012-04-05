@@ -14,7 +14,7 @@ Ellipse::Ellipse(const QPoint& center, int dx, int dy) :
 {
 }
 
-bool Ellipse::isIn(const QPoint& point)
+bool Ellipse::isIn(const QPoint& point) const
 {
   int fakeR = qMax(_dx, _dy);
 

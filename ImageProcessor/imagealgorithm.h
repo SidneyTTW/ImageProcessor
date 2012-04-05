@@ -2,6 +2,7 @@
 #define IMAGEALGORITHM_H
 
 #include <QImage>
+#include "area.h"
 #include "basicstatistic.h"
 
 /**
@@ -57,8 +58,6 @@ public:
    * The only format supported.
    */
   const static QImage::Format SUPPORTED_FORMAT = QImage::Format_ARGB32;
-
-  ImageAlgorithm();
 
   /**
    * @return Whether the image can be processed by this algorithm.
@@ -147,7 +146,7 @@ public:
    * @param filter The filter.
    */
   template <class T>
-  static QImage *filtImage(const QImage& image, T *filter);
+  static QImage *filtImage(const QImage& image, const Area& area, T *filter);
 
   /**
    * Filt an image according to given filter.
@@ -156,7 +155,7 @@ public:
    * @param filter The filter.
    */
   template <class T>
-  static void filtImage(QImage *image, T *filter);
+  static void filtImage(QImage *image, const Area& area, T *filter);
 
   /**
    * Reverse the color.
@@ -284,10 +283,6 @@ public:
     {
     }
 
-    virtual QImage *filt(const QImage&image)=0;
-
-    virtual void filt(QImage *image)=0;
-
     /**
      * Width of the matrix.
      */
@@ -333,16 +328,6 @@ public:
     ~ConvolutionFilter()
     {
       delete [] _matrix;
-    }
-
-    virtual QImage *filt(const QImage&image)
-    {
-      return filtImage<ConvolutionFilter>(image, this);
-    }
-
-    virtual void filt(QImage *image)
-    {
-      filtImage<ConvolutionFilter>(image, this);
     }
 
     /**
@@ -424,16 +409,6 @@ public:
       delete [] arrayR;
       delete [] arrayG;
       delete [] arrayB;
-    }
-
-    virtual QImage *filt(const QImage&image)
-    {
-      return filtImage<MedianFilter>(image, this);
-    }
-
-    virtual void filt(QImage *image)
-    {
-      filtImage<MedianFilter>(image, this);
     }
 
     /**
@@ -616,7 +591,7 @@ private:
 };
 
 template <class T>
-QImage *ImageAlgorithm::filtImage(const QImage& image, T *filter)
+QImage *ImageAlgorithm::filtImage(const QImage& image, const Area& area, T *filter)
 {
   if (filter == NULL || !validType(image))
     return NULL;
@@ -653,29 +628,30 @@ QImage *ImageAlgorithm::filtImage(const QImage& image, T *filter)
     filtedImgDataPtr = backup2 + realWidth2 * i;
     for (int j = 0;j < width;++j)
     {
-      int tr, tg, tb, ta;
-      for (int k = 0;k < matrixHeight;++k)
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
       {
-        for (int l = 0;l < matrixWidth;++l)
+        int tr, tg, tb, ta;
+        for (int k = 0;k < matrixHeight;++k)
         {
-          int index = k * matrixWidth + l;
-          if (i + k - borderHeight < 0 ||
-              i + k - borderHeight >= height ||
-              j + l - borderWidth < 0 ||
-              j + l - borderWidth >= width)
+          for (int l = 0;l < matrixWidth;++l)
           {
-            dataPtrPtr[index] = NULL;
-            continue;
+            int index = k * matrixWidth + l;
+            if (i + k - borderHeight < 0 ||
+                i + k - borderHeight >= height ||
+                j + l - borderWidth < 0 ||
+                j + l - borderWidth >= width)
+              dataPtrPtr[index] = NULL;
+            else
+              dataPtrPtr[index] = imageDataPtr + offsets[index];
           }
-          dataPtrPtr[index] = imageDataPtr + offsets[index];
         }
+        filter->calculateRGBA(dataPtrPtr, matrixWidth * matrixHeight, tr, tg, tb, ta);
+        tr = qBound(0, tr, MAX_COLOR_VALUE);
+        tg = qBound(0, tg, MAX_COLOR_VALUE);
+        tb = qBound(0, tb, MAX_COLOR_VALUE);
+        ta = qBound(0, ta, MAX_COLOR_VALUE);
+        setRGBA(filtedImgDataPtr, tr, tg, tb, ta);
       }
-      filter->calculateRGBA(dataPtrPtr, matrixWidth * matrixHeight, tr, tg, tb, ta);
-      tr = qBound(0, tr, MAX_COLOR_VALUE);
-      tg = qBound(0, tg, MAX_COLOR_VALUE);
-      tb = qBound(0, tb, MAX_COLOR_VALUE);
-      ta = qBound(0, ta, MAX_COLOR_VALUE);
-      setRGBA(filtedImgDataPtr, tr, tg, tb, ta);
       imageDataPtr += 4;
       filtedImgDataPtr += 4;
     }
@@ -686,9 +662,9 @@ QImage *ImageAlgorithm::filtImage(const QImage& image, T *filter)
 }
 
 template <class T>
-void ImageAlgorithm::filtImage(QImage *image, T *filter)
+void ImageAlgorithm::filtImage(QImage *image, const Area& area, T *filter)
 {
-  QImage *result = filtImage<T>(*image, filter);
+  QImage *result = filtImage<T>(*image, area, filter);
   if (result != NULL)
   {
     memcpy(image->bits(), result->bits(), result->byteCount());

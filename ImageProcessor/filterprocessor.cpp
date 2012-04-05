@@ -9,12 +9,12 @@ FilterProcessor::FilterProcessor()
 
 Area::AreaType FilterProcessor::acceptableAreaType() const
 {
-  return Area::TypeEmpty;
+  return Area::TypeAll;
 }
 
 Area::AreaTypeFlag FilterProcessor::resultAreaType() const
 {
-  return Area::TypeEmpty;
+  return _area.getType();
 }
 
 Area FilterProcessor::resultArea() const
@@ -41,21 +41,21 @@ QImage *FilterProcessor::processImage(const QImage& image) const
   {
   case Midian:
     {
-      ImageAlgorithm::AbstractFilter *filter =
+      ImageAlgorithm::MedianFilter *filter =
           new ImageAlgorithm::MedianFilter(_width, _height);
-      result = filter->filt(image);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::MedianFilter>(image, _area, filter);
       delete filter;
       break;
     }
   case Convolution:
     {
-      ImageAlgorithm::AbstractFilter *filter =
+      ImageAlgorithm::ConvolutionFilter *filter =
           new ImageAlgorithm::ConvolutionFilter(_convolutionMatrix.data(),
                                                 _width,
                                                 _height,
                                                 _convolutionDivisor,
                                                 _convolutionOffset);
-      result = filter->filt(image);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::ConvolutionFilter>(image, _area, filter);
       delete filter;
       break;
     }
@@ -69,21 +69,21 @@ void FilterProcessor::processImage(QImage *image) const
   {
   case Midian:
     {
-      ImageAlgorithm::AbstractFilter *filter =
+      ImageAlgorithm::MedianFilter *filter =
           new ImageAlgorithm::MedianFilter(_width, _height);
-      filter->filt(image);
+      ImageAlgorithm::filtImage<ImageAlgorithm::MedianFilter>(image, _area, filter);
       delete filter;
       break;
     }
   case Convolution:
     {
-      ImageAlgorithm::AbstractFilter *filter =
+      ImageAlgorithm::ConvolutionFilter *filter =
           new ImageAlgorithm::ConvolutionFilter(_convolutionMatrix.data(),
                                                 _width,
                                                 _height,
                                                 _convolutionDivisor,
                                                 _convolutionOffset);
-      filter->filt(image);
+      ImageAlgorithm::filtImage<ImageAlgorithm::ConvolutionFilter>(image, _area, filter);
       delete filter;
       break;
     }
@@ -93,13 +93,13 @@ void FilterProcessor::processImage(QImage *image) const
 QDialog *FilterProcessor::getOptionDialog(Area area,
                                           const MyImage& image)
 {
-  FilterDialog *result = new FilterDialog(image.getImage());
+  FilterDialog *result = new FilterDialog(image.getImage(), area);
   connect(result,
           SIGNAL(confirmed(FilterProcessor::FilterType,
-                           int,int,QVector<int>,int,int)),
+                           int,int,Area,QVector<int>,int,int)),
           this,
           SLOT(confirm(FilterProcessor::FilterType,
-                       int,int,QVector<int>,int,int)));
+                       int,int,Area,QVector<int>,int,int)));
   return result;
 }
 
@@ -110,10 +110,11 @@ QString FilterProcessor::name() const
 
 QString FilterProcessor::toString() const
 {
-  QString result = tr("%1 %2 %3").
+  QString result = tr("%1 %2 %3 %4").
                    arg((int) _type).
                    arg(_width).
-                   arg(_height);
+                   arg(_height).
+                   arg(_area.toString());
   if (_type == Convolution)
   {
     result += tr(" %1 %2").arg(_convolutionDivisor).arg(_convolutionOffset);
@@ -126,11 +127,12 @@ QString FilterProcessor::toString() const
 AbstractImageProcessor *FilterProcessor::fromString(const QString& str) const
 {
   QStringList list = str.split(' ', QString::SkipEmptyParts);
-  if (list.size() < 3)
+  if (list.size() < 4)
     return NULL;
   FilterType type = (FilterType)list.takeFirst().toInt();
   int width = list.takeFirst().toInt();
   int height = list.takeFirst().toInt();
+  Area area = Area::fromString(list.takeFirst());
   QVector<int> matrix;
   int divisor = 1;
   int offset = 0;
@@ -150,12 +152,14 @@ AbstractImageProcessor *FilterProcessor::fromString(const QString& str) const
   result->_convolutionMatrix = matrix;
   result->_convolutionDivisor = divisor;
   result->_convolutionOffset = offset;
+  result->_area = area;
   return result;
 }
 
 void FilterProcessor::confirm(FilterProcessor::FilterType type,
                               int width,
                               int height,
+                              Area area,
                               QVector<int> convolutionMatrix,
                               int convolutionDivisor,
                               int convolutionOffset)
@@ -164,6 +168,7 @@ void FilterProcessor::confirm(FilterProcessor::FilterType type,
   processor->_type = type;
   processor->_width = width;
   processor->_height = height;
+  processor->_area = area;
   processor->_convolutionMatrix = convolutionMatrix;
   processor->_convolutionDivisor = convolutionDivisor;
   processor->_convolutionOffset = convolutionOffset;

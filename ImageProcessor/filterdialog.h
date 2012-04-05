@@ -24,7 +24,7 @@ public:
   /**
    * Constructor.
    */
-  explicit FilterDialog(const QImage& image, QWidget *parent = 0);
+  explicit FilterDialog(const QImage& image, const Area& area, QWidget *parent = 0);
 
   /**
    * Destructor.
@@ -33,6 +33,11 @@ public:
 
 private:
   Ui::FilterDialog *ui;
+
+  /**
+   * The area to filt.
+   */
+  Area _area;
 
   /**
    * The image.
@@ -91,6 +96,7 @@ signals:
   void confirmed(FilterProcessor::FilterType type,
                  int width,
                  int height,
+                 Area area,
                  QVector<int> convolutionMatrix,
                  int convolutionDivisor,
                  int convolutionOffset);

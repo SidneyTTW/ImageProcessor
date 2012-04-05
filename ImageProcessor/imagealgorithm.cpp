@@ -2,11 +2,6 @@
 
 #include <qmath.h>
 
-ImageAlgorithm::ImageAlgorithm()
-{
-  ImageAlgorithm::filtImage<MedianFilter>(QImage(), NULL);
-  ImageAlgorithm::filtImage<ConvolutionFilter>(QImage(), NULL);
-}
 
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.

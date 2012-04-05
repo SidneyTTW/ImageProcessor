@@ -52,6 +52,11 @@ private:
   int _height;
 
   /**
+   * The area to filt.
+   */
+  Area _area;
+
+  /**
    * Matrix used of the convolution filter.
    */
   QVector<int> _convolutionMatrix;
@@ -73,6 +78,7 @@ private slots:
   void confirm(FilterProcessor::FilterType type,
                int width,
                int height,
+               Area area,
                QVector<int> convolutionMatrix,
                int convolutionDivisor,
                int convolutionOffset);

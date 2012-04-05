@@ -64,10 +64,11 @@ public:
   }
 };
 
-FilterDialog::FilterDialog(const QImage& image, QWidget *parent) :
+FilterDialog::FilterDialog(const QImage& image, const Area& area, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FilterDialog),
     _image(image),
+    _area(area),
     changingByCode(false),
     builtInDialog(NULL)
 {
@@ -116,7 +117,7 @@ void FilterDialog::resetPreview()
     {
       ImageAlgorithm::MedianFilter *filter =
           new ImageAlgorithm::MedianFilter(width, height);
-      image = filter->filt(_image);
+      image = ImageAlgorithm::filtImage<ImageAlgorithm::MedianFilter>(_image, _area, filter);
       delete filter;
       break;
     }
@@ -134,7 +135,7 @@ void FilterDialog::resetPreview()
                                                 height,
                                                 divisor,
                                                 offset);
-      image = filter->filt(_image);
+      image = ImageAlgorithm::filtImage<ImageAlgorithm::ConvolutionFilter>(_image, _area, filter);
       delete filter;
       break;
     }
@@ -269,7 +270,7 @@ void FilterDialog::on_okPushButton_clicked()
         matrix.push_back(matrixValueAt(i, j));
   int divisor = ui->divisorSpinBox->value();
   int offset = ui->offsetSpinBox->value();
-  emit confirmed(type, width, height, matrix, divisor, offset);
+  emit confirmed(type, width, height, _area,  matrix, divisor, offset);
   accept();
 }
 

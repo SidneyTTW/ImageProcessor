@@ -29,7 +29,7 @@ public:
    * @param The point.
    * @return Whether the point is in the ellipse.
    */
-  bool isIn(const QPoint& point);
+  bool isIn(const QPoint& point) const;
 
   /**
    * @return The center.
@@ -58,7 +58,8 @@ public:
   /**
    * @return Whether it's a circle.
    */
-  inline bool isCircle() {
+  inline bool isCircle() const
+  {
     return _dx == _dy;
   }
 
