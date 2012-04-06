@@ -2,7 +2,6 @@
 
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsView>
 #include <QPainter>
 #include <QSpinBox>
 
@@ -145,6 +144,7 @@ bool PenProcessor::eventFilter(QObject *object, QEvent *event)
       positions.clear();
       positions.push_back(QPoint(pos.x(), pos.y()));
       valid = true;
+      emit optionChanged(this);
       break;
     }
   case QEvent::GraphicsSceneMouseMove:

@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include "drawlineprocessor.h"
+#include "fastgaussprocessor.h"
 #include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
 #include "penprocessor.h"
@@ -19,6 +20,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new ToGrayProcessor());
   result.push_back(new ReverseProcessor());
   result.push_back(new HistogramEqualizationProcessor());
+  result.push_back(new FastGaussProcessor());
   return result;
 }
 
