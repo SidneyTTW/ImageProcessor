@@ -466,6 +466,34 @@ namespace ImageAlgorithm
               ResizeAlgorithmType type);
 
   /**
+   * Change the HSL using given offsets.
+   * The alpha will be remained.
+   *
+   * @param image The image to reverse.
+   * @param hOffset Offset of h.
+   * @param sOffset Offset of s.
+   * @param lOffset Offset of l.
+   */
+  QImage *changeHSL(const QImage& image,
+                    double hOffset,
+                    double sOffset,
+                    double lOffset);
+
+  /**
+   * Change the HSL using given offsets.
+   * The alpha will be remained.
+   *
+   * @param image The image to reverse.
+   * @param hOffset Offset of h.
+   * @param sOffset Offset of s.
+   * @param lOffset Offset of l.
+   */
+  void changeHSL(QImage *image,
+                 double hOffset,
+                 double sOffset,
+                 double lOffset);
+
+  /**
    * Get the statistic of an image.
    *
    * @param image The image to convert.

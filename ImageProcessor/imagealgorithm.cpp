@@ -424,6 +424,93 @@ void ImageAlgorithm::resize(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::changeHSL(const QImage& image,
+                                  double hOffset,
+                                  double sOffset,
+                                  double lOffset)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = resultImgDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    resultImgDataPtr = backup2 + realWidth2 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      double h, s, l;
+      RGB2HSL(r, g, b, h, s, l);
+      h += hOffset;
+      while (h < 0)
+        h += 1;
+      while (h > 1)
+        h -= 1;
+      s += sOffset;
+      while (s < 0)
+        s += 1;
+      while (s > 1)
+        s -= 1;
+      l = qBound(0.0, l + lOffset, 1.0);
+      HSL2RGB(h, s, l, r, g, b);
+      setRGBA(resultImgDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::changeHSL(QImage *image,
+                               double hOffset,
+                               double sOffset,
+                               double lOffset)
+{
+  if (!validType(*image))
+    return;
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth1 = image->bytesPerLine();
+  unsigned char *backup1 = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
+      double h, s, l;
+      RGB2HSL(r, g, b, h, s, l);
+      h += hOffset;
+      while (h < 0)
+        h += 1;
+      while (h > 1)
+        h -= 1;
+      s += sOffset;
+      while (s < 0)
+        s += 1;
+      while (s > 1)
+        s -= 1;
+      l = qBound(0.0, l + lOffset, 1.0);
+      HSL2RGB(h, s, l, r, g, b);
+      setRGBA(imageDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+    }
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {
