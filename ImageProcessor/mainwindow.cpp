@@ -464,6 +464,7 @@ void MainWindow::openChain()
     if (processor != NULL)
       processChain->addProcessorAtCurrentPosition(processor);
   widget->setImage(processChain->getCurrentImage()->getImage());
+  enableDisableActions();
   update();
 }
 
@@ -590,6 +591,7 @@ void MainWindow::on_closeButton_clicked()
     delete action;
   delete widget;
   delete processChain;
+  enableDisableActions();
 }
 
 void MainWindow::on_compressButton_clicked()
