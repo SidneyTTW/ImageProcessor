@@ -3,15 +3,12 @@
 
 #include <QImage>
 
-class ImageAlgorithm;
-
 /**
  * Class to wrap QImage according to my own needs.
  * The image will be converted into QImage::Format_ARGB32
  */
 class MyImage
 {
-  friend class ImageAlgorithm;
 public:
   /**
    * The type flag of image.

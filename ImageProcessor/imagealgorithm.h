@@ -31,9 +31,8 @@ inline int calculateMidNumber(int *array, int count)
 /**
  * Algorithm of images, only supports QImage::Format_ARGB32.
  */
-class ImageAlgorithm
+namespace ImageAlgorithm
 {
-public:
   /**
    * An enum class to describe the way to calculate the gray scale image.
    */
@@ -57,13 +56,132 @@ public:
   /**
    * The only format supported.
    */
-  const static QImage::Format SUPPORTED_FORMAT = QImage::Format_ARGB32;
+  const QImage::Format SUPPORTED_FORMAT = QImage::Format_ARGB32;
 
   /**
    * @return Whether the image can be processed by this algorithm.
    */
-  static inline bool validType(const QImage& image) {
+  inline bool validType(const QImage& image) {
     return image.format() == SUPPORTED_FORMAT;
+  }
+
+  /**
+   * Get RGBA of a point.
+   *
+   * @param dataPtr The pointer of the data.
+   *                The format of the image should be QImage::Format_ARGB32.
+   * @param r (Return) Red.
+   * @param g (Return) Green.
+   * @param b (Return) Blue.
+   * @param a (Return) Alpha.
+   */
+  inline void getRGBA(const unsigned char * dataPtr,
+                      int& r, int& g, int& b, int& a)
+  {
+    b = *dataPtr;
+    g = *(dataPtr+1);
+    r = *(dataPtr+2);
+    a = *(dataPtr+3);
+  }
+
+  /**
+   * Set RGBA of a point.
+   *
+   * @param dataPtr The pointer of the data.
+   *                The format of the image should be QImage::Format_ARGB32.
+   * @param r Red.
+   * @param g Green.
+   * @param b Blue.
+   * @param a Alpha.
+   */
+  inline void setRGBA(unsigned char * dataPtr,
+                      int r, int g, int b, int a)
+  {
+    *dataPtr = (char) b;
+    *(dataPtr+1) = (char) g;
+    *(dataPtr+2) = (char) r;
+    *(dataPtr+3) = (char) a;
+  }
+
+  /**
+   * Copy RGBA of a point.
+   *
+   * @param sourceDataPtr The pointer of the source data.
+   *                      The format of the image should be
+   *                      QImage::Format_ARGB32.
+   * @param targetDataPtr  The pointer of the target data.
+   *                       The format of the image should be
+   *                       QImage::Format_ARGB32.
+   */
+  inline void copyRGBA(const unsigned char * sourceDataPtr,
+                       unsigned char * targetDataPtr)
+  {
+    int r, g, b, a;
+    getRGBA(sourceDataPtr, r, g, b, a);
+    setRGBA(targetDataPtr, r, g, b, a);
+  }
+
+  /**
+   * Add RGBA of a point.
+   *
+   * @param sourceDataPtr The pointer of the source data.
+   *                      The format of the image should be
+   *                      QImage::Format_ARGB32.
+   * @param factor The factor.
+   * @param targetDataPtr  The pointer of the target data.
+   *                       The format of the image should be
+   *                       QImage::Format_ARGB32.
+   */
+  inline void addRGBA(const unsigned char * sourceDataPtr,
+                      double factor,
+                      unsigned char * targetDataPtr)
+  {
+    int sr, sg, sb, sa;
+    int tr, tg, tb, ta;
+    getRGBA(sourceDataPtr, sr, sg, sb, sa);
+    getRGBA(sourceDataPtr, tr, tg, tb, ta);
+    tr = qBound(0, (int)(tr + factor * sr), MAX_COLOR_VALUE);
+    tg = qBound(0, (int)(tg + factor * sg), MAX_COLOR_VALUE);
+    tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
+    ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
+    setRGBA(targetDataPtr, tr, tg, tb, ta);
+  }
+
+  /**
+   * Add RGBA of a point.
+   *
+   * @param sourceDataPtr The pointer of the source data.
+   *                      The format of the image should be
+   *                      QImage::Format_ARGB32.
+   * @param factor The factor.
+   * @param targetDataPtr  The pointer of the target data.
+   *                       The format of the image should be
+   *                       QImage::Format_ARGB32.
+   */
+  inline void addRGBAs(const unsigned char * sourceDataPtr,
+                       double factor,
+                       unsigned char * targetDataPtr)
+  {
+    int sr, sg, sb, sa;
+    int tr, tg, tb, ta;
+    getRGBA(sourceDataPtr, sr, sg, sb, sa);
+    getRGBA(sourceDataPtr, tr, tg, tb, ta);
+    tr = qBound(0, (int)(tr + factor * sr), MAX_COLOR_VALUE);
+    tg = qBound(0, (int)(tg + factor * sg), MAX_COLOR_VALUE);
+    tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
+    ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
+    setRGBA(targetDataPtr, tr, tg, tb, ta);
+  }
+
+  /**
+   * @param realWidth The bytes in a line.
+   * @param x The x position.
+   * @param y  The y position.
+   * @return The offset from the beginning of data pointer.
+   */
+  inline int pixelOffset(int realWidth , int x, int y)
+  {
+    return realWidth * y + 4 * x;
   }
 
   /**
@@ -73,7 +191,7 @@ public:
    * @param g Green.
    * @param b Blue.
    */
-  static inline int calculateGray(int r, int g, int b,
+  inline int calculateGray(int r, int g, int b,
                                   ImageToGrayAlgorithmType type)
   {
     switch (type)
@@ -100,12 +218,124 @@ public:
   }
 
   /**
+   * Function to get the HSL from RGB.
+   * Thanks to http://blog.csdn.net/aniven/article/details/2205851
+   *
+   * @param r Red.
+   * @param g Green.
+   * @param b Blue.
+   * @param h Red.
+   * @param s Green.
+   * @param l Blue.
+   */
+  inline void RGB2HSL(int r, int g, int b, double& h,double& s,double& l)
+  {
+    double dr, dg, db, max, min, del_R, del_G, del_B, del_Max;
+    dr = (double)r / MAX_COLOR_VALUE;
+    dg = (double)g / MAX_COLOR_VALUE;
+    db = (double)b / MAX_COLOR_VALUE;
+
+    min = qMin(dr, qMin(dg, db));
+    max = qMax(dr, qMax(dg, db));
+    del_Max = max - min;
+
+    l = (max + min) / 2.0;
+
+    if (del_Max == 0)
+    {
+      h = 0;
+      s = 0;
+    }
+    else
+    {
+      if (l < 0.5)
+        s = del_Max / (max + min);
+      else
+        s = del_Max / (2 - max - min);
+
+      del_R = (((max - dr) / 6.0) + (del_Max / 2.0)) / del_Max;
+      del_G = (((max - dg) / 6.0) + (del_Max / 2.0)) / del_Max;
+      del_B = (((max - db) / 6.0) + (del_Max / 2.0)) / del_Max;
+
+      if (dr == max)
+        h = del_B - del_G;
+      else if (dg == max)
+        h = (1.0 / 3.0) + del_R - del_B;
+      else if (db == max)
+        h = (2.0 / 3.0) + del_G - del_R;
+
+      if (h < 0)
+        h += 1;
+      if (h > 1)
+        h -= 1;
+    }
+  }
+
+  /**
+   * Aid function used to do the convertion from HSL to RGB.
+   * Thanks to http://blog.csdn.net/aniven/article/details/2205851
+   *
+   * @param v1 A value.
+   * @param v2 Another value.
+   * @param vH Hue.
+   */
+  inline double Hue2RGB(double v1, double v2, double vH)
+  {
+    if (vH < 0)
+      vH += 1;
+    if (vH > 1)
+      vH -= 1;
+    if (6.0 * vH < 1)
+      return v1 + (v2 - v1) * 6.0 * vH;
+    if (2.0 * vH < 1)
+      return v2;
+    if (3.0 * vH < 2)
+      return v1 + (v2 - v1) * ((2.0 / 3.0) - vH) * 6.0;
+    return (v1);
+  }
+
+  /**
+   * Function to get the RGB from HSL.
+   * Thanks to http://blog.csdn.net/aniven/article/details/2205851
+   *
+   * @param h Red.
+   * @param s Green.
+   * @param l Blue.
+   * @param r Red.
+   * @param g Green.
+   * @param b Blue.
+   */
+  inline void HSL2RGB(double h,double s,double l, int& r, int& g, int& b)
+  {
+    double var_1, var_2;
+    if (s == 0)
+    {
+        r = l * MAX_COLOR_VALUE;
+        g = l * MAX_COLOR_VALUE;
+        b = l * MAX_COLOR_VALUE;
+    }
+    else
+    {
+      if (l < 0.5)
+        var_2 = l * (1 + s);
+      else
+        var_2 = (l + s) - (s * l);
+
+      var_1 = 2.0 * l - var_2;
+
+      r = 255.0 * Hue2RGB(var_1, var_2, h + (1.0 / 3.0));
+      g = 255.0 * Hue2RGB(var_1, var_2, h);
+      b = 255.0 * Hue2RGB(var_1, var_2, h - (1.0 / 3.0));
+    }
+  }
+
+  /**
    * Convert an image to a gray one.
    *
    * @param image The image to convert.
    * @param type The type of algorithm to use.
    */
-  static QImage *convertToGrayScale(const QImage& image,
+   QImage *convertToGrayScale(const QImage& image,
                                     ImageToGrayAlgorithmType type);
 
   /**
@@ -114,7 +344,7 @@ public:
    * @param image The image to convert.
    * @param type The type of algorithm to use.
    */
-  static void convertToGrayScale(QImage *image,
+  void convertToGrayScale(QImage *image,
                                  ImageToGrayAlgorithmType type);
 
   /**
@@ -124,7 +354,7 @@ public:
    * @param threshold The threshold.
    * @param startColor The start color, 0 means black, 1 means white.
    */
-  static QImage *convertToBlackAndWhite(const QImage& image,
+  QImage *convertToBlackAndWhite(const QImage& image,
                                         QVector<int> threshold,
                                         int startColor=0);
 
@@ -135,7 +365,7 @@ public:
    * @param threshold The threshold.
    * @param startColor The start color, 0 means black, 1 means white.
    */
-  static void convertToBlackAndWhite(QImage *image,
+  void convertToBlackAndWhite(QImage *image,
                                      QVector<int> threshold,
                                      int startColor=0);
 
@@ -146,7 +376,7 @@ public:
    * @param filter The filter.
    */
   template <class T>
-  static QImage *filtImage(const QImage& image, const Area& area, T *filter);
+  QImage *filtImage(const QImage& image, const Area& area, T *filter);
 
   /**
    * Filt an image according to given filter.
@@ -155,7 +385,7 @@ public:
    * @param filter The filter.
    */
   template <class T>
-  static void filtImage(QImage *image, const Area& area, T *filter);
+  void filtImage(QImage *image, const Area& area, T *filter);
 
   /**
    * Reverse the color.
@@ -163,7 +393,7 @@ public:
    *
    * @param image The image to reverse.
    */
-  static QImage *reverse(const QImage& image);
+  QImage *reverse(const QImage& image);
 
   /**
    * Reverse the color.
@@ -171,7 +401,7 @@ public:
    *
    * @param image The image to reverse.
    */
-  static void reverse(QImage *image);
+  void reverse(QImage *image);
 
   /**
    * Change rgb tunel.
@@ -183,11 +413,11 @@ public:
    * @param mapB The map of blue.
    * @param tunel The tunel to change.
    */
-  static QImage *changeRGBWithMap(const QImage& image,
-                                  int mapR[MAX_COLOR_VALUE],
-                                  int mapG[MAX_COLOR_VALUE],
-                                  int mapB[MAX_COLOR_VALUE],
-                                  RGBAField tunel);
+  QImage *changeRGBWithMap(const QImage& image,
+                           int mapR[MAX_COLOR_VALUE],
+                           int mapG[MAX_COLOR_VALUE],
+                           int mapB[MAX_COLOR_VALUE],
+                           RGBAField tunel);
 
   /**
    * Change rgb tunel.
@@ -199,11 +429,11 @@ public:
    * @param mapB The map of blue.
    * @param tunel The tunel to change.
    */
-  static void changeRGBWithMap(QImage *image,
-                               int mapR[MAX_COLOR_VALUE],
-                               int mapG[MAX_COLOR_VALUE],
-                               int mapB[MAX_COLOR_VALUE],
-                               RGBAField tunel);
+  void changeRGBWithMap(QImage *image,
+                        int mapR[MAX_COLOR_VALUE],
+                        int mapG[MAX_COLOR_VALUE],
+                        int mapB[MAX_COLOR_VALUE],
+                        RGBAField tunel);
 
   /**
    * Resize the image according to the given algorithm type.
@@ -214,11 +444,11 @@ public:
    * @param newHeight The new height.
    * @param type The type of algorithm to use.
    */
-  static QImage *resize(const QImage& image,
-                        Area area,
-                        int newWidth,
-                        int newHeight,
-                        ResizeAlgorithmType type);
+  QImage *resize(const QImage& image,
+                 Area area,
+                 int newWidth,
+                 int newHeight,
+                 ResizeAlgorithmType type);
 
   /**
    * Resize the image according to the given algorithm type.
@@ -229,11 +459,11 @@ public:
    * @param newHeight The new height.
    * @param type The type of algorithm to use.
    */
-  static void resize(QImage *image,
-                     Area area,
-                     int newWidth,
-                     int newHeight,
-                     ResizeAlgorithmType type);
+  void resize(QImage *image,
+              Area area,
+              int newWidth,
+              int newHeight,
+              ResizeAlgorithmType type);
 
   /**
    * Get the statistic of an image.
@@ -241,8 +471,8 @@ public:
    * @param image The image to convert.
    * @param type The type of algorithm to use.
    */
-  static BasicStatistic getStatistic(const QImage& image,
-                                     ImageToGrayAlgorithmType type);
+  BasicStatistic getStatistic(const QImage& image,
+                              ImageToGrayAlgorithmType type);
 
 
   /**
@@ -251,7 +481,7 @@ public:
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  static int OTSU(const QImage& image, ImageToGrayAlgorithmType type);
+  int OTSU(const QImage& image, ImageToGrayAlgorithmType type);
 
 
   /**
@@ -260,14 +490,14 @@ public:
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  static int maxEntropy(const QImage& image, ImageToGrayAlgorithmType type);
+  int maxEntropy(const QImage& image, ImageToGrayAlgorithmType type);
 
   /**
    * @param k (2k+1) will be the size of the core.
    * @param d Standard deviation.
    * @param result Pointer of an array(size is (2k+1)(2k+1)).
    */
-  static void gaussCore(int k, float d,int *result);
+  void gaussCore(int k, float d,int *result);
 
   /**
    * Abstract class of filter.
@@ -472,127 +702,7 @@ public:
      */
     int count;
   };
-
-private:
-  /**
-   * Get RGBA of a point.
-   *
-   * @param dataPtr The pointer of the data.
-   *                The format of the image should be QImage::Format_ARGB32.
-   * @param r (Return) Red.
-   * @param g (Return) Green.
-   * @param b (Return) Blue.
-   * @param a (Return) Alpha.
-   */
-  static inline void getRGBA(const unsigned char * dataPtr,
-                             int& r, int& g, int& b, int& a)
-  {
-    b = *dataPtr;
-    g = *(dataPtr+1);
-    r = *(dataPtr+2);
-    a = *(dataPtr+3);
-  }
-
-  /**
-   * Set RGBA of a point.
-   *
-   * @param dataPtr The pointer of the data.
-   *                The format of the image should be QImage::Format_ARGB32.
-   * @param r Red.
-   * @param g Green.
-   * @param b Blue.
-   * @param a Alpha.
-   */
-  static inline void setRGBA(unsigned char * dataPtr,
-                             int r, int g, int b, int a)
-  {
-    *dataPtr = (char) b;
-    *(dataPtr+1) = (char) g;
-    *(dataPtr+2) = (char) r;
-    *(dataPtr+3) = (char) a;
-  }
-
-  /**
-   * Copy RGBA of a point.
-   *
-   * @param sourceDataPtr The pointer of the source data.
-   *                      The format of the image should be
-   *                      QImage::Format_ARGB32.
-   * @param targetDataPtr  The pointer of the target data.
-   *                       The format of the image should be
-   *                       QImage::Format_ARGB32.
-   */
-  static inline void copyRGBA(const unsigned char * sourceDataPtr,
-                              unsigned char * targetDataPtr)
-  {
-    int r, g, b, a;
-    getRGBA(sourceDataPtr, r, g, b, a);
-    setRGBA(targetDataPtr, r, g, b, a);
-  }
-
-  /**
-   * Add RGBA of a point.
-   *
-   * @param sourceDataPtr The pointer of the source data.
-   *                      The format of the image should be
-   *                      QImage::Format_ARGB32.
-   * @param factor The factor.
-   * @param targetDataPtr  The pointer of the target data.
-   *                       The format of the image should be
-   *                       QImage::Format_ARGB32.
-   */
-  static inline void addRGBA(const unsigned char * sourceDataPtr,
-                             double factor,
-                             unsigned char * targetDataPtr)
-  {
-    int sr, sg, sb, sa;
-    int tr, tg, tb, ta;
-    getRGBA(sourceDataPtr, sr, sg, sb, sa);
-    getRGBA(sourceDataPtr, tr, tg, tb, ta);
-    tr = qBound(0, (int)(tr + factor * sr), MAX_COLOR_VALUE);
-    tg = qBound(0, (int)(tg + factor * sg), MAX_COLOR_VALUE);
-    tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
-    ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
-    setRGBA(targetDataPtr, tr, tg, tb, ta);
-  }
-
-  /**
-   * Add RGBA of a point.
-   *
-   * @param sourceDataPtr The pointer of the source data.
-   *                      The format of the image should be
-   *                      QImage::Format_ARGB32.
-   * @param factor The factor.
-   * @param targetDataPtr  The pointer of the target data.
-   *                       The format of the image should be
-   *                       QImage::Format_ARGB32.
-   */
-  static inline void addRGBAs(const unsigned char * sourceDataPtr,
-                              double factor,
-                              unsigned char * targetDataPtr)
-  {
-    int sr, sg, sb, sa;
-    int tr, tg, tb, ta;
-    getRGBA(sourceDataPtr, sr, sg, sb, sa);
-    getRGBA(sourceDataPtr, tr, tg, tb, ta);
-    tr = qBound(0, (int)(tr + factor * sr), MAX_COLOR_VALUE);
-    tg = qBound(0, (int)(tg + factor * sg), MAX_COLOR_VALUE);
-    tb = qBound(0, (int)(tb + factor * sb), MAX_COLOR_VALUE);
-    ta = qBound(0, (int)(ta + factor * sa), MAX_COLOR_VALUE);
-    setRGBA(targetDataPtr, tr, tg, tb, ta);
-  }
-
-  /**
-   * @param realWidth The bytes in a line.
-   * @param x The x position.
-   * @param y  The y position.
-   * @return The offset from the beginning of data pointer.
-   */
-  static inline int pixelOffset(int realWidth , int x, int y)
-  {
-    return realWidth * y + 4 * x;
-  }
-};
+}
 
 template <class T>
 QImage *ImageAlgorithm::filtImage(const QImage& image, const Area& area, T *filter)
