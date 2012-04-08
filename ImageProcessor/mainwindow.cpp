@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ImageProcessorWithSimpleOptionAction *action =
         new ImageProcessorWithSimpleOptionAction(processor, this);
     action->setCheckable(true);
-    action->setStatusTip(processor->name());
+    action->setStatusTip(processor->description());
     action->setIcon(QIcon(processor->iconPath()));
     action->setToolTip(processor->description());
     simpleActions.append(action);
@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
             SLOT(addComplexProcessor(AbstractImageProcessor*)));
     ImageProcessorWithComplexOptionAction *action =
         new ImageProcessorWithComplexOptionAction(processor, this);
-    action->setStatusTip(processor->name());
+    action->setStatusTip(processor->description());
     action->setIcon(QIcon(processor->iconPath()));
     action->setToolTip(processor->description());
     action->setText(processor->name());
