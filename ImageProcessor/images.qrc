@@ -1,5 +1,17 @@
 <RCC>
     <qresource prefix="/">
         <file>images/bg_pattern.png</file>
+        <file>images/black_and_white.png</file>
+        <file>images/blur.png</file>
+        <file>images/filter.png</file>
+        <file>images/histogram_equalization.png</file>
+        <file>images/line.png</file>
+        <file>images/pen.png</file>
+        <file>images/resize.png</file>
+        <file>images/reverse.png</file>
+        <file>images/gray.png</file>
+        <file>images/ellipse.png</file>
+        <file>images/polygon.png</file>
+        <file>images/rectangle.png</file>
     </qresource>
 </RCC>

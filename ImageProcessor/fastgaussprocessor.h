@@ -28,6 +28,8 @@ public:
   virtual QString name() const;
   virtual QString toString() const;
   virtual AbstractImageProcessor *fromString(const QString& str) const;
+  virtual QString description() const;
+  virtual QString iconPath() const;
 
 protected:
   /**

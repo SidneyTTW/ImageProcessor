@@ -124,6 +124,16 @@ AbstractImageProcessor *FastGaussProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString FastGaussProcessor::description() const
+{
+  return "Blur";
+}
+
+QString FastGaussProcessor::iconPath() const
+{
+  return Resource::iconBlur;
+}
+
 bool FastGaussProcessor::eventFilter(QObject *object, QEvent *event)
 {
   switch (event->type())

@@ -73,6 +73,16 @@ AbstractImageProcessor *ToGrayProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString ToGrayProcessor::description() const
+{
+  return "Turn the image into gray";
+}
+
+QString ToGrayProcessor::iconPath() const
+{
+  return Resource::iconGray;
+}
+
 void ToGrayProcessor::confirm()
 {
   ToGrayProcessor *newProcessor = new ToGrayProcessor();

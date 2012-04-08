@@ -104,6 +104,16 @@ AbstractImageProcessor *ToBlackAndWhiteProcessor::fromString(const QString& str)
   return result;
 }
 
+QString ToBlackAndWhiteProcessor::description() const
+{
+  return "Turn the image into black and white";
+}
+
+QString ToBlackAndWhiteProcessor::iconPath() const
+{
+  return Resource::iconBlackAndWhite;
+}
+
 void ToBlackAndWhiteProcessor::confirm
     (ToBlackAndWhiteProcessor::ThresholdType type,
      int startColor,

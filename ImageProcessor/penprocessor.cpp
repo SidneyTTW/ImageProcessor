@@ -134,6 +134,16 @@ AbstractImageProcessor *PenProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString PenProcessor::description() const
+{
+  return "Pen";
+}
+
+QString PenProcessor::iconPath() const
+{
+  return Resource::iconPen;
+}
+
 bool PenProcessor::eventFilter(QObject *object, QEvent *event)
 {
   switch (event->type())

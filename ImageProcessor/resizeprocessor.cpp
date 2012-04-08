@@ -131,6 +131,16 @@ AbstractImageProcessor *ResizeProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString ResizeProcessor::description() const
+{
+  return "Resize whole image or selected rectangle";
+}
+
+QString ResizeProcessor::iconPath() const
+{
+  return Resource::iconResize;
+}
+
 void ResizeProcessor::confirm
     (ResizeProcessor::SizeType sizeType,
      Area area,

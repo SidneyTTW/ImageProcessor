@@ -156,6 +156,16 @@ AbstractImageProcessor *FilterProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString FilterProcessor::description() const
+{
+  return "Filt";
+}
+
+QString FilterProcessor::iconPath() const
+{
+  return Resource::iconFilter;
+}
+
 void FilterProcessor::confirm(FilterProcessor::FilterType type,
                               int width,
                               int height,

@@ -13,6 +13,7 @@
 #include "imageprocessorwithsimpleoptionaction.h"
 #include "imageprocessorwithcomplexoptionaction.h"
 #include "imageviewwidget.h"
+#include "myglobal.h"
 #include "newfiledialog.h"
 #include "processchain.h"
 #include "processoraid.h"
@@ -35,15 +36,15 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->undoAction->setShortcut(QKeySequence::Undo);
   ui->redoAction->setShortcut(QKeySequence::Redo);
 
-  rectangleAction = new QAction("Rectangle", this);
+  rectangleAction = new QAction(QIcon(Resource::iconRectangle), "", this);
   rectangleAction->setCheckable(true);
   connect(rectangleAction, SIGNAL(triggered()), this, SLOT(chooseRectangle()));
   ui->mainToolBar->addAction(rectangleAction);
-  polygonAction = new QAction("Polygon", this);
+  polygonAction = new QAction(QIcon(Resource::iconPolygon), "", this);
   polygonAction->setCheckable(true);
   connect(polygonAction, SIGNAL(triggered()), this, SLOT(choosePolygon()));
   ui->mainToolBar->addAction(polygonAction);
-  ellipseAction = new QAction("Ellipse", this);
+  ellipseAction = new QAction(QIcon(Resource::iconEllipse), "", this);
   ellipseAction->setCheckable(true);
   connect(ellipseAction, SIGNAL(triggered()), this, SLOT(chooseEllipse()));
   ui->mainToolBar->addAction(ellipseAction);
@@ -70,7 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
         new ImageProcessorWithSimpleOptionAction(processor, this);
     action->setCheckable(true);
     action->setStatusTip(processor->name());
-    action->setText(processor->name());
+    action->setIcon(QIcon(processor->iconPath()));
+    action->setToolTip(processor->description());
     simpleActions.append(action);
     connect(action, SIGNAL(triggered()), signalMapper1, SLOT(map()));
     signalMapper1->setMapping(action, (QObject *)action);
@@ -90,6 +92,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ImageProcessorWithComplexOptionAction *action =
         new ImageProcessorWithComplexOptionAction(processor, this);
     action->setStatusTip(processor->name());
+    action->setIcon(QIcon(processor->iconPath()));
+    action->setToolTip(processor->description());
     action->setText(processor->name());
     complexActions.append(action);
     connect(action, SIGNAL(triggered()), signalMapper2, SLOT(map()));

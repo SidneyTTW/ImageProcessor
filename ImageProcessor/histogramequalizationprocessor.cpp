@@ -119,6 +119,16 @@ AbstractImageProcessor *HistogramEqualizationProcessor::fromString
   return result;
 }
 
+QString HistogramEqualizationProcessor::description() const
+{
+  return "Histogram Equalization";
+}
+
+QString HistogramEqualizationProcessor::iconPath() const
+{
+  return Resource::iconHistogramEqualization;
+}
+
 void HistogramEqualizationProcessor::confirm()
 {
   HistogramEqualizationProcessor *newProcessor =

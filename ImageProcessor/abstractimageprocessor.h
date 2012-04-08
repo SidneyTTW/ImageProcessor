@@ -83,6 +83,16 @@ public:
    */
   virtual AbstractImageProcessor *fromString(const QString& str) const=0;
 
+  /**
+   * @return The description of the processor.
+   */
+  virtual QString description() const=0;
+
+  /**
+   * @return The path of the icon of the processor.
+   */
+  virtual QString iconPath() const=0;
+
 signals:
   /**
    * Signal emitted when a new processor is created.

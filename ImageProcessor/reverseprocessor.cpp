@@ -66,6 +66,16 @@ AbstractImageProcessor *ReverseProcessor::fromString(const QString& str) const
   return result;
 }
 
+QString ReverseProcessor::description() const
+{
+  return "Reverse";
+}
+
+QString ReverseProcessor::iconPath() const
+{
+  return Resource::iconReverse;
+}
+
 void ReverseProcessor::confirm()
 {
   ReverseProcessor *newProcessor = new ReverseProcessor();

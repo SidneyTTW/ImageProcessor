@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QPainter>
 #include <QSpinBox>
+#include "myglobal.h"
 
 DrawLineProcessor::DrawLineProcessor() :
     _width(1),
@@ -136,6 +137,16 @@ AbstractImageProcessor *DrawLineProcessor::fromString(const QString& str) const
   result->endPosition.setY(list.takeFirst().toInt());
   result->valid = true;
   return result;
+}
+
+QString DrawLineProcessor::description() const
+{
+  return "Draw a line";
+}
+
+QString DrawLineProcessor::iconPath() const
+{
+  return Resource::iconLine;
 }
 
 bool DrawLineProcessor::eventFilter(QObject *object, QEvent *event)
