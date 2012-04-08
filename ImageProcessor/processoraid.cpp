@@ -6,6 +6,7 @@
 #include "fastgaussprocessor.h"
 #include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
+#include "hslprocessor.h"
 #include "penprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
@@ -30,6 +31,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new ToBlackAndWhiteProcessor());
   result.push_back(new ResizeProcessor());
   result.push_back(new FilterProcessor());
+  result.push_back(new HSLProcessor());
   return result;
 }
 

@@ -49,7 +49,9 @@ SOURCES += main.cpp\
     builtinconvolutiondialog.cpp \
     newfiledialog.cpp \
     areachooser.cpp \
-    fastgaussprocessor.cpp
+    fastgaussprocessor.cpp \
+    hslprocessor.cpp \
+    hsldialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -94,7 +96,9 @@ HEADERS  += mainwindow.h \
     builtinconvolutiondialog.h \
     newfiledialog.h \
     areachooser.h \
-    fastgaussprocessor.h
+    fastgaussprocessor.h \
+    hslprocessor.h \
+    hsldialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -105,7 +109,8 @@ FORMS    += mainwindow.ui \
     resizedialog.ui \
     filterdialog.ui \
     builtinconvolutiondialog.ui \
-    newfiledialog.ui
+    newfiledialog.ui \
+    hsldialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

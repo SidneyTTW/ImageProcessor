@@ -456,11 +456,7 @@ QImage *ImageAlgorithm::changeHSL(const QImage& image,
         h += 1;
       while (h > 1)
         h -= 1;
-      s += sOffset;
-      while (s < 0)
-        s += 1;
-      while (s > 1)
-        s -= 1;
+      s = qBound(0.0, s + sOffset, 1.0);
       l = qBound(0.0, l + lOffset, 1.0);
       HSL2RGB(h, s, l, r, g, b);
       setRGBA(resultImgDataPtr, r, g, b, a);
@@ -498,11 +494,7 @@ void ImageAlgorithm::changeHSL(QImage *image,
         h += 1;
       while (h > 1)
         h -= 1;
-      s += sOffset;
-      while (s < 0)
-        s += 1;
-      while (s > 1)
-        s -= 1;
+      s = qBound(0.0, s + sOffset, 1.0);
       l = qBound(0.0, l + lOffset, 1.0);
       HSL2RGB(h, s, l, r, g, b);
       setRGBA(imageDataPtr, r, g, b, a);
