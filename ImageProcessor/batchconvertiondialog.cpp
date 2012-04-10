@@ -93,6 +93,7 @@ void BatchConvertionDialog::on_okButton_clicked()
                            0,
                            list.size(),
                            this);
+  progress.setWindowTitle("Processing");
   progress.setMinimumDuration(1);
   progress.setWindowModality(Qt::WindowModal);
   QString imagePath;
