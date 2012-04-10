@@ -8,6 +8,7 @@
 #include "histogramequalizationprocessor.h"
 #include "hslprocessor.h"
 #include "penprocessor.h"
+#include "redeyereductionprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
 #include "sharpenprocessor.h"
@@ -24,6 +25,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new HistogramEqualizationProcessor());
   result.push_back(new FastGaussProcessor());
   result.push_back(new SharpenProcessor());
+  result.push_back(new RedEyeReductionProcessor());
   return result;
 }
 

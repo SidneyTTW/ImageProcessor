@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     fastgaussprocessor.cpp \
     hslprocessor.cpp \
     hsldialog.cpp \
-    sharpenprocessor.cpp
+    sharpenprocessor.cpp \
+    redeyereductionprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -100,7 +101,8 @@ HEADERS  += mainwindow.h \
     fastgaussprocessor.h \
     hslprocessor.h \
     hsldialog.h \
-    sharpenprocessor.h
+    sharpenprocessor.h \
+    redeyereductionprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \

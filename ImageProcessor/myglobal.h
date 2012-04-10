@@ -14,6 +14,7 @@ namespace Resource
   const QString iconLine = ":/images/line.png";
   const QString iconBlur = ":/images/blur.png";
   const QString iconSharpen = ":/images/sharpen.png";
+  const QString iconRedEye = ":/images/red_eye.png";
   const QString iconFilter = ":/images/filter.png";
   const QString iconHistogramEqualization = ":/images/histogram_equalization.png";
   const QString iconResize = ":/images/resize.png";

@@ -494,6 +494,22 @@ namespace ImageAlgorithm
                  double lOffset);
 
   /**
+   * Red eye reduction.
+   *
+   * @param image The image to do the red eye reduction.
+   * @param area The area of eye.
+   */
+  QImage *redEyeReduction(const QImage& image, const Area& area);
+
+  /**
+   * Red eye reduction.
+   *
+   * @param image The image to do the red eye reduction.
+   * @param area The area of eye.
+   */
+  void redEyeReduction(QImage *image, const Area& area);
+
+  /**
    * Get the statistic of an image.
    *
    * @param image The image to convert.

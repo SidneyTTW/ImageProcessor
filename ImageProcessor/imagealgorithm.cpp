@@ -503,6 +503,77 @@ void ImageAlgorithm::changeHSL(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::redEyeReduction(const QImage& image, const Area& area)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = resultImgDataPtr;
+
+  memcpy(resultImgDataPtr, imageDataPtr, image.byteCount());
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    resultImgDataPtr = backup2 + realWidth2 * i;
+    for (int j = 0;j < width;++j)
+    {
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+      {
+        int tr, tg, tb, ta;
+        getRGBA(imageDataPtr, tr, tg, tb, ta);
+        float redIntensity = tg + tb != 0 ? (tr / (float)(tg + tb)) : 5;
+        if (redIntensity > 0.7f)
+        {
+          tr = (tg + tb) / 2;
+          setRGBA(resultImgDataPtr, tr, tg, tb, ta);
+        }
+      }
+      imageDataPtr += 4;
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::redEyeReduction(QImage *image, const Area& area)
+{
+  if (!validType(*image))
+    return;
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth1 = image->bytesPerLine();
+  unsigned char *backup1 = imageDataPtr;
+
+  for(int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    for (int j = 0;j < width;++j)
+    {
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+      {
+        int tr, tg, tb, ta;
+        getRGBA(imageDataPtr, tr, tg, tb, ta);
+        float redIntensity = tg + tb != 0 ? (tr / (float)(tg + tb)) : 5;
+        if (redIntensity > 0.6f)
+        {
+          tr = (tg + tb) / 2;
+          setRGBA(imageDataPtr, tr, tg, tb, ta);
+        }
+      }
+      imageDataPtr += 4;
+    }
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {
