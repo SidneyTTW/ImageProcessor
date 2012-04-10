@@ -1,71 +1,63 @@
-#include "fastgaussprocessor.h"
+#include "sharpenprocessor.h"
 
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QSpinBox>
 
-FastGaussProcessor::FastGaussProcessor() :
+int SharpenProcessor::_convolutionCore[9] = { 0, -1,  0,
+                                             -1,  5, -1,
+                                              0, -1,  0};
+
+SharpenProcessor::SharpenProcessor() :
     _radius(10),
     _optionWidget(NULL)
 {
 }
 
-MyImage::ImageTypeFlag FastGaussProcessor::resultType() const
+MyImage::ImageTypeFlag SharpenProcessor::resultType() const
 {
   return (MyImage::ImageTypeFlag)MyImage::Remain;
 }
 
-QImage *FastGaussProcessor::processImage(const QImage& image) const
+QImage *SharpenProcessor::processImage(const QImage& image) const
 {
-  int width = 3;
-  int *gaussMatrix = new int[width * width];
-  ImageAlgorithm::gaussCore(1, 1, gaussMatrix);
-  int divisor = 0;
-  for (int i = 0;i < width * width;++i)
-    divisor += gaussMatrix[i];
+  int divisor = 1;
   int offset = 0;
   QImage *result = new QImage(image);
   for (int i = 0;i < positions.size();++i)
   {
     ImageAlgorithm::ConvolutionFilter *filter =
-        new ImageAlgorithm::ConvolutionFilter(gaussMatrix,
-                                              width,
-                                              width,
+        new ImageAlgorithm::ConvolutionFilter(_convolutionCore,
+                                              3,
+                                              3,
                                               divisor,
                                               offset);
     Area area(Ellipse(positions.at(i), _radius, _radius));
     ImageAlgorithm::filtImage<ImageAlgorithm::ConvolutionFilter>(result, area, filter);
     delete filter;
   }
-  delete gaussMatrix;
   return result;
 }
 
-void FastGaussProcessor::processImage(QImage *image) const
+void SharpenProcessor::processImage(QImage *image) const
 {
-  int width = 3;
-  int *gaussMatrix = new int[width * width];
-  ImageAlgorithm::gaussCore(1, 1, gaussMatrix);
-  int divisor = 0;
-  for (int i = 0;i < width * width;++i)
-    divisor += gaussMatrix[i];
+  int divisor = 1;
   int offset = 0;
   for (int i = 0;i < positions.size();++i)
   {
     ImageAlgorithm::ConvolutionFilter *filter =
-        new ImageAlgorithm::ConvolutionFilter(gaussMatrix,
-                                              width,
-                                              width,
+        new ImageAlgorithm::ConvolutionFilter(_convolutionCore,
+                                              3,
+                                              3,
                                               divisor,
                                               offset);
     Area area(Ellipse(positions.at(i), _radius, _radius));
     ImageAlgorithm::filtImage<ImageAlgorithm::ConvolutionFilter>(image, area, filter);
     delete filter;
   }
-  delete gaussMatrix;
 }
 
-QWidget *FastGaussProcessor::optionWidget()
+QWidget *SharpenProcessor::optionWidget()
 {
   if (_optionWidget == NULL)
   {
@@ -81,7 +73,7 @@ QWidget *FastGaussProcessor::optionWidget()
   return _optionWidget;
 }
 
-MyImage FastGaussProcessor::preProcessImage(const MyImage& image) const
+MyImage SharpenProcessor::preProcessImage(const MyImage& image) const
 {
   QImage *resultImage = processImage(image.getImage());
   MyImage result(*resultImage, image.getType());
@@ -89,22 +81,22 @@ MyImage FastGaussProcessor::preProcessImage(const MyImage& image) const
   return result;
 }
 
-bool FastGaussProcessor::cancelWhenNewOneIsCreated() const
+bool SharpenProcessor::cancelWhenNewOneIsCreated() const
 {
   return false;
 }
 
-void FastGaussProcessor::interrupt()
+void SharpenProcessor::interrupt()
 {
   positions.clear();
 }
 
-QString FastGaussProcessor::name() const
+QString SharpenProcessor::name() const
 {
-  return "Fast Gauss";
+  return "Sharpen";
 }
 
-QString FastGaussProcessor::toString() const
+QString SharpenProcessor::toString() const
 {
   QString result = tr("%1").arg(_radius);
   for (int i = 0;i < positions.size();++i)
@@ -112,12 +104,12 @@ QString FastGaussProcessor::toString() const
   return result;
 }
 
-AbstractImageProcessor *FastGaussProcessor::fromString(const QString& str) const
+AbstractImageProcessor *SharpenProcessor::fromString(const QString& str) const
 {
   QStringList list = str.split(' ', QString::SkipEmptyParts);
   if (list.size() <= 1 || list.size() % 2 == 0)
     return NULL;
-  FastGaussProcessor *result = new FastGaussProcessor();
+  SharpenProcessor *result = new SharpenProcessor();
   result->_radius = list.takeFirst().toInt();
   while (!list.isEmpty())
     result->positions.push_back(QPoint(list.takeFirst().toInt(),
@@ -125,17 +117,17 @@ AbstractImageProcessor *FastGaussProcessor::fromString(const QString& str) const
   return result;
 }
 
-QString FastGaussProcessor::description() const
+QString SharpenProcessor::description() const
 {
-  return "Blur";
+  return "Sharpen";
 }
 
-QString FastGaussProcessor::iconPath() const
+QString SharpenProcessor::iconPath() const
 {
-  return Resource::iconBlur;
+  return Resource::iconSharpen;
 }
 
-bool FastGaussProcessor::eventFilter(QObject *object, QEvent *event)
+bool SharpenProcessor::eventFilter(QObject *object, QEvent *event)
 {
   switch (event->type())
   {
@@ -158,7 +150,7 @@ bool FastGaussProcessor::eventFilter(QObject *object, QEvent *event)
     }
   case QEvent::GraphicsSceneMouseRelease:
     {
-      FastGaussProcessor *newProcessor = new FastGaussProcessor();
+      SharpenProcessor *newProcessor = new SharpenProcessor();
       newProcessor->_radius = _radius;
       newProcessor->positions = positions;
       emit processorCreated(newProcessor);
@@ -170,7 +162,7 @@ bool FastGaussProcessor::eventFilter(QObject *object, QEvent *event)
   return false;
 }
 
-void FastGaussProcessor::changeToRadius(int radius)
+void SharpenProcessor::changeToRadius(int radius)
 {
   _radius = radius;
 }

@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     areachooser.cpp \
     fastgaussprocessor.cpp \
     hslprocessor.cpp \
-    hsldialog.cpp
+    hsldialog.cpp \
+    sharpenprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -98,7 +99,8 @@ HEADERS  += mainwindow.h \
     areachooser.h \
     fastgaussprocessor.h \
     hslprocessor.h \
-    hsldialog.h
+    hsldialog.h \
+    sharpenprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \

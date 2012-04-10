@@ -13,5 +13,6 @@
         <file>images/ellipse.png</file>
         <file>images/polygon.png</file>
         <file>images/rectangle.png</file>
+        <file>images/sharpen.png</file>
     </qresource>
 </RCC>

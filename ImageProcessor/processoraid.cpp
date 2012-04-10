@@ -10,6 +10,7 @@
 #include "penprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
+#include "sharpenprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
 
@@ -22,6 +23,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new ReverseProcessor());
   result.push_back(new HistogramEqualizationProcessor());
   result.push_back(new FastGaussProcessor());
+  result.push_back(new SharpenProcessor());
   return result;
 }
 
