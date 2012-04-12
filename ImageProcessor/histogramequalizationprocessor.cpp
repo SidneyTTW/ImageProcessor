@@ -19,9 +19,9 @@ QImage *HistogramEqualizationProcessor::processImage(const QImage& image) const
 {
   BasicStatistic statistic =
       ImageAlgorithm::getStatistic(image, ImageAlgorithm::Green);
-  int mapR[MAX_COLOR_VALUE];
-  int mapG[MAX_COLOR_VALUE];
-  int mapB[MAX_COLOR_VALUE];
+  int mapR[MAX_COLOR_VALUE + 1];
+  int mapG[MAX_COLOR_VALUE + 1];
+  int mapB[MAX_COLOR_VALUE + 1];
   calculateRGBMap(statistic, mapR, mapG, mapB);
   QImage *result = ImageAlgorithm::changeRGBWithMap(image,
                                                     mapR,
@@ -81,7 +81,7 @@ void HistogramEqualizationProcessor::calculateRGBMap
 {
   int sumR = 0, sumG = 0, sumB = 0;
   int points = statistic._width * statistic._height;
-  for (int i = 0;i < MAX_COLOR_VALUE;++i)
+  for (int i = 0;i <= MAX_COLOR_VALUE;++i)
   {
     if (_tunel.testFlag(ImageAlgorithm::Field_R))
     {

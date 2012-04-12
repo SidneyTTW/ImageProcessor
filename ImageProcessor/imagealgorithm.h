@@ -419,9 +419,9 @@ namespace ImageAlgorithm
    * @param tunel The tunel to change.
    */
   QImage *changeRGBWithMap(const QImage& image,
-                           int mapR[MAX_COLOR_VALUE],
-                           int mapG[MAX_COLOR_VALUE],
-                           int mapB[MAX_COLOR_VALUE],
+                           int mapR[MAX_COLOR_VALUE + 1],
+                           int mapG[MAX_COLOR_VALUE + 1],
+                           int mapB[MAX_COLOR_VALUE + 1],
                            RGBAField tunel);
 
   /**
@@ -435,9 +435,9 @@ namespace ImageAlgorithm
    * @param tunel The tunel to change.
    */
   void changeRGBWithMap(QImage *image,
-                        int mapR[MAX_COLOR_VALUE],
-                        int mapG[MAX_COLOR_VALUE],
-                        int mapB[MAX_COLOR_VALUE],
+                        int mapR[MAX_COLOR_VALUE + 1],
+                        int mapG[MAX_COLOR_VALUE + 1],
+                        int mapB[MAX_COLOR_VALUE + 1],
                         RGBAField tunel);
 
   /**
