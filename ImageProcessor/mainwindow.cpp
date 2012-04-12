@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ellipseAction->setCheckable(true);
   connect(ellipseAction, SIGNAL(triggered()), this, SLOT(chooseEllipse()));
   ui->mainToolBar->addAction(ellipseAction);
+  ui->mainToolBar->addSeparator();
 
   signalMapper1 = new QSignalMapper();
   signalMapper2 = new QSignalMapper();
@@ -80,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     areaChooser = new AreaChooser();
   }
+  ui->mainToolBar->addSeparator();
   QVector<AbstractImageProcessorWithDialogOption *> complexOptions =
       ProcessorAid::complexOptions();
   for (int i = 0;i < complexOptions.size();++i)

@@ -58,8 +58,8 @@ bool ThresholdItem::eventFilter(QObject *object, QEvent *event)
                  MAX_COLOR_VALUE);
       draggingValue = -1;
       for (int i = 0;i < _thresholds.size();++i)
-        if (_thresholds[i] - currentValue >= -5 &&
-            _thresholds[i] - currentValue <= 5)
+        if (_thresholds[i] - currentValue >= -2 &&
+            _thresholds[i] - currentValue <= 2)
         {
           draggingValue = _thresholds[i];
           break;
@@ -97,8 +97,8 @@ bool ThresholdItem::eventFilter(QObject *object, QEvent *event)
       {
         int i = 0;
         for (;i < _thresholds.size();++i)
-          if (_thresholds[i] - currentValue >= -5 &&
-              _thresholds[i] - currentValue <= 5)
+          if (_thresholds[i] - currentValue >= -2 &&
+              _thresholds[i] - currentValue <= 2)
           {
             _thresholds.remove(i);
             plot()->replot();
