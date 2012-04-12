@@ -15,5 +15,7 @@
         <file>images/rectangle.png</file>
         <file>images/sharpen.png</file>
         <file>images/red_eye.png</file>
+        <file>images/hsl.png</file>
+        <file>images/algebra_operation.png</file>
     </qresource>
 </RCC>

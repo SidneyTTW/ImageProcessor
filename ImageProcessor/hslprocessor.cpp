@@ -86,7 +86,7 @@ QString HSLProcessor::description() const
 
 QString HSLProcessor::iconPath() const
 {
-  return "";
+  return Resource::iconHSL;
 }
 
 void HSLProcessor::confirm(double h, double s, double l)
