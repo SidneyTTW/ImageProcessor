@@ -574,6 +574,167 @@ void ImageAlgorithm::redEyeReduction(QImage *image, const Area& area)
   }
 }
 
+QImage *ImageAlgorithm::algebraOperation(const QImage& image,
+                                         const QImage& image2,
+                                         AlgebraOperationType type)
+{
+  if ((!validType(image)) || (!validType(image2)))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  const unsigned char *imageDataPtr2 = image2.bits();
+  QImage *resultImg = new QImage(image);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = image2.bytesPerLine();
+  int realWidth3 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  const unsigned char *backup2 = imageDataPtr2;
+  unsigned char *backup3 = resultImgDataPtr;
+  width = qMin(width, image2.width());
+  height = qMin(height, image2.height());
+
+  for (int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    imageDataPtr2 = backup2 + realWidth2 * i;
+    resultImgDataPtr = backup3 + realWidth3 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r1, g1, b1, a1;
+      int r2, g2, b2, a2;
+      getRGBA(imageDataPtr, r1, g1, b1, a1);
+      getRGBA(imageDataPtr2, r2, g2, b2, a2);
+      switch (type)
+      {
+      case Add:
+        r1 = qBound(0,
+                    r1 * a1 / MAX_COLOR_VALUE + r2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g1 * a1 / MAX_COLOR_VALUE + g2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b1 * a1 / MAX_COLOR_VALUE + b2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        break;
+      case Minus:
+        r1 = qBound(0,
+                    r1 * a1 / MAX_COLOR_VALUE - r2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g1 * a1 / MAX_COLOR_VALUE - g2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b1 * a1 / MAX_COLOR_VALUE - b2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        break;
+      case Multiply:
+        r1 = qBound(0, r1 * r2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        g1 = qBound(0, g1 * g2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        b1 = qBound(0, b1 * b2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        break;
+      case Divide:
+        r1 = qBound(0,
+                    r2 != 0 ? r1 * MAX_COLOR_VALUE / r2 : r1,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g2 != 0 ? g1 * MAX_COLOR_VALUE / g2 : g1,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b2 != 0 ? b1 * MAX_COLOR_VALUE / b2 : b1,
+                    MAX_COLOR_VALUE);
+        break;
+      default:
+        break;
+      }
+      setRGBA(resultImgDataPtr, r1, g1, b1, a1);
+      imageDataPtr += 4;
+      imageDataPtr2 += 4;
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::algebraOperation(QImage *image,
+                                      const QImage& image2,
+                                      AlgebraOperationType type)
+{
+  if ((!validType(*image)) || (!validType(image2)))
+    return;
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  const unsigned char *imageDataPtr2 = image2.bits();
+  int realWidth1 = image->bytesPerLine();
+  int realWidth2 = image2.bytesPerLine();
+  unsigned char *backup1 = imageDataPtr;
+  const unsigned char *backup2 = imageDataPtr2;
+  width = qMin(width, image2.width());
+  height = qMin(height, image2.height());
+
+  for (int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i;
+    imageDataPtr2 = backup2 + realWidth2 * i;
+    for(int j = 0;j < width;++j)
+    {
+      int r1, g1, b1, a1;
+      int r2, g2, b2, a2;
+      getRGBA(imageDataPtr, r1, g1, b1, a1);
+      getRGBA(imageDataPtr2, r2, g2, b2, a2);
+      switch (type)
+      {
+      case Add:
+        r1 = qBound(0,
+                    r1 * a1 / MAX_COLOR_VALUE + r2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g1 * a1 / MAX_COLOR_VALUE + g2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b1 * a1 / MAX_COLOR_VALUE + b2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        break;
+      case Minus:
+        r1 = qBound(0,
+                    r1 * a1 / MAX_COLOR_VALUE - r2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g1 * a1 / MAX_COLOR_VALUE - g2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b1 * a1 / MAX_COLOR_VALUE - b2 * a2 / MAX_COLOR_VALUE,
+                    MAX_COLOR_VALUE);
+        break;
+      case Multiply:
+        r1 = qBound(0, r1 * r2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        g1 = qBound(0, g1 * g2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        b1 = qBound(0, b1 * b2 / MAX_COLOR_VALUE, MAX_COLOR_VALUE);
+        break;
+      case Divide:
+        r1 = qBound(0,
+                    r2 != 0 ? r1 * MAX_COLOR_VALUE / r2 : r1,
+                    MAX_COLOR_VALUE);
+        g1 = qBound(0,
+                    g2 != 0 ? g1 * MAX_COLOR_VALUE / g2 : g1,
+                    MAX_COLOR_VALUE);
+        b1 = qBound(0,
+                    b2 != 0 ? b1 * MAX_COLOR_VALUE / b2 : b1,
+                    MAX_COLOR_VALUE);
+        break;
+      default:
+        break;
+      }
+      setRGBA(imageDataPtr, r1, g1, b1, a1);
+      imageDataPtr += 4;
+      imageDataPtr2 += 4;
+    }
+  }
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {

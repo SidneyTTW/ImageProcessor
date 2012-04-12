@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include "algebraoperationprocessor.h"
 #include "drawlineprocessor.h"
 #include "fastgaussprocessor.h"
 #include "filterprocessor.h"
@@ -36,6 +37,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new ResizeProcessor());
   result.push_back(new FilterProcessor());
   result.push_back(new HSLProcessor());
+  result.push_back(new AlgebraOperationProcessor());
   return result;
 }
 

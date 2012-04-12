@@ -20,6 +20,7 @@ namespace Resource
   const QString iconResize = ":/images/resize.png";
   const QString iconReverse = ":/images/reverse.png";
   const QString iconBlackAndWhite = ":/images/black_and_white.png";
+  const QString iconAlgebraOperation = ":/images/algebra_operation.png";
   const QString iconGray = ":/images/gray.png";
   const QString iconRectangle = ":/images/rectangle.png";
   const QString iconPolygon = ":/images/polygon.png";

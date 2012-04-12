@@ -49,6 +49,11 @@ namespace ImageAlgorithm
   enum RGBAFieldFlag{Field_R = 1, Field_G = 2, Field_B = 4};
 
   /**
+   * An enum class to describe the algebra operation.
+   */
+  enum AlgebraOperationType{Add, Minus, Multiply, Divide};
+
+  /**
    * The type of the RGBA fields.
    */
   typedef QFlags<RGBAFieldFlag> RGBAField;
@@ -508,6 +513,28 @@ namespace ImageAlgorithm
    * @param area The area of eye.
    */
   void redEyeReduction(QImage *image, const Area& area);
+
+  /**
+   * Algebra operation with another image.
+   *
+   * @param image One of the image to do the algebra operation.
+   * @param image Another image to do the algebra operation.
+   * @param type The type of the algorithm.
+   */
+  QImage *algebraOperation(const QImage& image,
+                           const QImage& image2,
+                           AlgebraOperationType type);
+
+  /**
+   * Algebra operation with another image.
+   *
+   * @param image One of the image to do the algebra operation.
+   * @param image Another image to do the algebra operation.
+   * @param type The type of the algorithm.
+   */
+  void algebraOperation(QImage *image,
+                        const QImage& image2,
+                        AlgebraOperationType type);
 
   /**
    * Get the statistic of an image.

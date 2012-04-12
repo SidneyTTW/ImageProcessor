@@ -53,7 +53,9 @@ SOURCES += main.cpp\
     hslprocessor.cpp \
     hsldialog.cpp \
     sharpenprocessor.cpp \
-    redeyereductionprocessor.cpp
+    redeyereductionprocessor.cpp \
+    algebraoperationdialog.cpp \
+    algebraoperationprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -102,7 +104,9 @@ HEADERS  += mainwindow.h \
     hslprocessor.h \
     hsldialog.h \
     sharpenprocessor.h \
-    redeyereductionprocessor.h
+    redeyereductionprocessor.h \
+    algebraoperationdialog.h \
+    algebraoperationprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -114,7 +118,8 @@ FORMS    += mainwindow.ui \
     filterdialog.ui \
     builtinconvolutiondialog.ui \
     newfiledialog.ui \
-    hsldialog.ui
+    hsldialog.ui \
+    algebraoperationdialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
