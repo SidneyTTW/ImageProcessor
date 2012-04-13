@@ -59,12 +59,11 @@ private:
    * @param mapR Map of red.
    * @param mapG Map of green.
    * @param mapB Map of blue.
-   * @param mapA Map of alpha.
    */
   void calculateRGBMap(const BasicStatistic& statistic,
-                       int mapR[MAX_COLOR_VALUE],
-                       int mapG[MAX_COLOR_VALUE],
-                       int mapB[MAX_COLOR_VALUE]) const;
+                       int mapR[MAX_COLOR_VALUE + 1],
+                       int mapG[MAX_COLOR_VALUE + 1],
+                       int mapB[MAX_COLOR_VALUE + 1]) const;
 
 private slots:
   /**

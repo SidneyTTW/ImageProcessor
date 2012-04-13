@@ -75,9 +75,9 @@ void HistogramEqualizationProcessor::interrupt()
 
 void HistogramEqualizationProcessor::calculateRGBMap
     (const BasicStatistic& statistic,
-     int mapR[MAX_COLOR_VALUE],
-     int mapG[MAX_COLOR_VALUE],
-     int mapB[MAX_COLOR_VALUE]) const
+     int mapR[MAX_COLOR_VALUE + 1],
+     int mapG[MAX_COLOR_VALUE + 1],
+     int mapB[MAX_COLOR_VALUE + 1]) const
 {
   int sumR = 0, sumG = 0, sumB = 0;
   int points = statistic._width * statistic._height;
