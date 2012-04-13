@@ -26,6 +26,7 @@ namespace Resource
   const QString iconRectangle = ":/images/rectangle.png";
   const QString iconPolygon = ":/images/polygon.png";
   const QString iconEllipse = ":/images/ellipse.png";
+  const QString iconHistogramMatch = ":/images/histogram_match.png";
 }
 
 #endif // MYGLOBAL_H

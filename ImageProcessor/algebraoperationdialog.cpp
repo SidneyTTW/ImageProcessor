@@ -103,7 +103,6 @@ void AlgebraOperationDialog::on_cancelPushButton_clicked()
 
 void AlgebraOperationDialog::on_fileButton_clicked()
 {
-
   QString path =
       QFileDialog::getOpenFileName(this,
                                    "Select an image file",

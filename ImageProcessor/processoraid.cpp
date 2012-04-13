@@ -7,6 +7,7 @@
 #include "fastgaussprocessor.h"
 #include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
+#include "histogrammatchprocessor.h"
 #include "hslprocessor.h"
 #include "penprocessor.h"
 #include "redeyereductionprocessor.h"
@@ -38,6 +39,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new FilterProcessor());
   result.push_back(new HSLProcessor());
   result.push_back(new AlgebraOperationProcessor());
+  result.push_back(new HistogramMatchProcessor());
   return result;
 }
 

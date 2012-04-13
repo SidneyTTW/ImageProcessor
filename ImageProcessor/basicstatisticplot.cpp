@@ -11,7 +11,6 @@
 
 BasicStatisticPlot::BasicStatisticPlot(BasicStatistic statistic)
 {
-  setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
   init();
   setStatistic(statistic);
 }

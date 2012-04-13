@@ -55,7 +55,9 @@ SOURCES += main.cpp\
     sharpenprocessor.cpp \
     redeyereductionprocessor.cpp \
     algebraoperationdialog.cpp \
-    algebraoperationprocessor.cpp
+    algebraoperationprocessor.cpp \
+    histogrammatchdialog.cpp \
+    histogrammatchprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -106,7 +108,9 @@ HEADERS  += mainwindow.h \
     sharpenprocessor.h \
     redeyereductionprocessor.h \
     algebraoperationdialog.h \
-    algebraoperationprocessor.h
+    algebraoperationprocessor.h \
+    histogrammatchdialog.h \
+    histogrammatchprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -119,7 +123,8 @@ FORMS    += mainwindow.ui \
     builtinconvolutiondialog.ui \
     newfiledialog.ui \
     hsldialog.ui \
-    algebraoperationdialog.ui
+    algebraoperationdialog.ui \
+    histogrammatchdialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

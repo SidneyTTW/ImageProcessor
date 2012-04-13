@@ -17,5 +17,6 @@
         <file>images/red_eye.png</file>
         <file>images/hsl.png</file>
         <file>images/algebra_operation.png</file>
+        <file>images/histogram_match.png</file>
     </qresource>
 </RCC>
