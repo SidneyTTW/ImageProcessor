@@ -406,14 +406,16 @@ void MainWindow::createNewImage(MyImage::ImageTypeFlag type,
 
 void MainWindow::open()
 {
-  QString path =
-      QFileDialog::getOpenFileName(this,
-                                   "Select an image file",
-                                   tr(""),
-                                   "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
-  if (path.isEmpty())
+  QStringList paths =
+      QFileDialog::getOpenFileNames(this,
+                                    "Select an image file",
+                                    tr(""),
+                                    "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
+  if (paths.isEmpty())
     return;
-  open(path);
+  QString path;
+  foreach (path, paths)
+    open(path);
 }
 
 void MainWindow::open(QString path)
