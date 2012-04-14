@@ -3,7 +3,9 @@
 
 #include <QAction>
 #include <QDialog>
+#include <QDropEvent>
 #include <QFileDialog>
+#include <QUrl>
 #include "abstractimageprocessorwithsimpleoption.h"
 #include "abstractimageprocessorwithdialogoption.h"
 #include "areachooser.h"
@@ -138,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
           this,
           SLOT(currentChanged(int)));
   enableDisableActions();
+  setAcceptDrops(true);
 }
 
 QColor MainWindow::getCurrentColor() const
@@ -409,6 +412,11 @@ void MainWindow::open()
                                    "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
   if (path.isEmpty())
     return;
+  open(path);
+}
+
+void MainWindow::open(QString path)
+{
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
   statisticWidget->setBoundedImageView(widget);
@@ -425,6 +433,25 @@ void MainWindow::open()
   ui->stackedWidget->setCurrentWidget(widget);
   enableDisableActions();
   setWindowTitle(tr("Image Processor--%1").arg(action->text()));
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+  if (event->mimeData()->hasUrls())
+    event->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+  if (event->mimeData()->hasUrls())
+  {
+    foreach (QUrl url, event->mimeData()->urls())
+    {
+      if (url.toLocalFile().isEmpty())
+        continue;
+      open(url.toLocalFile());
+    }
+  }
 }
 
 void MainWindow::saveAs()

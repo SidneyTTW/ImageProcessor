@@ -38,6 +38,8 @@ public:
   virtual QColor getBackgroundColor() const;
 
 protected:
+  virtual void dragEnterEvent(QDragEnterEvent *event);
+  virtual void dropEvent(QDropEvent *event);
 
 private:
   Ui::MainWindow *ui;
@@ -86,6 +88,11 @@ private:
    * Connect a simple action with the image.
    */
   void connectSimpleAction(ImageProcessorWithSimpleOptionAction *action);
+
+  /**
+   * Open a file.
+   */
+  void open(QString path);
 
   /**
    * Map from the widget to the process chain.
