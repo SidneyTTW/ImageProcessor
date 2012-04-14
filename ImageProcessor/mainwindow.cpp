@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QDropEvent>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QUrl>
 #include "abstractimageprocessorwithsimpleoption.h"
 #include "abstractimageprocessorwithdialogoption.h"
@@ -417,6 +418,20 @@ void MainWindow::open()
 
 void MainWindow::open(QString path)
 {
+  QFileInfo fileInfo(path);
+  QString suffix = fileInfo.suffix();
+  if (suffix != "png" &&
+      suffix != "jpg" &&
+      suffix != "jpeg" &&
+      suffix != "bmp" &&
+      suffix != "gif")
+  {
+    QMessageBox::critical(this,
+                          "Wrong type of image",
+                          tr("Can't open file: %1\nThis program only accepts *.png *.jpg *.jpeg *.bmp *.gif").
+                          arg(path));
+    return;
+  }
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
   statisticWidget->setBoundedImageView(widget);
