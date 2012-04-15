@@ -434,13 +434,19 @@ void MainWindow::open(QString path)
                           arg(path));
     return;
   }
+  MyImage *image = MyImage::open(path);
+  if (image == NULL)
+  {
+    QMessageBox::critical(this,
+                          "Failed to open the image",
+                          tr("Failed to open file: %1").
+                          arg(path));
+    return;
+  }
   disconnectAll();
   ImageViewWidget *widget = new ImageViewWidget();
   statisticWidget->setBoundedImageView(widget);
   connect(widget, SIGNAL(areaChanged(Area)), this, SLOT(areaChanged(Area)));
-  MyImage *image = new MyImage(QImage(path).
-                               convertToFormat(QImage::Format_ARGB32),
-                               MyImage::Colored);
   QAction *action = ui->windowMenu->addAction(path, signalMapper3, SLOT(map()));
   signalMapper3->setMapping(action, (QObject *)widget);
   widget->setImage(image->getImage());

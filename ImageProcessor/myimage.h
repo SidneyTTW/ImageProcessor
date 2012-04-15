@@ -44,6 +44,12 @@ public:
   }
 
   /**
+   * @param path The path of the file.
+   * @return The image.
+   */
+  static MyImage *open(const QString& path);
+
+  /**
    * Save the image.
    *
    * @param path The path of the file.
