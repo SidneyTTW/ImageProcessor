@@ -18,5 +18,8 @@
         <file>images/hsl.png</file>
         <file>images/algebra_operation.png</file>
         <file>images/histogram_match.png</file>
+        <file>images/save.png</file>
+        <file>images/open.png</file>
+        <file>images/new.png</file>
     </qresource>
 </RCC>

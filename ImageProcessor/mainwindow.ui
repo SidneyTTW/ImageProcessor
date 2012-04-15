@@ -81,7 +81,7 @@
    </widget>
    <widget class="QMenu" name="menuComplex_Convertion">
     <property name="title">
-     <string>Complex Convertion</string>
+     <string>&amp;Complex Convertion</string>
     </property>
    </widget>
    <widget class="QMenu" name="fileMenu">
@@ -161,11 +161,19 @@
    </property>
   </action>
   <action name="openAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>
   </action>
   <action name="saveAsAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Save As</string>
    </property>
@@ -186,6 +194,10 @@
    </property>
   </action>
   <action name="newAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/new.png</normaloff>:/images/new.png</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
@@ -200,6 +212,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>
