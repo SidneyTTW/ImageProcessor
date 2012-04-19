@@ -21,5 +21,6 @@
         <file>images/save.png</file>
         <file>images/open.png</file>
         <file>images/new.png</file>
+        <file>images/point_processor.png</file>
     </qresource>
 </RCC>

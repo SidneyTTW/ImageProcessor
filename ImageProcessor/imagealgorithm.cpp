@@ -223,7 +223,8 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
                                          int mapR[MAX_COLOR_VALUE + 1],
                                          int mapG[MAX_COLOR_VALUE + 1],
                                          int mapB[MAX_COLOR_VALUE + 1],
-                                         RGBAField tunel)
+                                         RGBAField tunel,
+                                         Area area)
 {
   if (!validType(image))
     return NULL;
@@ -243,15 +244,18 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
     resultImgDataPtr = backup2 + realWidth2 * i;
     for(int j = 0;j < width;++j)
     {
-      int r, g, b, a;
-      getRGBA(imageDataPtr, r, g, b, a);
-      if (tunel.testFlag(Field_R))
-        r = mapR[r];
-      if (tunel.testFlag(Field_G))
-        g = mapG[g];
-      if (tunel.testFlag(Field_B))
-        b = mapB[b];
-      setRGBA(resultImgDataPtr, r, g, b, a);
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+      {
+        int r, g, b, a;
+        getRGBA(imageDataPtr, r, g, b, a);
+        if (tunel.testFlag(Field_R))
+          r = mapR[r];
+        if (tunel.testFlag(Field_G))
+          g = mapG[g];
+        if (tunel.testFlag(Field_B))
+          b = mapB[b];
+        setRGBA(resultImgDataPtr, r, g, b, a);
+      }
       imageDataPtr += 4;
       resultImgDataPtr += 4;
     }
@@ -263,7 +267,8 @@ void ImageAlgorithm::changeRGBWithMap(QImage *image,
                                       int mapR[MAX_COLOR_VALUE + 1],
                                       int mapG[MAX_COLOR_VALUE + 1],
                                       int mapB[MAX_COLOR_VALUE + 1],
-                                      RGBAField tunel)
+                                      RGBAField tunel,
+                                      Area area)
 {
   if (!validType(*image))
     return;
@@ -278,15 +283,18 @@ void ImageAlgorithm::changeRGBWithMap(QImage *image,
     imageDataPtr = backup + realWidth * i;
     for(int j = 0;j < width;++j)
     {
-      int r, g, b, a;
-      getRGBA(imageDataPtr, r, g, b, a);
-      if (tunel.testFlag(Field_R))
-        r = mapR[r];
-      if (tunel.testFlag(Field_G))
-        g = mapG[g];
-      if (tunel.testFlag(Field_B))
-        b = mapB[b];
-      setRGBA(imageDataPtr, r, g, b, a);
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+      {
+        int r, g, b, a;
+        getRGBA(imageDataPtr, r, g, b, a);
+        if (tunel.testFlag(Field_R))
+          r = mapR[r];
+        if (tunel.testFlag(Field_G))
+          g = mapG[g];
+        if (tunel.testFlag(Field_B))
+          b = mapB[b];
+        setRGBA(imageDataPtr, r, g, b, a);
+      }
       imageDataPtr += 4;
     }
   }

@@ -10,6 +10,7 @@
 #include "histogrammatchprocessor.h"
 #include "hslprocessor.h"
 #include "penprocessor.h"
+#include "pointprocessor.h"
 #include "redeyereductionprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
@@ -40,6 +41,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new HSLProcessor());
   result.push_back(new AlgebraOperationProcessor());
   result.push_back(new HistogramMatchProcessor());
+  result.push_back(new PointProcessor());
   return result;
 }
 

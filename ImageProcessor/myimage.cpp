@@ -54,6 +54,7 @@ MyImage *MyImage::open(const QString& path)
     result->_type = Colored;
   else if (hasGray)
     result->_type = Gray;
+  return result;
 }
 
 void MyImage::save(const QString& path) const

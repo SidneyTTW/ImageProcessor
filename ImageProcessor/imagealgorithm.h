@@ -417,12 +417,14 @@ namespace ImageAlgorithm
    * @param mapG The map of green.
    * @param mapB The map of blue.
    * @param tunel The tunel to change.
+   * @param area The area to change.
    */
   QImage *changeRGBWithMap(const QImage& image,
                            int mapR[MAX_COLOR_VALUE + 1],
                            int mapG[MAX_COLOR_VALUE + 1],
                            int mapB[MAX_COLOR_VALUE + 1],
-                           RGBAField tunel);
+                           RGBAField tunel,
+                           Area area = Area());
 
   /**
    * Change rgb tunel.
@@ -433,12 +435,14 @@ namespace ImageAlgorithm
    * @param mapG The map of green.
    * @param mapB The map of blue.
    * @param tunel The tunel to change.
+   * @param area The area to change.
    */
   void changeRGBWithMap(QImage *image,
                         int mapR[MAX_COLOR_VALUE + 1],
                         int mapG[MAX_COLOR_VALUE + 1],
                         int mapB[MAX_COLOR_VALUE + 1],
-                        RGBAField tunel);
+                        RGBAField tunel,
+                        Area area = Area());
 
   /**
    * Resize the image according to the given algorithm type.
