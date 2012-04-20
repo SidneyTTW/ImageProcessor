@@ -156,8 +156,13 @@ QColor MainWindow::getBackgroundColor() const
 
 void MainWindow::simpleActionSelected(QObject *action)
 {
-  disconnectAllExcept((ImageProcessorWithSimpleOptionAction *)action);
-  connectSimpleAction((ImageProcessorWithSimpleOptionAction *)action);
+  if (((ImageProcessorWithComplexOptionAction *)action)->isChecked())
+  {
+    disconnectAllExcept((ImageProcessorWithSimpleOptionAction *)action);
+    connectSimpleAction((ImageProcessorWithSimpleOptionAction *)action);
+  }
+  else
+    disconnectAll();
 }
 
 void MainWindow::complexActionSelected(QObject *action)
@@ -188,6 +193,7 @@ void MainWindow::disconnectAll()
   simpleOptionContainerWidget->clear();
   if (widget == NULL || processChain == NULL)
     return;
+  widget->clearCursorArea();
   widget->setImage(processChain->getCurrentImage()->getImage());
   areaChooser->detach();
   update();
@@ -206,6 +212,7 @@ void MainWindow::disconnectAllExcept(ImageProcessorWithSimpleOptionAction *
     if (widget != NULL)
       widget->removeEventFilter(simpleActions[i]->getConfiguarionInstance());
   }
+  widget->clearCursorArea();
   areaChooser->detach();
   rectangleAction->setChecked(false);
   polygonAction->setChecked(false);

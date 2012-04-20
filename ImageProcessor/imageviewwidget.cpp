@@ -1,10 +1,63 @@
 #include "imageviewwidget.h"
 
-#include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QPointF>
 #include "borderlayout.h"
+
+void MyScene::setCursorArea(Ellipse ellipse)
+{
+  cursorItem->setCursorArea(ellipse);
+  QList <QGraphicsView *> _views = views();
+  QGraphicsView *view;
+  foreach (view, _views)
+    view->viewport()->update();
+}
+
+void MyScene::clearCursorArea()
+{
+  cursorItem->clearCursorArea();
+  QList <QGraphicsView *> _views = views();
+  QGraphicsView *view;
+  foreach (view, _views)
+    view->viewport()->update();
+}
+
+void MyScene::CursorItem::paint(QPainter *painter,
+                                const QStyleOptionGraphicsItem *,
+                                QWidget *)
+{
+  QPen pen(QColor(0, 0, 0));
+  pen.setStyle(Qt::SolidLine);
+  painter->setPen(pen);
+  switch (areaState)
+  {
+  case StateEllipse:
+    painter->drawEllipse(_ellipse.getCenter(),
+                         _ellipse.getDx(),
+                         _ellipse.getDy());
+    break;
+  default:
+    break;
+  }
+}
+
+
+QRectF MyScene::CursorItem::boundingRect() const
+{
+  switch (areaState)
+  {
+  case StateEllipse:
+    return QRectF(_ellipse.getCenter().x() - _ellipse.getDx(),
+                  _ellipse.getCenter().y() - _ellipse.getDy(),
+                  _ellipse.getDx() * 2,
+                  _ellipse.getDy() * 2);
+    break;
+  default:
+    return QRectF();
+    break;
+  }
+}
 
 /**
  * Class of item to hold an image and area.
@@ -120,11 +173,10 @@ ImageViewWidget::ImageViewWidget(QWidget *parent) :
     QWidget(parent)
 {
   label = new QLabel();
-  scene = new QGraphicsScene();
-  view = new MyView(scene);
   imageItem = new ImageItem();
-  scene->addItem(imageItem);
+  scene = new MyScene(imageItem);
   scene->installEventFilter(this);
+  view = new MyView(scene);
   imageItem->setPos(0, 0);
   BorderLayout *layout = new BorderLayout();
   layout->addWidget(label, BorderLayout::North);

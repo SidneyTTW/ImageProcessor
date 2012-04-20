@@ -3,6 +3,7 @@
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QSpinBox>
+#include "imageviewwidget.h"
 
 int SharpenProcessor::_convolutionCore[9] = { 0, -1,  0,
                                              -1,  5, -1,
@@ -129,6 +130,7 @@ QString SharpenProcessor::iconPath() const
 
 bool SharpenProcessor::eventFilter(QObject *object, QEvent *event)
 {
+  MyScene *scene = (MyScene *)object;
   switch (event->type())
   {
   case QEvent::GraphicsSceneMousePress:
@@ -142,6 +144,7 @@ bool SharpenProcessor::eventFilter(QObject *object, QEvent *event)
   case QEvent::GraphicsSceneMouseMove:
     {
       QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
+      scene->setCursorArea(Ellipse(QPoint(pos.x(), pos.y()), _radius, _radius));
       if (((QGraphicsSceneMouseEvent *) event)->buttons() == Qt::NoButton)
         break;
       positions.push_back(QPoint(pos.x(), pos.y()));
