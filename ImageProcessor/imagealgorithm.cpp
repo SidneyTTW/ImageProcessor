@@ -231,7 +231,7 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
   int width = image.width();
   int height = image.height();
   const unsigned char *imageDataPtr = image.bits();
-  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
+  QImage *resultImg = new QImage(image);
   unsigned char *resultImgDataPtr = resultImg->bits();
   int realWidth1 = image.bytesPerLine();
   int realWidth2 = resultImg->bytesPerLine();
