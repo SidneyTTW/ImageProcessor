@@ -146,11 +146,19 @@
    </widget>
   </widget>
   <action name="undoAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/undo.png</normaloff>:/images/undo.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Undo</string>
    </property>
   </action>
   <action name="redoAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/redo.png</normaloff>:/images/redo.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Redo</string>
    </property>
