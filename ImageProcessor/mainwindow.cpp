@@ -655,6 +655,11 @@ void MainWindow::on_closeButton_clicked()
   delete widget;
   delete processChain;
   enableDisableActions();
+  processChain = currentChain();
+  if (processChain == NULL)
+    statisticWidget->setImage(QImage());
+  else
+    statisticWidget->setImage(processChain->getCurrentImage()->getImage());
 }
 
 void MainWindow::on_compressButton_clicked()
