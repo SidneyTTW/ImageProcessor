@@ -1,26 +1,21 @@
-#ifndef RESIZEPROCESSOR_H
-#define RESIZEPROCESSOR_H
+#ifndef ROTATEPROCESSOR_H
+#define ROTATEPROCESSOR_H
 
 #include "abstractimageprocessorwithdialogoption.h"
 
 #include "imagealgorithm.h"
 
 /**
- * Class of processor to resize an image.
+ * Class of processor to rotate an image.
  */
-class ResizeProcessor : public AbstractImageProcessorWithDialogOption
+class RotateProcessor : public AbstractImageProcessorWithDialogOption
 {
   Q_OBJECT
 public:
   /**
-   * Type of the size.
-   */
-  enum SizeType {Absolute, Relative};
-
-  /**
    * Constructor.
    */
-  ResizeProcessor();
+  RotateProcessor();
 
   virtual Area::AreaType acceptableAreaType() const;
   virtual Area::AreaTypeFlag resultAreaType() const;
@@ -38,24 +33,14 @@ public:
 
 private:
   /**
-   * Type of the size.
-   */
-  SizeType _sizeType;
-
-  /**
    * Type of the algorithm.
    */
   ImageAlgorithm::GeometricAlgorithmType _algorithmType;
 
   /**
-   * Width.
+   * Angle.
    */
-  double _width;
-
-  /**
-   * Height.
-   */
-  double _height;
+  double _angle;
 
   /**
    * The area to filt.
@@ -66,11 +51,9 @@ private slots:
   /**
    * Slot used to get the confirm.
    */
-  void confirm(ResizeProcessor::SizeType,
-               Area area,
+  void confirm(Area area,
                ImageAlgorithm::GeometricAlgorithmType,
-               double,
                double);
 };
 
-#endif // RESIZEPROCESSOR_H
+#endif // ROTATEPROCESSOR_H

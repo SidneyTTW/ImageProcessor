@@ -39,9 +39,9 @@ namespace ImageAlgorithm
   enum ImageToGrayAlgorithmType{Green = 0, Float, Integer, Displacement, Average};
 
   /**
-   * An enum class to describe the way to resize image.
+   * An enum class to describe the way to geometric operator.
    */
-  enum ResizeAlgorithmType{NearestNeighbor, Bilinear, Bicubic};
+  enum GeometricAlgorithmType{NearestNeighbor, Bilinear, Bicubic};
 
   /**
    * An enum class to describe the RGBA fields.
@@ -457,7 +457,7 @@ namespace ImageAlgorithm
                  Area area,
                  int newWidth,
                  int newHeight,
-                 ResizeAlgorithmType type);
+                 GeometricAlgorithmType type);
 
   /**
    * Resize the image according to the given algorithm type.
@@ -472,7 +472,7 @@ namespace ImageAlgorithm
               Area area,
               int newWidth,
               int newHeight,
-              ResizeAlgorithmType type);
+              GeometricAlgorithmType type);
 
   /**
    * Change the HSL using given offsets.
@@ -539,6 +539,30 @@ namespace ImageAlgorithm
   void algebraOperation(QImage *image,
                         const QImage& image2,
                         AlgebraOperationType type);
+
+  /**
+   * Rotate.
+   *
+   * @param image The image to rotate.
+   * @param angle The angle to rotate.
+   * @param area The area to rotate.
+   */
+  QImage *rotate(const QImage& image,
+                 double angle,
+                 GeometricAlgorithmType type,
+                 const Area& area=Area());
+
+  /**
+   * Rotate.
+   *
+   * @param image The image to rotate.
+   * @param angle The angle to rotate.
+   * @param area The area to rotate.
+   */
+  void rotate(QImage *image,
+              double angle,
+              GeometricAlgorithmType type,
+              const Area& area=Area());
 
   /**
    * Get the statistic of an image.

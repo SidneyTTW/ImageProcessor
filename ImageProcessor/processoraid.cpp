@@ -14,6 +14,7 @@
 #include "redeyereductionprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
+#include "rotateprocessor.h"
 #include "sharpenprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
@@ -37,6 +38,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   QVector<AbstractImageProcessorWithDialogOption *> result;
   result.push_back(new ToBlackAndWhiteProcessor());
   result.push_back(new ResizeProcessor());
+  result.push_back(new RotateProcessor());
   result.push_back(new FilterProcessor());
   result.push_back(new HSLProcessor());
   result.push_back(new AlgebraOperationProcessor());

@@ -9,9 +9,9 @@ ResizeDialog::ResizeDialog(const QImage& image, const Area& area, QWidget *paren
 {
   ui->setupUi(this);
   changingByCode = true;
-  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  if (area.getType() != Area::TypeEmpty)
   {
-    QRect rect = area.getRectangle();
+    QRect rect = area.bound();
     ui->widthSpinBox->setValue(rect.width());
     ui->heightSpinBox->setValue(rect.height());
   }
@@ -28,7 +28,7 @@ void ResizeDialog::resetPreview()
 {
   int widthFrom = _image.width();
   int heightFrom = _image.height();
-  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  if (_area.getType() != Area::TypeEmpty)
   {
     QRect rect = _area.getRectangle();
     widthFrom = rect.width();
@@ -40,7 +40,7 @@ void ResizeDialog::resetPreview()
   int heightTo = ui->absoluteButton->isChecked() ?
                  ui->heightSpinBox->value() :
                  heightFrom * ui->heightRateSpinBox->value();
-  ImageAlgorithm::ResizeAlgorithmType type;
+  ImageAlgorithm::GeometricAlgorithmType type;
   if (ui->nearestButton->isChecked())
     type = ImageAlgorithm::NearestNeighbor;
   else if (ui->bilinearButton->isChecked())
@@ -95,7 +95,7 @@ void ResizeDialog::on_widthSpinBox_valueChanged(int value)
   if (changingByCode)
     return;
   changingByCode = true;
-  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  if (_area.getType() != Area::TypeEmpty)
     ui->widthRateSpinBox->setValue(1.0 * value / _area.getRectangle().width());
   else
     ui->widthRateSpinBox->setValue(1.0 * value / _image.width());
@@ -108,7 +108,7 @@ void ResizeDialog::on_heightSpinBox_valueChanged(int value)
   if (changingByCode)
     return;
   changingByCode = true;
-  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  if (_area.getType() != Area::TypeEmpty)
     ui->heightRateSpinBox->setValue(1.0 * value / _area.getRectangle().height());
   else
     ui->heightRateSpinBox->setValue(1.0 * value / _image.height());
@@ -121,7 +121,7 @@ void ResizeDialog::on_widthRateSpinBox_valueChanged(double value)
   if (changingByCode)
     return;
   changingByCode = true;
-  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  if (_area.getType() != Area::TypeEmpty)
     ui->widthSpinBox->setValue(value * _area.getRectangle().width());
   else
     ui->widthSpinBox->setValue(value * _image.width());
@@ -134,7 +134,7 @@ void ResizeDialog::on_heightRateSpinBox_valueChanged(double value)
   if (changingByCode)
     return;
   changingByCode = true;
-  if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+  if (_area.getType() != Area::TypeEmpty)
     ui->heightSpinBox->setValue(value * _area.getRectangle().height());
   else
     ui->heightSpinBox->setValue(value * _image.height());
@@ -147,7 +147,7 @@ void ResizeDialog::on_okPushButton_clicked()
   ResizeProcessor::SizeType sizeType = ui->absoluteButton->isChecked() ?
                                        ResizeProcessor::Absolute :
                                        ResizeProcessor::Relative;
-  ImageAlgorithm::ResizeAlgorithmType algorithmType;
+  ImageAlgorithm::GeometricAlgorithmType algorithmType;
   if (ui->nearestButton->isChecked())
     algorithmType = ImageAlgorithm::NearestNeighbor;
   else if (ui->bilinearButton->isChecked())

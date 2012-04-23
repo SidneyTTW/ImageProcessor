@@ -87,6 +87,11 @@ public:
   void paint(QPainter *painter, int width, int height);
 
   /**
+   * @return Rectangle bound of the area.
+   */
+  QRect bound() const;
+
+  /**
    * @return The information string of the area.
    */
   QString toString() const;

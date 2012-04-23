@@ -79,6 +79,28 @@ void Area::paint(QPainter *painter, int width, int height)
   }
 }
 
+QRect Area::bound() const
+{
+  switch (mainType)
+  {
+  case TypeRectangle:
+    return _rectangle;
+    break;
+  case TypePolygon:
+    return _polygon.boundingRect();
+    break;
+  case TypeEllipse:
+    return QRect(_ellipse.getCenter().x() - _ellipse.getDx(),
+                 _ellipse.getCenter().y() - _ellipse.getDy(),
+                 _ellipse.getDx() * 2,
+                 _ellipse.getDy() * 2);
+    break;
+  default:
+    return QRect();
+    break;
+  }
+}
+
 QString Area::toString() const
 {
   QString result = QObject::tr("%1").arg((int)mainType);

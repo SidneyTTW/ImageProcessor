@@ -45,7 +45,7 @@ private:
   void resetPreview();
 
   /**
-   * The area to filt.
+   * The area to resize.
    */
   Area _area;
 
@@ -55,7 +55,7 @@ signals:
    */
   void confirm(ResizeProcessor::SizeType sizeType,
                Area area,
-               ImageAlgorithm::ResizeAlgorithmType algorithmType,
+               ImageAlgorithm::GeometricAlgorithmType algorithmType,
                double width,
                double height);
 

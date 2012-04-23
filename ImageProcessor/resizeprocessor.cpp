@@ -9,7 +9,7 @@ ResizeProcessor::ResizeProcessor()
 
 Area::AreaType ResizeProcessor::acceptableAreaType() const
 {
-  return (Area::AreaType)(Area::TypeRectangle | Area::TypeEmpty);
+  return Area::TypeAll;
 }
 
 Area::AreaTypeFlag ResizeProcessor::resultAreaType() const
@@ -47,7 +47,7 @@ QImage *ResizeProcessor::processImage(const QImage& image) const
   case Relative:
     width = _width * image.width();
     height = _height * image.height();
-    if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    if (_area.getType() != Area::TypeEmpty)
     {
       width = _area.getRectangle().width() * image.width();
       height = _area.getRectangle().height() * image.height();
@@ -72,7 +72,7 @@ void ResizeProcessor::processImage(QImage *image) const
   case Relative:
     width = _width * image->width();
     height = _height * image->height();
-    if (_area.getType() == Area::TypeRectangle || _area.getType() == Area::TypeSquare)
+    if (_area.getType() != Area::TypeEmpty)
     {
       width = _area.getRectangle().width() * image->width();
       height = _area.getRectangle().height() * image->height();
@@ -88,13 +88,13 @@ QDialog *ResizeProcessor::getOptionDialog(Area area, const MyImage& image)
   connect(result,
           SIGNAL(confirm(ResizeProcessor::SizeType,
                          Area,
-                         ImageAlgorithm::ResizeAlgorithmType,
+                         ImageAlgorithm::GeometricAlgorithmType,
                          double,
                          double)),
           this,
           SLOT(confirm(ResizeProcessor::SizeType,
                        Area,
-                       ImageAlgorithm::ResizeAlgorithmType,
+                       ImageAlgorithm::GeometricAlgorithmType,
                        double,
                        double)));
   return result;
@@ -123,7 +123,7 @@ AbstractImageProcessor *ResizeProcessor::fromString(const QString& str) const
     return NULL;
   ResizeProcessor *result = new ResizeProcessor();
   result->_sizeType = (SizeType) list.takeFirst().toInt();
-  result->_algorithmType = (ImageAlgorithm::ResizeAlgorithmType)
+  result->_algorithmType = (ImageAlgorithm::GeometricAlgorithmType)
                            list.takeFirst().toInt();
   result->_width = list.takeFirst().toDouble();
   result->_height = list.takeFirst().toDouble();
@@ -133,7 +133,7 @@ AbstractImageProcessor *ResizeProcessor::fromString(const QString& str) const
 
 QString ResizeProcessor::description() const
 {
-  return "Resize whole image or selected rectangle";
+  return "Resize whole image or selected area";
 }
 
 QString ResizeProcessor::iconPath() const
@@ -144,7 +144,7 @@ QString ResizeProcessor::iconPath() const
 void ResizeProcessor::confirm
     (ResizeProcessor::SizeType sizeType,
      Area area,
-     ImageAlgorithm::ResizeAlgorithmType algorithmType,
+     ImageAlgorithm::GeometricAlgorithmType algorithmType,
      double width,
      double height)
 {

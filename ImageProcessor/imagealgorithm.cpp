@@ -2,6 +2,62 @@
 
 #include <qmath.h>
 
+inline QPointF calculatePos(double r, double angle)
+{
+  return QPointF(r * qCos(angle), r * qSin(angle));
+}
+
+inline double calculateAngle(double x, double y)
+{
+  qreal result = qAtan(qAbs(y / x));
+  if (x < 0 && y >= 0)
+    return PI - result;
+  if (x <= 0 && y < 0)
+    return PI + result;
+  if (x > 0 && y < 0)
+    return 2 * PI - result;
+  if (result != result) // NaN !!!
+    return 0;
+  return result;
+}
+
+/**
+ * Find the range of the rotation.
+ *
+ * @param width The width.
+ * @param height The height.
+ * @param angle The angle.
+ * @param left The left bound.
+ * @param right The right bound.
+ * @param top The top bound.
+ * @param bottom The bottom bound.
+ */
+void rotateFindRange(int width, int height, double angle,
+                     int& left, int& right, int& top, int& bottom)
+{
+  left = right = top = bottom = 0;
+  double vr[3];
+  double va[3];
+  vr[0] = width;
+  vr[1] = qSqrt(width * width + height * height);
+  vr[2] = height;
+  va[0] = angle;
+  va[1] = angle + calculateAngle(width, height);
+  va[2] = 3.14159 / 2 + angle;
+  for (int i = 0;i < 3;++i)
+  {
+    QPointF v = calculatePos(vr[i], va[i]);
+    if (v.x() < left)
+      left = v.x();
+    if (v.x() > right)
+      right = v.x();
+    if (v.y() < top)
+      top = v.y();
+    if (v.y() > bottom)
+      bottom = v.y();
+  }
+}
+
 // Thanks to http://blog.csdn.net/nrc_douningbo/article/details/5929106
 // Although there was something wrong, my program was sped up a lot.
 QImage *ImageAlgorithm::convertToGrayScale(const QImage& image,
@@ -304,7 +360,7 @@ QImage *ImageAlgorithm::resize(const QImage& image,
                                Area area,
                                int newWidth,
                                int newHeight,
-                               ResizeAlgorithmType type)
+                               GeometricAlgorithmType type)
 {
   if (!validType(image))
     return NULL;
@@ -312,8 +368,8 @@ QImage *ImageAlgorithm::resize(const QImage& image,
   int height = image.height();
   int resultImageWidth = newWidth;
   int resultImageHeight = newHeight;
-  QRect rect = area.getRectangle();
-  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  QRect rect = area.bound();
+  if (area.getType() != Area::TypeEmpty)
   {
     resultImageWidth = qMax(newWidth + rect.left(), width);
     resultImageHeight = qMax(newHeight + rect.top(), height);
@@ -330,15 +386,20 @@ QImage *ImageAlgorithm::resize(const QImage& image,
 
   memset(resultImgDataPtr, 0, resultImageWidth * resultImageHeight);
 
-  for (int i = 0;i < qMin(height, resultImageHeight);++i)
+  // Copy the not effected part
+  if (area.getType() != Area::TypeEmpty)
   {
-    imageDataPtr = backup1 + i * realWidth1;
-    resultImgDataPtr = backup2 + i * realWidth2;
-    for (int j = 0;j < qMin(width, resultImageWidth);++j)
+    for (int i = 0;i < qMin(height, resultImageHeight);++i)
     {
-      memcpy(resultImgDataPtr, imageDataPtr, 4);
-      imageDataPtr += 4;
-      resultImgDataPtr += 4;
+      imageDataPtr = backup1 + i * realWidth1;
+      resultImgDataPtr = backup2 + i * realWidth2;
+      for (int j = 0;j < qMin(width, resultImageWidth);++j)
+      {
+        if (!area.in(j, i))
+          memcpy(resultImgDataPtr, imageDataPtr, 4);
+        imageDataPtr += 4;
+        resultImgDataPtr += 4;
+      }
     }
   }
 
@@ -348,70 +409,76 @@ QImage *ImageAlgorithm::resize(const QImage& image,
   int yFrom = 0;
   int xTo = resultImageWidth;
   int yTo = resultImageHeight;
-  if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+  if (area.getType() != Area::TypeEmpty)
   {
     xFrom = rect.left();
     yFrom = rect.top();
     xTo = xFrom + newWidth;
     yTo = yFrom + newHeight;
   }
+  // The resized part
   for(int i = yFrom;i < yTo;++i)
   {
     double originalY = 1.0 * i * (height - 1) / newHeight;
-    if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+    if (area.getType() != Area::TypeEmpty)
       originalY = rect.top() + 1.0 * (i - rect.top()) * (rect.height() - 1) / newHeight;
     resultImgDataPtr = backup2 + realWidth2 * i + 4 * xFrom;
     for(int j = xFrom;j < xTo;++j)
     {
       double originalX = 1.0 * j * (width - 1) / newWidth;
-      if (area.getType() == Area::TypeRectangle || area.getType() == Area::TypeSquare)
+      if (area.getType() != Area::TypeEmpty)
         originalX = rect.left() + 1.0 * (j - rect.left()) * (rect.width() - 1) / newWidth;
       int floorX = qFloor(originalX);
       int floorY = qFloor(originalY);
-      int tr = 0, tg = 0, tb = 0, ta = 0;
-      switch (type)
+      if (area.getType() == Area::TypeEmpty || area.in(floorX, floorY))
       {
-      case NearestNeighbor:
-        getRGBA(imageDataPtr + pixelOffset(realWidth1, originalX, originalY),
-                tr, tg, tb, ta);
-        break;
-      case Bilinear:
+        int tr = 0, tg = 0, tb = 0, ta = 0;
+        switch (type)
         {
-          int sr[4], sg[4], sb[4], sa[4];
+        case NearestNeighbor:
           getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                             floorX,
-                                             floorY),
-                  sr[0], sg[0], sb[0], sa[0]);
-          getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                             qCeil(originalX),
-                                             floorY),
-                  sr[1], sg[1], sb[1], sa[1]);
-          getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                             floorX,
-                                             qCeil(originalY)),
-                  sr[2], sg[2], sb[2], sa[2]);
-          getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                             qCeil(originalX),
-                                             qCeil(originalY)),
-                  sr[3], sg[3], sb[3], sa[3]);
-          double factors[4];
-          factors[0] = (1 - (originalX - floorX)) * (1 - (originalY - floorY));
-          factors[1] = (originalX - floorX) * (1 - (originalY - floorY));
-          factors[2] = (1 - (originalX - floorX)) * (originalY - floorY);
-          factors[3] = (originalX - floorX) * (originalY - floorY);
-          for (int k = 0;k < 4;++k)
+                                             qRound(originalX),
+                                             qRound(originalY)),
+                  tr, tg, tb, ta);
+          break;
+        case Bilinear:
           {
-            tr += sr[k] * factors[k];
-            tg += sg[k] * factors[k];
-            tb += sb[k] * factors[k];
-            ta += sa[k] * factors[k];
+            int sr[4], sg[4], sb[4], sa[4];
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               floorX,
+                                               floorY),
+                    sr[0], sg[0], sb[0], sa[0]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               qCeil(originalX),
+                                               floorY),
+                    sr[1], sg[1], sb[1], sa[1]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               floorX,
+                                               qCeil(originalY)),
+                    sr[2], sg[2], sb[2], sa[2]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               qCeil(originalX),
+                                               qCeil(originalY)),
+                    sr[3], sg[3], sb[3], sa[3]);
+            double factors[4];
+            factors[0] = (1 - (originalX - floorX)) * (1 - (originalY - floorY));
+            factors[1] = (originalX - floorX) * (1 - (originalY - floorY));
+            factors[2] = (1 - (originalX - floorX)) * (originalY - floorY);
+            factors[3] = (originalX - floorX) * (originalY - floorY);
+            for (int k = 0;k < 4;++k)
+            {
+              tr += sr[k] * factors[k];
+              tg += sg[k] * factors[k];
+              tb += sb[k] * factors[k];
+              ta += sa[k] * factors[k];
+            }
+            break;
           }
+        case Bicubic:
           break;
         }
-      case Bicubic:
-        break;
+        setRGBA(resultImgDataPtr, tr, tg, tb, ta);
       }
-      setRGBA(resultImgDataPtr, tr, tg, tb, ta);
       resultImgDataPtr += 4;
     }
   }
@@ -422,7 +489,7 @@ void ImageAlgorithm::resize(QImage *image,
                             Area area,
                             int newWidth,
                             int newHeight,
-                            ResizeAlgorithmType type)
+                            GeometricAlgorithmType type)
 {
   QImage *result = resize(*image, area, newWidth, newHeight, type);
   if (result != NULL)
@@ -742,6 +809,193 @@ void ImageAlgorithm::algebraOperation(QImage *image,
     }
   }
 }
+
+QImage *ImageAlgorithm::rotate(const QImage& image,
+                               double angle,
+                               GeometricAlgorithmType type,
+                               const Area& area)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+  int left, right, top, bottom;
+  QRect areaBound = area.bound();
+  int resultImageWidth, resultImageHeight;
+  double xOffset, yOffset;
+  int xCenter, yCenter;
+  int xFromIncrease = 0;
+  int yFromIncrease = 0;
+  if (area.getType() != Area::TypeEmpty)
+  {
+    left = qBound(0, areaBound.left(), width);
+    right = qBound(0, areaBound.right(), width);
+    top = qBound(0, areaBound.top(), height);
+    bottom = qBound(0, areaBound.bottom(), height);
+    areaBound = QRect(QPoint(left, top), QPoint(right, bottom));
+    rotateFindRange(right - left, bottom - top,
+                    angle, left, right, top, bottom);
+    xCenter = areaBound.left() + areaBound.width() / 2;
+    yCenter = areaBound.top() + areaBound.height() / 2;
+    QPointF newCenter = calculatePos(qSqrt(xCenter * xCenter + yCenter * yCenter),
+                                     calculateAngle(xCenter, yCenter) + angle);
+    if (xCenter - (right - left) / 2 < 0)
+    {
+      xFromIncrease = xCenter - (right - left) / 2;
+      xCenter -= xFromIncrease;
+    }
+    if (yCenter - (bottom - top) / 2 < 0)
+    {
+      yFromIncrease = yCenter - (bottom - top) / 2;
+      yCenter -= yFromIncrease;
+    }
+    resultImageWidth = qMax(areaBound.left() + areaBound.width() / 2 +
+                            (right - left) / 2, width) -
+                       xFromIncrease;
+    resultImageHeight = qMax(areaBound.top() + areaBound.height() / 2 +
+                             (bottom - top) / 2, height) -
+                        yFromIncrease;
+    xOffset = xCenter - newCenter.x();
+    yOffset = yCenter - newCenter.y();
+    int newWidth = right - left;
+    int newHeight = bottom - top;
+    left = xCenter - newWidth / 2;
+    right = xCenter + newWidth / 2;
+    top = yCenter - newHeight / 2;
+    bottom = yCenter + newHeight / 2;
+  }
+  else
+  {
+    rotateFindRange(width, height, angle, left, right, top, bottom);
+    resultImageWidth = right - left;
+    resultImageHeight = bottom - top;
+    xCenter = (right - left) / 2;
+    yCenter = (bottom - top) / 2;
+    QPointF newCenter = calculatePos(qSqrt(width * width + height * height) / 2,
+                                     calculateAngle(width, height) + angle);
+    xOffset = xCenter - newCenter.x();
+    yOffset = yCenter - newCenter.y();
+    left = 0;
+    right = resultImageWidth;
+    top = 0;
+    bottom = resultImageHeight;
+  }
+
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(resultImageWidth,
+                                 resultImageHeight,
+                                 SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth1 = image.bytesPerLine();
+  int realWidth2 = resultImg->bytesPerLine();
+  const unsigned char *backup1 = imageDataPtr;
+  unsigned char *backup2 = resultImgDataPtr;
+
+  memset(resultImgDataPtr, 0, resultImageWidth * resultImageHeight);
+
+  // Copy the not effected part
+  if (area.getType() != Area::TypeEmpty)
+  {
+    for (int i = 0;i < resultImageHeight;++i)
+    {
+      resultImgDataPtr = backup2 + i * realWidth2;
+      for (int j = 0;j < resultImageWidth;++j)
+      {
+        int originalX = j + xFromIncrease;
+        int originalY = i + yFromIncrease;
+        if (originalX >= 0 && originalX < width &&
+            originalY >= 0 && originalY < height &&
+            (!area.in(originalX, originalY)))
+          memcpy(resultImgDataPtr,
+                 imageDataPtr + pixelOffset(realWidth1, originalX, originalY),
+                 4);
+        resultImgDataPtr += 4;
+      }
+    }
+  }
+
+  // The rotated part
+  for(int i = top;i < bottom;++i)
+  {
+    resultImgDataPtr = backup2 + realWidth2 * i + 4 * left;
+    for(int j = left;j < right;++j)
+    {
+      double newX = j - xOffset;
+      double newY = i - yOffset;
+      double newAngle = calculateAngle(newX, newY);
+      QPointF originalPos = calculatePos(qSqrt(newX * newX + newY * newY),
+                                         newAngle - angle);
+      double originalX = originalPos.x();
+      double originalY = originalPos.y();
+      int floorX = qFloor(originalX);
+      int floorY = qFloor(originalY);
+      if (floorX >= 0 && floorX < width && floorY >= 0 && floorY < height &&
+          (area.getType() == Area::TypeEmpty || area.in(floorX, floorY)))
+      {
+        int tr = 0, tg = 0, tb = 0, ta = 0;
+        switch (type)
+        {
+        case NearestNeighbor:
+          getRGBA(imageDataPtr + pixelOffset(realWidth1, floorX, floorY),
+                  tr, tg, tb, ta);
+          break;
+        case Bilinear:
+          {
+            int sr[4], sg[4], sb[4], sa[4];
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               floorX,
+                                               floorY),
+                    sr[0], sg[0], sb[0], sa[0]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               qCeil(originalX),
+                                               floorY),
+                    sr[1], sg[1], sb[1], sa[1]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               floorX,
+                                               qCeil(originalY)),
+                    sr[2], sg[2], sb[2], sa[2]);
+            getRGBA(imageDataPtr + pixelOffset(realWidth1,
+                                               qCeil(originalX),
+                                               qCeil(originalY)),
+                    sr[3], sg[3], sb[3], sa[3]);
+            double factors[4];
+            factors[0] = (1 - (originalX - floorX)) * (1 - (originalY - floorY));
+            factors[1] = (originalX - floorX) * (1 - (originalY - floorY));
+            factors[2] = (1 - (originalX - floorX)) * (originalY - floorY);
+            factors[3] = (originalX - floorX) * (originalY - floorY);
+            for (int k = 0;k < 4;++k)
+            {
+              tr += sr[k] * factors[k];
+              tg += sg[k] * factors[k];
+              tb += sb[k] * factors[k];
+              ta += sa[k] * factors[k];
+            }
+            break;
+          }
+        case Bicubic:
+          break;
+        }
+        setRGBA(resultImgDataPtr, tr, tg, tb, ta);
+      }
+      resultImgDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::rotate(QImage *image,
+                            double angle,
+                            GeometricAlgorithmType type,
+                            const Area& area)
+{
+  QImage *result = rotate(*image, angle, type, area);
+  if (result != NULL)
+  {
+    *result = *result;
+    delete result;
+  }
+}
+
 
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)

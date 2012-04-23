@@ -8,6 +8,11 @@
  */
 #define MAX_COLOR_VALUE 255
 
+/**
+ * PI
+ */
+const static double PI = 3.1415926535;
+
 namespace Resource
 {
   const QString iconPen = ":/images/pen.png";
@@ -19,6 +24,7 @@ namespace Resource
   const QString iconHistogramEqualization = ":/images/histogram_equalization.png";
   const QString iconHSL = ":/images/hsl.png";
   const QString iconResize = ":/images/resize.png";
+  const QString iconRotate = ":/images/rotate.png";
   const QString iconReverse = ":/images/reverse.png";
   const QString iconBlackAndWhite = ":/images/black_and_white.png";
   const QString iconAlgebraOperation = ":/images/algebra_operation.png";

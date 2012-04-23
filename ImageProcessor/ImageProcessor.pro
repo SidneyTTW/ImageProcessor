@@ -59,7 +59,9 @@ SOURCES += main.cpp\
     histogrammatchdialog.cpp \
     histogrammatchprocessor.cpp \
     pointprocessor.cpp \
-    pointdialog.cpp
+    pointdialog.cpp \
+    rotateprocessor.cpp \
+    rotatedialog.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -114,7 +116,9 @@ HEADERS  += mainwindow.h \
     histogrammatchdialog.h \
     histogrammatchprocessor.h \
     pointprocessor.h \
-    pointdialog.h
+    pointdialog.h \
+    rotateprocessor.h \
+    rotatedialog.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -129,7 +133,8 @@ FORMS    += mainwindow.ui \
     hsldialog.ui \
     algebraoperationdialog.ui \
     histogrammatchdialog.ui \
-    pointdialog.ui
+    pointdialog.ui \
+    rotatedialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
