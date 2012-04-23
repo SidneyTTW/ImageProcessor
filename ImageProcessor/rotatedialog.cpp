@@ -55,3 +55,18 @@ void RotateDialog::on_cancelPushButton_clicked()
 {
   reject();
 }
+
+void RotateDialog::on_nearestButton_toggled(bool checked)
+{
+  resetPreview();
+}
+
+void RotateDialog::on_bilinearButton_toggled(bool checked)
+{
+  resetPreview();
+}
+
+void RotateDialog::on_bicubicButton_toggled(bool checked)
+{
+  resetPreview();
+}

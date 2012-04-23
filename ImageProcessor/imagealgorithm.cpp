@@ -947,16 +947,16 @@ QImage *ImageAlgorithm::rotate(const QImage& image,
                                                floorY),
                     sr[0], sg[0], sb[0], sa[0]);
             getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                               qCeil(originalX),
+                                               qMin(qCeil(originalX), width - 1),
                                                floorY),
                     sr[1], sg[1], sb[1], sa[1]);
             getRGBA(imageDataPtr + pixelOffset(realWidth1,
                                                floorX,
-                                               qCeil(originalY)),
+                                               qMin(qCeil(originalY), height - 1)),
                     sr[2], sg[2], sb[2], sa[2]);
             getRGBA(imageDataPtr + pixelOffset(realWidth1,
-                                               qCeil(originalX),
-                                               qCeil(originalY)),
+                                               qMin(qCeil(originalX), width - 1),
+                                               qMin(qCeil(originalY), height - 1)),
                     sr[3], sg[3], sb[3], sa[3]);
             double factors[4];
             factors[0] = (1 - (originalX - floorX)) * (1 - (originalY - floorY));

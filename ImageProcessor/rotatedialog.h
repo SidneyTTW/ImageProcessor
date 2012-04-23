@@ -53,6 +53,9 @@ signals:
                double);
 
 private slots:
+  void on_bicubicButton_toggled(bool checked);
+  void on_bilinearButton_toggled(bool checked);
+  void on_nearestButton_toggled(bool checked);
   void on_cancelPushButton_clicked();
   void on_okPushButton_clicked();
   void on_angleSlider_valueChanged(int value);
