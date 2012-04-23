@@ -24,5 +24,6 @@
         <file>images/point_processor.png</file>
         <file>images/redo.png</file>
         <file>images/undo.png</file>
+        <file>images/rotate.png</file>
     </qresource>
 </RCC>
