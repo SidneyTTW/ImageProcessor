@@ -40,19 +40,19 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->redoAction->setShortcut(QKeySequence::Redo);
 
   rectangleAction = new QAction(QIcon(Resource::iconRectangle), "", this);
-  rectangleAction->setTooltip("Select a rectangle area");
+  rectangleAction->setToolTip("Select a rectangle area");
   rectangleAction->setStatusTip("Select a rectangle area");
   rectangleAction->setCheckable(true);
   connect(rectangleAction, SIGNAL(triggered()), this, SLOT(chooseRectangle()));
   ui->mainToolBar->addAction(rectangleAction);
   polygonAction = new QAction(QIcon(Resource::iconPolygon), "", this);
-  polygonAction->setTooltip("Select a polygon area");
+  polygonAction->setToolTip("Select a polygon area");
   polygonAction->setStatusTip("Select a polygon area");
   polygonAction->setCheckable(true);
   connect(polygonAction, SIGNAL(triggered()), this, SLOT(choosePolygon()));
   ui->mainToolBar->addAction(polygonAction);
   ellipseAction = new QAction(QIcon(Resource::iconEllipse), "", this);
-  ellipseAction->setTooltip("Select an ellipse area");
+  ellipseAction->setToolTip("Select an ellipse area");
   ellipseAction->setStatusTip("Select an ellipse area");
   ellipseAction->setCheckable(true);
   connect(ellipseAction, SIGNAL(triggered()), this, SLOT(chooseEllipse()));
@@ -470,6 +470,7 @@ void MainWindow::open(QString path)
   ui->stackedWidget->setCurrentWidget(widget);
   enableDisableActions();
   setWindowTitle(tr("Image Processor--%1").arg(action->text()));
+  return;
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -486,7 +487,16 @@ void MainWindow::dropEvent(QDropEvent *event)
     {
       if (url.toLocalFile().isEmpty())
         continue;
-      open(url.toLocalFile());
+      QFileInfo fileInfo(url.toLocalFile());
+      QString suffix = fileInfo.suffix();
+      if (suffix == "png" ||
+          suffix == "jpg" ||
+          suffix == "jpeg" ||
+          suffix == "bmp" ||
+          suffix == "gif")
+        open(url.toLocalFile());
+      else if (suffix == "pc")
+        openChain(url.toLocalFile());
     }
   }
 }
@@ -514,6 +524,25 @@ void MainWindow::saveAs()
   }
 }
 
+void MainWindow::openChain(QString path)
+{
+  ImageViewWidget *widget = currentWidget();
+  ProcessChain *processChain = currentChain();
+  if (widget == NULL || processChain == NULL)
+    return;
+  if (path.isEmpty())
+    return;
+  disconnectAll();
+  QList<AbstractImageProcessor *> chains = ProcessChain::loadProcessor(path);
+  AbstractImageProcessor *processor;
+  foreach(processor, chains)
+    if (processor != NULL)
+      processChain->addProcessorAtCurrentPosition(processor);
+  widget->setImage(processChain->getCurrentImage()->getImage());
+  enableDisableActions();
+  update();
+}
+
 void MainWindow::openChain()
 {
   ImageViewWidget *widget = currentWidget();
@@ -527,15 +556,7 @@ void MainWindow::openChain()
                                    "Process Chain (*.pc)");
   if (path.isEmpty())
     return;
-  disconnectAll();
-  QList<AbstractImageProcessor *> chains = ProcessChain::loadProcessor(path);
-  AbstractImageProcessor *processor;
-  foreach(processor, chains)
-    if (processor != NULL)
-      processChain->addProcessorAtCurrentPosition(processor);
-  widget->setImage(processChain->getCurrentImage()->getImage());
-  enableDisableActions();
-  update();
+  openChain(path);
 }
 
 void MainWindow::saveChain()

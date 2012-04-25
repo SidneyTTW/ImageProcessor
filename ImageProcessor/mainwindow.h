@@ -95,6 +95,11 @@ private:
   void open(QString path);
 
   /**
+   * Open process chain.
+   */
+  void openChain(QString path);
+
+  /**
    * Map from the widget to the process chain.
    */
   QMap <ImageViewWidget *, ProcessChain *> processChains;
