@@ -26,7 +26,10 @@ QImage *EraseProcessor::processImage(const QImage& image) const
   QImage *result = new QImage(image);
   for (int i = 0;i < positions.size();++i)
   {
-    Area area(Ellipse(positions.at(i), _size, _size));
+    Area area(QRect(positions.at(i).x() - _size / 2,
+                    positions.at(i).y() - _size / 2,
+                    _size + 1,
+                    _size + 1));
     ImageAlgorithm::erase(result, area, color);
   }
   return result;
@@ -41,7 +44,10 @@ void EraseProcessor::processImage(QImage *image) const
     color = _color;
   for (int i = 0;i < positions.size();++i)
   {
-    Area area(Ellipse(positions.at(i), _size, _size));
+    Area area(QRect(positions.at(i).x() - _size / 2,
+                    positions.at(i).y() - _size / 2,
+                    _size + 1,
+                    _size + 1));
     ImageAlgorithm::erase(image, area, color);
   }
 }
@@ -132,7 +138,10 @@ bool EraseProcessor::eventFilter(QObject *object, QEvent *event)
   case QEvent::GraphicsSceneMouseMove:
     {
       QPointF pos = ((QGraphicsSceneMouseEvent *) event)->scenePos();
-      scene->setCursorArea(Ellipse(QPoint(pos.x(), pos.y()), _size, _size));
+      scene->setCursorArea(QRect(pos.x() - _size / 2,
+                                 pos.y() - _size / 2,
+                                 _size,
+                                 _size));
       if (((QGraphicsSceneMouseEvent *) event)->buttons() == Qt::NoButton)
         break;
       positions.push_back(QPoint(pos.x(), pos.y()));

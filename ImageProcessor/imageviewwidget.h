@@ -47,6 +47,13 @@ public:
   void setCursorArea(Ellipse ellipse);
 
   /**
+   * Set the cursor area to rectangle.
+   *
+   * @param rectangle The rectangle
+   */
+  void setCursorArea(QRect rectangle);
+
+  /**
    * Clear the cursor area.
    */
   void clearCursorArea();
@@ -61,7 +68,7 @@ private:
     /**
      * The state of the area.
      */
-    enum AreaState {Non, StateEllipse};
+    enum AreaState {Non, StateEllipse, StateRectangle};
 
     /**
      * Constructor.
@@ -77,6 +84,17 @@ private:
     {
       _ellipse = ellipse;
       areaState = StateEllipse;
+    }
+
+    /**
+   * Set the cursor area to rectangle.
+   *
+   * @param rectangle The rectangle
+     */
+    inline void setCursorArea(QRect rectangle)
+    {
+      _rectangle = rectangle;
+      areaState = StateRectangle;
     }
 
     /**
@@ -96,6 +114,11 @@ private:
      * The ellipse.
      */
     Ellipse _ellipse;
+
+    /**
+     * The ellipse.
+     */
+    QRectF _rectangle;
 
     /**
      * The state of the area.

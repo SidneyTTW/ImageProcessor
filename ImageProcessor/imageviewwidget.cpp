@@ -14,6 +14,15 @@ void MyScene::setCursorArea(Ellipse ellipse)
     view->viewport()->update();
 }
 
+void MyScene::setCursorArea(QRect rectangle)
+{
+  cursorItem->setCursorArea(rectangle);
+  QList <QGraphicsView *> _views = views();
+  QGraphicsView *view;
+  foreach (view, _views)
+    view->viewport()->update();
+}
+
 void MyScene::clearCursorArea()
 {
   cursorItem->clearCursorArea();
@@ -42,6 +51,9 @@ void MyScene::CursorItem::paint(QPainter *painter,
                            _ellipse.getDy() + 1);
     }
     break;
+  case StateRectangle:
+    painter->drawRect(_rectangle);
+    break;
   default:
     break;
   }
@@ -57,6 +69,9 @@ QRectF MyScene::CursorItem::boundingRect() const
                   _ellipse.getCenter().y() - _ellipse.getDy(),
                   _ellipse.getDx() * 2,
                   _ellipse.getDy() * 2);
+    break;
+  case StateRectangle:
+    return QRectF(_rectangle);
     break;
   default:
     return QRectF();
