@@ -42,7 +42,7 @@ ColorChooser::ColorChooser(QWidget *parent) :
   gridLayout = new QGridLayout();
   foreButton = new ColorPushButton(QColor(0, 0, 0));
   gridLayout->addWidget(foreButton, 0, 0, 1, 1);
-  backButton = new ColorPushButton(QColor(0, 0, 0));
+  backButton = new ColorPushButton(QColor(255, 255, 255));
   gridLayout->addWidget(backButton, 1, 0, 1, 1);
   for (int i = 0;i < COLOR_COUNT;++i)
   {

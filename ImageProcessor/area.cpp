@@ -92,8 +92,8 @@ QRect Area::bound() const
   case TypeEllipse:
     return QRect(_ellipse.getCenter().x() - _ellipse.getDx(),
                  _ellipse.getCenter().y() - _ellipse.getDy(),
-                 _ellipse.getDx() * 2,
-                 _ellipse.getDy() * 2);
+                 _ellipse.getDx() * 2 + 2,
+                 _ellipse.getDy() * 2 + 2);
     break;
   default:
     return QRect();

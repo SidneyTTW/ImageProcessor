@@ -996,6 +996,70 @@ void ImageAlgorithm::rotate(QImage *image,
   }
 }
 
+QImage *ImageAlgorithm::erase(const QImage& image,
+                              const Area& area,
+                              const QColor& color)
+{
+  if (!validType(image))
+    return NULL;
+  int r = color.red();
+  int g = color.green();
+  int b = color.blue();
+  int a = color.alpha();
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  QImage *resultImg = new QImage(width, height, SUPPORTED_FORMAT);
+  unsigned char *resultImgDataPtr = resultImg->bits();
+  int realWidth2 = resultImg->bytesPerLine();
+  unsigned char *backup2 = resultImgDataPtr;
+  QRect bound = area.getType() == area.TypeEmpty ?
+                QRect(0, 0, width, height) :
+                area.bound();
+
+  memcpy(resultImgDataPtr, imageDataPtr, image.byteCount());
+
+  for(int i = qMax(0, bound.top());i < qMin(height, bound.bottom());++i)
+  {
+    resultImgDataPtr = backup2 + realWidth2 * i + 4 * qMax(0, bound.left());
+    for (int j = qMax(0, bound.left());j < qMax(0, bound.right());++j)
+    {
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+        setRGBA(resultImgDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+    }
+  }
+  return resultImg;
+}
+
+void ImageAlgorithm::erase(QImage *image, const Area& area, const QColor& color)
+{
+  if (!validType(*image))
+    return;
+  int r = color.red();
+  int g = color.green();
+  int b = color.blue();
+  int a = color.alpha();
+  int width = image->width();
+  int height = image->height();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth1 = image->bytesPerLine();
+  unsigned char *backup1 = imageDataPtr;
+  QRect bound = area.getType() == area.TypeEmpty ?
+                QRect(0, 0, width, height) :
+                area.bound();
+
+  for(int i = qMax(0, bound.top());i < qMin(height, bound.bottom());++i)
+  {
+    imageDataPtr = backup1 + realWidth1 * i + 4 * qMax(0, bound.left());
+    for (int j = qMax(0, bound.left());j < qMax(0, bound.right());++j)
+    {
+      if (area.in(j, i))
+        setRGBA(imageDataPtr, r, g, b, a);
+      imageDataPtr += 4;
+    }
+  }
+}
 
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)

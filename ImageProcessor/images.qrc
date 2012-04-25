@@ -25,5 +25,6 @@
         <file>images/redo.png</file>
         <file>images/undo.png</file>
         <file>images/rotate.png</file>
+        <file>images/erase.png</file>
     </qresource>
 </RCC>

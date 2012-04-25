@@ -64,6 +64,16 @@ public:
     return QColor();
   }
 
+  /**
+   * @return The current color of the color chooser.
+   */
+  inline QColor getBackgroundColor() const
+  {
+    if (_colorChooser != NULL)
+      return _colorChooser->getBackgroundColor();
+    return QColor();
+  }
+
 protected:
   /**
    * The color chooser.

@@ -33,9 +33,14 @@ void MyScene::CursorItem::paint(QPainter *painter,
   switch (areaState)
   {
   case StateEllipse:
-    painter->drawEllipse(_ellipse.getCenter(),
-                         _ellipse.getDx(),
-                         _ellipse.getDy());
+    {
+      QPointF center = _ellipse.getCenter();
+      center.setX(center.x() + 0.5);
+      center.setY(center.y() + 0.5);
+      painter->drawEllipse(center,
+                           _ellipse.getDx() + 1,
+                           _ellipse.getDy() + 1);
+    }
     break;
   default:
     break;

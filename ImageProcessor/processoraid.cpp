@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include "algebraoperationprocessor.h"
 #include "drawlineprocessor.h"
+#include "eraseprocessor.h"
 #include "fastgaussprocessor.h"
 #include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
@@ -30,6 +31,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new FastGaussProcessor());
   result.push_back(new SharpenProcessor());
   result.push_back(new RedEyeReductionProcessor());
+  result.push_back(new EraseProcessor());
   return result;
 }
 
