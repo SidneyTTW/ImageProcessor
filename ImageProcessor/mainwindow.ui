@@ -153,6 +153,9 @@
    <property name="text">
     <string>&amp;Undo</string>
    </property>
+   <property name="statusTip">
+    <string>Undo</string>
+   </property>
   </action>
   <action name="redoAction">
    <property name="icon">
@@ -161,6 +164,9 @@
    </property>
    <property name="text">
     <string>&amp;Redo</string>
+   </property>
+   <property name="statusTip">
+    <string>Redo</string>
    </property>
   </action>
   <action name="To_black_and_whiteaction">
@@ -176,6 +182,12 @@
    <property name="text">
     <string>&amp;Open</string>
    </property>
+   <property name="toolTip">
+    <string>Open an image</string>
+   </property>
+   <property name="statusTip">
+    <string>Open an image</string>
+   </property>
   </action>
   <action name="saveAsAction">
    <property name="icon">
@@ -185,20 +197,47 @@
    <property name="text">
     <string>&amp;Save As</string>
    </property>
+   <property name="toolTip">
+    <string>Save an image</string>
+   </property>
+   <property name="statusTip">
+    <string>Save an image</string>
+   </property>
   </action>
   <action name="saveChainAction">
    <property name="text">
     <string>Save Process Chain</string>
+   </property>
+   <property name="toolTip">
+    <string>Save process chain</string>
+   </property>
+   <property name="statusTip">
+    <string>Save process chain</string>
    </property>
   </action>
   <action name="openChainAction">
    <property name="text">
     <string>Open Process Chain</string>
    </property>
+   <property name="iconText">
+    <string>Open process chain</string>
+   </property>
+   <property name="toolTip">
+    <string>Open process chain</string>
+   </property>
+   <property name="statusTip">
+    <string>Open process chain</string>
+   </property>
   </action>
   <action name="batchConvertionAction">
    <property name="text">
     <string>Batch Convertion</string>
+   </property>
+   <property name="iconText">
+    <string>Batch convertion</string>
+   </property>
+   <property name="toolTip">
+    <string>Batch convertion</string>
    </property>
   </action>
   <action name="newAction">
@@ -208,6 +247,12 @@
    </property>
    <property name="text">
     <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string>Create an image</string>
+   </property>
+   <property name="statusTip">
+    <string>Create an image</string>
    </property>
   </action>
  </widget>

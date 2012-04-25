@@ -40,14 +40,20 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->redoAction->setShortcut(QKeySequence::Redo);
 
   rectangleAction = new QAction(QIcon(Resource::iconRectangle), "", this);
+  rectangleAction->setTooltip("Select a rectangle area");
+  rectangleAction->setStatusTip("Select a rectangle area");
   rectangleAction->setCheckable(true);
   connect(rectangleAction, SIGNAL(triggered()), this, SLOT(chooseRectangle()));
   ui->mainToolBar->addAction(rectangleAction);
   polygonAction = new QAction(QIcon(Resource::iconPolygon), "", this);
+  polygonAction->setTooltip("Select a polygon area");
+  polygonAction->setStatusTip("Select a polygon area");
   polygonAction->setCheckable(true);
   connect(polygonAction, SIGNAL(triggered()), this, SLOT(choosePolygon()));
   ui->mainToolBar->addAction(polygonAction);
   ellipseAction = new QAction(QIcon(Resource::iconEllipse), "", this);
+  ellipseAction->setTooltip("Select an ellipse area");
+  ellipseAction->setStatusTip("Select an ellipse area");
   ellipseAction->setCheckable(true);
   connect(ellipseAction, SIGNAL(triggered()), this, SLOT(chooseEllipse()));
   ui->mainToolBar->addAction(ellipseAction);
