@@ -3,8 +3,8 @@
 
 #include "abstractimageprocessorwithsimpleoption.h"
 
-#include "imagealgorithm.h"
 #include <QSpinBox>
+#include "imagealgorithm.h"
 
 /**
  * Class of processor to use gauss operator immidiately.

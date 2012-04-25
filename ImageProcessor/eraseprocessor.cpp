@@ -102,9 +102,10 @@ QString EraseProcessor::toString() const
 AbstractImageProcessor *EraseProcessor::fromString(const QString& str) const
 {
   QStringList list = str.split(' ', QString::SkipEmptyParts);
-  if (list.size() <= 1 || list.size() % 2 == 0)
+  if (list.size() <= 2 || list.size() % 2 == 1)
     return NULL;
   EraseProcessor *result = new EraseProcessor();
+  result->_color = QColor(list.takeFirst().toUInt());
   result->_size = list.takeFirst().toInt();
   while (!list.isEmpty())
     result->positions.push_back(QPoint(list.takeFirst().toInt(),
