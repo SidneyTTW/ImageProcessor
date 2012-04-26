@@ -505,18 +505,20 @@ void MainWindow::saveAs()
 {
   ImageViewWidget *widget = currentWidget();
   ProcessChain *processChain = currentChain();
+  QAction *action = actions.value(widget, NULL);
   if (widget == NULL || processChain == NULL)
     return;
-  QString path =
-      QFileDialog::
-      getSaveFileName(this,
-                      "Set the name of the image file",
-                      tr(""),
-                      "JPEG(*.jpg *.jpeg);;BMP(*.bmp);;PNG(*.png)");
+  QString path;
+  if (action != NULL)
+    path = action->text();
+  path = QFileDialog::
+         getSaveFileName(this,
+                         "Set the name of the image file",
+                         path,
+                         "JPEG(*.jpg *.jpeg);;BMP(*.bmp);;PNG(*.png)");
   if (path.isEmpty())
     return;
   processChain->getCurrentImage()->save(path);
-  QAction *action = actions.value(widget, NULL);
   if (action != NULL)
   {
     action->setText(path);
