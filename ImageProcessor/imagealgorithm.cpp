@@ -1061,6 +1061,74 @@ void ImageAlgorithm::erase(QImage *image, const Area& area, const QColor& color)
   }
 }
 
+QImage *ImageAlgorithm::magicErase(const QImage& image,
+                                   const QPoint& pos,
+                                   int allowedDifference)
+{
+  if (!validType(image))
+    return NULL;
+  QImage *resultImg = new QImage(image);
+  magicErase(resultImg, pos, allowedDifference);
+  return resultImg;
+}
+
+void ImageAlgorithm::magicErase(QImage *image,
+                                const QPoint& pos,
+                                int allowedDifference)
+{
+  if (!validType(*image))
+    return;
+  int width = image->width();
+  int height = image->height();
+  if (pos.x() < 0 || pos.x() >= width || pos.y() < 0 || pos.y() >= height)
+    return;
+
+  bool *visited = new bool[width * height];
+  int index = 0;
+  int *vector = new int[width * height * 2];
+  vector[0] = pos.x();
+  vector[1] = pos.y();
+  unsigned char *imageDataPtr = image->bits();
+  int realWidth = image->bytesPerLine();
+
+  int r, g, b, a;
+  getRGBA(imageDataPtr + pixelOffset(realWidth, pos.x(), pos.y()), r, g, b, a);
+
+  memset(visited, 0, sizeof(bool) * width * height);
+
+  while (index >= 0)
+  {
+    int x = vector[index * 2], y = vector[index * 2 + 1];
+    int sr, sg, sb, sa;
+    int offset = pixelOffset(realWidth, x, y);
+    getRGBA(imageDataPtr + offset, sr, sg, sb, sa);
+    bool allowed = qAbs(sr - r) + qAbs(sg - g) + qAbs(sb - b) <= allowedDifference;
+    --index;
+    if (allowed)
+    {
+      visited[y * width + x] = true;
+      setRGBA(imageDataPtr + offset, 0, 0, 0, 0);
+      int xFrom = qBound(0, x - 1, width - 1);
+      int xTo = qBound(0, x + 1, width - 1);
+      int yFrom = qBound(0, y - 1, height - 1);
+      int yTo = qBound(0, y + 1, height - 1);
+      for (int i = xFrom;i <= xTo;++i)
+      {
+        for (int j = yFrom;j <= yTo;++j)
+        {
+          if ((i == x && j == y) || visited[j * width + i])
+            continue;
+          ++index;
+          vector[index * 2] = i;
+          vector[index * 2 + 1] = j;
+        }
+      }
+    }
+  }
+  delete [] vector;
+  delete [] visited;
+}
+
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
                                             ImageToGrayAlgorithmType type)
 {

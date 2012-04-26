@@ -26,5 +26,6 @@
         <file>images/undo.png</file>
         <file>images/rotate.png</file>
         <file>images/erase.png</file>
+        <file>images/magic_erase.png</file>
     </qresource>
 </RCC>

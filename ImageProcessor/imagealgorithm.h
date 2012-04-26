@@ -574,13 +574,31 @@ namespace ImageAlgorithm
   QImage *erase(const QImage& image, const Area& area, const QColor& color);
 
   /**
-   * Red eye reduction.
+   * Erase an area with given color.
    *
    * @param image The image to do the red eye reduction.
    * @param area The area of eye.
    * @param color The color to set.
    */
   void erase(QImage *image, const Area& area, const QColor& color);
+
+  /**
+   * Erase a point and nearby points if their color are similar.
+   *
+   * @param image The image to do the red eye reduction.
+   * @param pos The position.
+   * @param allowedDifference The allowed difference.
+   */
+  QImage *magicErase(const QImage& image, const QPoint& pos, int allowedDifference);
+
+  /**
+   * Erase a point and nearby points if their color are similar.
+   *
+   * @param image The image to do the red eye reduction.
+   * @param pos The position.
+   * @param allowedDifference The allowed difference.
+   */
+  void magicErase(QImage *image, const QPoint& pos, int allowedDifference);
 
   /**
    * Get the statistic of an image.

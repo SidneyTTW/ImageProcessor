@@ -10,6 +10,7 @@
 #include "histogramequalizationprocessor.h"
 #include "histogrammatchprocessor.h"
 #include "hslprocessor.h"
+#include "magiceraseprocessor.h"
 #include "penprocessor.h"
 #include "pointprocessor.h"
 #include "redeyereductionprocessor.h"
@@ -32,6 +33,7 @@ QVector<AbstractImageProcessorWithSimpleOption *> ProcessorAid::simpleOptions()
   result.push_back(new SharpenProcessor());
   result.push_back(new RedEyeReductionProcessor());
   result.push_back(new EraseProcessor());
+  result.push_back(new MagicEraseProcessor());
   return result;
 }
 

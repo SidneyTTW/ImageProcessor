@@ -35,6 +35,7 @@ namespace Resource
   const QString iconHistogramMatch = ":/images/histogram_match.png";
   const QString iconPointProcessor = ":/images/point_processor.png";
   const QString iconErase = ":/images/erase.png";
+  const QString iconMagicErase = ":/images/magic_erase.png";
 }
 
 #endif // MYGLOBAL_H

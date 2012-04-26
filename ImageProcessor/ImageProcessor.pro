@@ -62,7 +62,8 @@ SOURCES += main.cpp\
     pointdialog.cpp \
     rotateprocessor.cpp \
     rotatedialog.cpp \
-    eraseprocessor.cpp
+    eraseprocessor.cpp \
+    magiceraseprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -120,7 +121,8 @@ HEADERS  += mainwindow.h \
     pointdialog.h \
     rotateprocessor.h \
     rotatedialog.h \
-    eraseprocessor.h
+    eraseprocessor.h \
+    magiceraseprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
