@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>HSL</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="images.qrc">
+    <normaloff>:/images/hsl.png</normaloff>:/images/hsl.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="ImageViewWidget" name="imageViewerWidget" native="true">
@@ -147,6 +151,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -205,6 +205,10 @@
    </property>
   </action>
   <action name="saveChainAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/save_chain.png</normaloff>:/images/save_chain.png</iconset>
+   </property>
    <property name="text">
     <string>Save Process Chain</string>
    </property>
@@ -216,6 +220,10 @@
    </property>
   </action>
   <action name="openChainAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/open_chain.png</normaloff>:/images/open_chain.png</iconset>
+   </property>
    <property name="text">
     <string>Open Process Chain</string>
    </property>
@@ -230,6 +238,10 @@
    </property>
   </action>
   <action name="batchConvertionAction">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/batch_convertion.png</normaloff>:/images/batch_convertion.png</iconset>
+   </property>
    <property name="text">
     <string>Batch Convertion</string>
    </property>

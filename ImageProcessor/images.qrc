@@ -27,5 +27,8 @@
         <file>images/rotate.png</file>
         <file>images/erase.png</file>
         <file>images/magic_erase.png</file>
+        <file>images/open_chain.png</file>
+        <file>images/save_chain.png</file>
+        <file>images/batch_convertion.png</file>
     </qresource>
 </RCC>
