@@ -12,6 +12,9 @@ namespace Ui {
     class FilterDialog;
 }
 
+/**
+ * Class of dialog to set the setting of filter.
+ */
 class FilterDialog : public QDialog
 {
   Q_OBJECT

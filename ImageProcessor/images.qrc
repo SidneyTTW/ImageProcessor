@@ -30,5 +30,10 @@
         <file>images/open_chain.png</file>
         <file>images/save_chain.png</file>
         <file>images/batch_convertion.png</file>
+        <file>images/right.png</file>
+        <file>images/up.png</file>
+        <file>images/left.png</file>
+        <file>images/down.png</file>
+        <file>images/bound.png</file>
     </qresource>
 </RCC>

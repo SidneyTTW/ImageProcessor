@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BoundDialog</class>
+ <widget class="QDialog" name="BoundDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="images.qrc">
+    <normaloff>:/images/bound.png</normaloff>:/images/bound.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="ImageViewWidget" name="imageViewerWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="upDownCheckBox">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="images.qrc">
+         <normaloff>:/images/down.png</normaloff>:/images/down.png</iconset>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="downUpCheckBox">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="images.qrc">
+         <normaloff>:/images/up.png</normaloff>:/images/up.png</iconset>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="leftRightCheckBox">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="images.qrc">
+         <normaloff>:/images/right.png</normaloff>:/images/right.png</iconset>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="rightLeftCheckBox">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="images.qrc">
+         <normaloff>:/images/left.png</normaloff>:/images/left.png</iconset>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="okPushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelPushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ImageViewWidget</class>
+   <extends>QWidget</extends>
+   <header>imageviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

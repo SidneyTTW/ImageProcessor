@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include "algebraoperationprocessor.h"
+#include "boundprocessor.h"
 #include "drawlineprocessor.h"
 #include "eraseprocessor.h"
 #include "fastgaussprocessor.h"
@@ -44,6 +45,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new ResizeProcessor());
   result.push_back(new RotateProcessor());
   result.push_back(new FilterProcessor());
+  result.push_back(new BoundProcessor());
   result.push_back(new HSLProcessor());
   result.push_back(new AlgebraOperationProcessor());
   result.push_back(new HistogramMatchProcessor());

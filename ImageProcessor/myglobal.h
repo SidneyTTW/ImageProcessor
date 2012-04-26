@@ -36,6 +36,7 @@ namespace Resource
   const QString iconPointProcessor = ":/images/point_processor.png";
   const QString iconErase = ":/images/erase.png";
   const QString iconMagicErase = ":/images/magic_erase.png";
+  const QString iconBound = ":/images/bound.png";
 }
 
 #endif // MYGLOBAL_H
