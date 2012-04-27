@@ -991,7 +991,7 @@ void ImageAlgorithm::rotate(QImage *image,
   QImage *result = rotate(*image, angle, type, area);
   if (result != NULL)
   {
-    *result = *result;
+    *image = *result;
     delete result;
   }
 }

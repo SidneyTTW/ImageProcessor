@@ -115,6 +115,10 @@ void BatchConvertionDialog::on_okButton_clicked()
     file.close();
     progress.setValue(i++);
   }
+  AbstractImageProcessor *processor;
+  foreach(processor, chains)
+    if (processor != NULL)
+      delete processor;
   QMessageBox::information(this,
                            "Convertion completed.",
                            "Convertion completed successfully.");

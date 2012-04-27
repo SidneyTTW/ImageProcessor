@@ -133,7 +133,8 @@ public:
   {
     painter->fillRect(0, 0, _image.width(), _image.height(), bgBrush);
     painter->drawImage(0, 0, _image);
-    QPen pen(QColor(150, 150, 150));
+    QPen pen(QColor(50, 50, 50));
+    pen.setWidthF(2.2);
     pen.setStyle(Qt::DashLine);
     painter->setPen(pen);
     _area.paint(painter, _image.width(), _image.height());

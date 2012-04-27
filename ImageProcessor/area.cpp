@@ -52,6 +52,8 @@ void Area::paint(QPainter *painter, int width, int height)
     newPainter->setBrush(painter->brush());
     painter = newPainter;
   }
+  QPainter::CompositionMode mode = painter->compositionMode();
+  painter->setCompositionMode(QPainter::CompositionMode_Xor);
   switch (mainType)
   {
   case TypeRectangle:
@@ -68,6 +70,7 @@ void Area::paint(QPainter *painter, int width, int height)
   default:
     break;
   }
+  painter->setCompositionMode(mode);
   if (conversed)
   {
     newPainter->setCompositionMode(QPainter::CompositionMode_DestinationOut);

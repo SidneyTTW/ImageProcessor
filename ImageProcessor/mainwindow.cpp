@@ -598,6 +598,7 @@ void MainWindow::currentChanged(int index)
     statisticWidget->setImage(QImage());
     return;
   }
+  statisticWidget->setImage(processChain->getCurrentImage()->getImage());
   enableDisableActions();
   QAction *action = actions.value(widget, NULL);
   if (action != NULL)
