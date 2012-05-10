@@ -93,6 +93,11 @@ public:
    */
   virtual QString iconPath() const=0;
 
+  /**
+   * Destructor.
+   */
+  virtual ~AbstractImageProcessor() {}
+
 signals:
   /**
    * Signal emitted when a new processor is created.
