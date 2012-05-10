@@ -35,5 +35,10 @@
         <file>images/left.png</file>
         <file>images/down.png</file>
         <file>images/bound.png</file>
+        <file>images/dilation_erosion.png</file>
+        <file>images/close_filter.png</file>
+        <file>images/open_filter.png</file>
+        <file>images/erosion.png</file>
+        <file>images/dilation.png</file>
     </qresource>
 </RCC>

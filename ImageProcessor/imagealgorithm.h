@@ -700,33 +700,33 @@ namespace ImageAlgorithm
     }
 
     /**
-     * Calculate the RGBA.
+     * Filt the image.
      * The alpha will be set to MAX_COLOR_VALUE
      *
-     * @param dataPtrPtr Pointer of the pointers of original image data.
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
      * @param n Number of pointers.
-     * @param r Red.
-     * @param g Green.
-     * @param b Blue.
-     * @param a Alpha.
      */
-    inline void calculateRGBA(const unsigned char **dataPtrPtr,
-                              int n,
-                              int& r,
-                              int& g,
-                              int& b,
-                              int& a)
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
     {
-      r = 0;
-      g = 0;
-      b = 0;
-      a = MAX_COLOR_VALUE;
+      if (isNull[n / 2])
+        return;
+      int r = 0;
+      int g = 0;
+      int b = 0;
+      int a = MAX_COLOR_VALUE;
       int sr, sg, sb, sa;
       for (int i = 0;i < n;++i)
       {
-        if (dataPtrPtr[i] == NULL)
+        if (isNull[i])
           continue;
-        getRGBA(dataPtrPtr[i], sr, sg, sb, sa);
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
         r += _matrix[i] * sr;
         g += _matrix[i] * sg;
         b += _matrix[i] * sb;
@@ -734,6 +734,12 @@ namespace ImageAlgorithm
       r = r / _divisor + _offset;
       g = g / _divisor + _offset;
       b = b / _divisor + _offset;
+
+      r = qBound(0, r, MAX_COLOR_VALUE);
+      g = qBound(0, g, MAX_COLOR_VALUE);
+      b = qBound(0, b, MAX_COLOR_VALUE);
+      a = qBound(0, a, MAX_COLOR_VALUE);
+      setRGBA(filtedImgDataPtr + offsets[n / 2], r, g, b, a);
     }
 
   private:
@@ -781,39 +787,38 @@ namespace ImageAlgorithm
     }
 
     /**
-     * Calculate the RGBA.
+     * Filt the image.
      * The alpha will be set to MAX_COLOR_VALUE
      *
-     * @param dataPtrPtr Pointer of the pointers of original image data.
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
      * @param n Number of pointers.
-     * @param r Red.
-     * @param g Green.
-     * @param b Blue.
-     * @param a Alpha.
      */
-    inline void calculateRGBA(const unsigned char **dataPtrPtr,
-                              int n,
-                              int& r,
-                              int& g,
-                              int& b,
-                              int& a)
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
     {
-      a = MAX_COLOR_VALUE;
       int sr, sg, sb, sa;
       count = 0;
       for (int i = 0;i < n;++i)
       {
-        if (dataPtrPtr[i] == NULL)
+        if (isNull[i])
           continue;
-        getRGBA(dataPtrPtr[i], sr, sg, sb, sa);
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
         arrayR[count] = sr;
         arrayG[count] = sg;
         arrayB[count] = sb;
         ++count;
       }
-      r = calculateMidNumber(arrayR, count);
-      g = calculateMidNumber(arrayG, count);
-      b = calculateMidNumber(arrayB, count);
+      int r = qBound(0, calculateMidNumber(arrayR, count), MAX_COLOR_VALUE);
+      int g = qBound(0, calculateMidNumber(arrayG, count), MAX_COLOR_VALUE);
+      int b = qBound(0, calculateMidNumber(arrayB, count), MAX_COLOR_VALUE);
+      int a = MAX_COLOR_VALUE;
+      setRGBA(filtedImgDataPtr + offsets[n / 2], r, g, b, a);
     }
 
   private:
@@ -836,6 +841,187 @@ namespace ImageAlgorithm
      * Count of valid numbers.
      */
     int count;
+  };
+
+  /**
+   * Class of filter of dilation.
+   */
+  class DilationFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param matrix The matrix.
+     * @param center Center of the matrix.
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     * @param divisor The divisor.
+     * @param offset The offset.
+     */
+    DilationFilter(const int *matrix,
+                   int center,
+                   int width,
+                   int height) :
+      AbstractFilter(width, height),
+      _center(center)
+    {
+      _matrix = new int[width * height];
+      memcpy(_matrix, matrix, width * height * 4);
+    }
+
+    /**
+     * Destructor.
+     */
+    ~DilationFilter()
+    {
+      delete [] _matrix;
+    }
+
+    /**
+     * Filt the image.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
+     * @param n Number of pointers.
+     */
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
+    {
+      int r, g, b, a;
+      if (isNull[_center])
+        return;
+      getRGBA(imageDataPtr + offsets[_center], r, g, b, a);
+
+      int sr, sg, sb, sa;
+      bool touch = false;
+      for (int i = 0;i < n;++i)
+      {
+        if (isNull[i])
+          continue;
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
+        if (_matrix[i] != 0 && _matrix[i] <= sg)
+        {
+          touch = true;
+          break;
+        }
+      }
+      if (touch)
+        setRGBA(filtedImgDataPtr + offsets[_center],
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE);
+      else
+        setRGBA(filtedImgDataPtr + offsets[_center], 0, 0, 0, MAX_COLOR_VALUE);
+    }
+
+  private:
+    /**
+     * The matrix.
+     */
+    int *_matrix;
+
+    /**
+     * The center.
+     */
+    int _center;
+  };
+
+  /**
+   * Class of filter of erosion.
+   */
+  class ErosionFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param matrix The matrix.
+     * @param center Center of the matrix.
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     */
+    ErosionFilter(const int *matrix,
+                  int center,
+                  int width,
+                  int height) :
+      AbstractFilter(width, height),
+      _center(center)
+    {
+      _matrix = new int[width * height];
+      memcpy(_matrix, matrix, width * height * 4);
+    }
+
+    /**
+     * Destructor.
+     */
+    ~ErosionFilter()
+    {
+      delete [] _matrix;
+    }
+
+    /**
+     * Filt the image.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
+     * @param n Number of pointers.
+     */
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
+    {
+      int r, g, b, a;
+      if (isNull[_center])
+        return;
+      getRGBA(imageDataPtr + offsets[_center], r, g, b, a);
+      a = MAX_COLOR_VALUE;
+
+      int sr, sg, sb, sa;
+      bool allIn = true;
+      for (int i = 0;i < n;++i)
+      {
+        if (isNull[i])
+          continue;
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
+        if (_matrix[i] != 0 && _matrix[i] > sg)
+        {
+          allIn = false;
+          break;
+        }
+      }
+      if (allIn)
+        setRGBA(filtedImgDataPtr + offsets[_center],
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE,
+                MAX_COLOR_VALUE);
+      else
+        setRGBA(filtedImgDataPtr + offsets[_center], 0, 0, 0, MAX_COLOR_VALUE);
+    }
+
+  private:
+    /**
+     * The matrix.
+     */
+    int *_matrix;
+
+    /**
+     * The center.
+     */
+    int _center;
   };
 }
 
@@ -860,8 +1046,7 @@ QImage *ImageAlgorithm::filtImage(const QImage& image, const Area& area, T *filt
   const unsigned char *backup1 = imageDataPtr;
   unsigned char *backup2 = filtedImgDataPtr;
 
-  const unsigned char **dataPtrPtr =
-      new const unsigned char *[matrixWidth * matrixHeight];
+  bool *isNull = new bool[matrixWidth * matrixHeight];
   int *offsets = new int[matrixWidth * matrixHeight];
 
   for (int i = 0;i < matrixWidth;++i)
@@ -879,34 +1064,29 @@ QImage *ImageAlgorithm::filtImage(const QImage& image, const Area& area, T *filt
     {
       if ((area.getType() == area.TypeEmpty) || area.in(j, i))
       {
-        int tr, tg, tb, ta;
         for (int k = 0;k < matrixHeight;++k)
         {
           for (int l = 0;l < matrixWidth;++l)
           {
             int index = k * matrixWidth + l;
-            if (i + k - borderHeight < 0 ||
-                i + k - borderHeight >= height ||
-                j + l - borderWidth < 0 ||
-                j + l - borderWidth >= width)
-              dataPtrPtr[index] = NULL;
-            else
-              dataPtrPtr[index] = imageDataPtr + offsets[index];
+            isNull[index] =  i + k - borderHeight < 0 ||
+                             i + k - borderHeight >= height ||
+                             j + l - borderWidth < 0 ||
+                             j + l - borderWidth >= width;
           }
         }
-        filter->calculateRGBA(dataPtrPtr, matrixWidth * matrixHeight, tr, tg, tb, ta);
-        tr = qBound(0, tr, MAX_COLOR_VALUE);
-        tg = qBound(0, tg, MAX_COLOR_VALUE);
-        tb = qBound(0, tb, MAX_COLOR_VALUE);
-        ta = qBound(0, ta, MAX_COLOR_VALUE);
-        setRGBA(filtedImgDataPtr, tr, tg, tb, ta);
+        filter->filt(imageDataPtr,
+                     filtedImgDataPtr,
+                     offsets,
+                     isNull,
+                     matrixWidth * matrixHeight);
       }
       imageDataPtr += 4;
       filtedImgDataPtr += 4;
     }
   }
+  delete [] isNull;
   delete [] offsets;
-  delete [] dataPtrPtr;
   return filtedImg;
 }
 

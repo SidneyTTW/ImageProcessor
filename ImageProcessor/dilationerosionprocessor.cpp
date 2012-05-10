@@ -1,0 +1,215 @@
+#include "dilationerosionprocessor.h"
+
+#include "dilationerosiondialog.h"
+#include "imagealgorithm.h"
+
+DilationErosionProcessor::DilationErosionProcessor()
+{
+}
+
+Area::AreaType DilationErosionProcessor::acceptableAreaType() const
+{
+  return Area::TypeAll;
+}
+
+Area::AreaTypeFlag DilationErosionProcessor::resultAreaType() const
+{
+  return _area.getType();
+}
+
+Area DilationErosionProcessor::resultArea() const
+{
+  return Area();
+}
+
+MyImage::ImageType DilationErosionProcessor::acceptableType() const
+{
+  return MyImage::BlackAndWhite;
+}
+
+MyImage::ImageTypeFlag DilationErosionProcessor::resultType() const
+{
+  return MyImage::BlackAndWhite;
+}
+
+QImage *DilationErosionProcessor::processImage(const QImage& image) const
+{
+  QImage *result = NULL;
+  switch (_type)
+  {
+  case Dilation:
+    {
+      ImageAlgorithm::DilationFilter *filter =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter);
+      delete filter;
+      break;
+    }
+  case Erosion:
+    {
+      ImageAlgorithm::ErosionFilter *filter =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter);
+      delete filter;
+      break;
+    }
+  case Open:
+    {
+      ImageAlgorithm::ErosionFilter *filter =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter);
+      delete filter;
+      break;
+      ImageAlgorithm::DilationFilter *filter2 =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter2);
+      delete filter2;
+      break;
+    }
+  case Close:
+    {
+      ImageAlgorithm::DilationFilter *filter =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter);
+      delete filter;
+      break;
+      ImageAlgorithm::ErosionFilter *filter2 =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      result = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter2);
+      delete filter2;
+      break;
+    }
+  }
+  return result;
+}
+
+void DilationErosionProcessor::processImage(QImage *image) const
+{
+  switch (_type)
+  {
+  case Dilation:
+    {
+      ImageAlgorithm::DilationFilter *filter =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter);
+      delete filter;
+      break;
+    }
+  case Erosion:
+    {
+      ImageAlgorithm::ErosionFilter *filter =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter);
+      delete filter;
+      break;
+    }
+  case Open:
+    {
+      ImageAlgorithm::ErosionFilter *filter =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter);
+      delete filter;
+      break;
+      ImageAlgorithm::DilationFilter *filter2 =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter2);
+      delete filter2;
+      break;
+    }
+  case Close:
+    {
+      ImageAlgorithm::DilationFilter *filter =
+          new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter);
+      delete filter;
+      break;
+      ImageAlgorithm::ErosionFilter *filter2 =
+          new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
+      ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter2);
+      delete filter2;
+      break;
+    }
+  }
+}
+
+QDialog *DilationErosionProcessor::getOptionDialog(Area area, const MyImage& image)
+{
+  DilationErosionDialog *result = new DilationErosionDialog(image.getImage(), area);
+  connect(result,
+          SIGNAL(confirmed(DilationErosionProcessor::DilationErosionType,
+                           int,int,int,Area,QVector<int>)),
+          this,
+          SLOT(confirm(DilationErosionProcessor::DilationErosionType,
+                       int,int,int,Area,QVector<int>)));
+  return result;
+}
+
+QString DilationErosionProcessor::name() const
+{
+  return "DilationErosion";
+}
+
+QString DilationErosionProcessor::toString() const
+{
+  QString result = tr("%1 %2 %3 %4 %5").
+                   arg((int) _type).
+                   arg(_width).
+                   arg(_height).
+                   arg(_center).
+                   arg(_area.toString());
+  for (int i = 0;i < _matrix.size();++i)
+    result += tr(" %1").arg(_matrix[i]);
+  return result;
+}
+
+AbstractImageProcessor *DilationErosionProcessor::fromString(const QString& str) const
+{
+  QStringList list = str.split(' ', QString::SkipEmptyParts);
+  if (list.size() < 5)
+    return NULL;
+  DilationErosionType type = (DilationErosionType)list.takeFirst().toInt();
+  int width = list.takeFirst().toInt();
+  int height = list.takeFirst().toInt();
+  int center = list.takeFirst().toInt();
+  Area area = Area::fromString(list.takeFirst());
+  QVector<int> matrix;
+  if (list.size() != width * height)
+    return NULL;
+  for (int i = 0;i < width * height;++i)
+    matrix.push_back(list.takeFirst().toInt());
+  DilationErosionProcessor *result = new DilationErosionProcessor();
+  result->_type = type;
+  result->_width = width;
+  result->_height = height;
+  result->_center = center;
+  result->_matrix = matrix;
+  result->_area = area;
+  return result;
+}
+
+QString DilationErosionProcessor::description() const
+{
+  return "Dilation/Erosion/Open/Close";
+}
+
+QString DilationErosionProcessor::iconPath() const
+{
+  return Resource::iconDilationErosion;
+}
+
+void DilationErosionProcessor::confirm(DilationErosionProcessor::DilationErosionType type,
+                                       int width,
+                                       int height,
+                                       int center,
+                                       Area area,
+                                       QVector<int> matrix)
+{
+  DilationErosionProcessor *processor = new DilationErosionProcessor();
+  processor->_type = type;
+  processor->_width = width;
+  processor->_height = height;
+  processor->_center = center;
+  processor->_area = area;
+  processor->_matrix = matrix;
+  emit processorCreated(processor);
+}

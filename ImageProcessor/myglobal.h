@@ -37,6 +37,7 @@ namespace Resource
   const QString iconErase = ":/images/erase.png";
   const QString iconMagicErase = ":/images/magic_erase.png";
   const QString iconBound = ":/images/bound.png";
+  const QString iconDilationErosion = ":/images/dilation_erosion.png";
 }
 
 #endif // MYGLOBAL_H

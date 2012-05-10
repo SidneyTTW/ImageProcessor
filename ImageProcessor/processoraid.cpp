@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include "algebraoperationprocessor.h"
 #include "boundprocessor.h"
+#include "dilationerosionprocessor.h"
 #include "drawlineprocessor.h"
 #include "eraseprocessor.h"
 #include "fastgaussprocessor.h"
@@ -50,6 +51,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new AlgebraOperationProcessor());
   result.push_back(new HistogramMatchProcessor());
   result.push_back(new PointProcessor());
+  result.push_back(new DilationErosionProcessor());
   return result;
 }
 

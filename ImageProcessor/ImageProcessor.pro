@@ -65,7 +65,9 @@ SOURCES += main.cpp\
     eraseprocessor.cpp \
     magiceraseprocessor.cpp \
     boundprocessor.cpp \
-    bounddialog.cpp
+    bounddialog.cpp \
+    dilationerosiondialog.cpp \
+    dilationerosionprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -126,7 +128,9 @@ HEADERS  += mainwindow.h \
     eraseprocessor.h \
     magiceraseprocessor.h \
     boundprocessor.h \
-    bounddialog.h
+    bounddialog.h \
+    dilationerosiondialog.h \
+    dilationerosionprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -143,7 +147,8 @@ FORMS    += mainwindow.ui \
     histogrammatchdialog.ui \
     pointdialog.ui \
     rotatedialog.ui \
-    bounddialog.ui
+    bounddialog.ui \
+    dilationerosiondialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt
