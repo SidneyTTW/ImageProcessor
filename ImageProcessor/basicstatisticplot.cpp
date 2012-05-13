@@ -3,7 +3,6 @@
 #include <qwt_legend.h>
 #include <qwt_legend_item.h>
 #include <qwt_plot_canvas.h>
-#include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
 #include "basicstatistic.h"
 #include "histogram.h"
@@ -27,7 +26,7 @@ void BasicStatisticPlot::init()
   insertLegend(l, QwtPlot::RightLegend);
 
   // Create the grid
-  QwtPlotGrid *grid = new QwtPlotGrid();
+  grid = new QwtPlotGrid();
   grid->enableX(false);
   grid->enableY(true);
   grid->enableXMin(false);
@@ -107,4 +106,5 @@ BasicStatisticPlot::~BasicStatisticPlot()
   for (int i = 0;i < 3;++i)
     delete lineCharts[i];
   delete grayHistogram;
+  delete grid;
 }

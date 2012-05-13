@@ -3,6 +3,8 @@
 
 #include <qwt_plot.h>
 
+#include <qwt_plot_grid.h>
+
 class BasicStatistic;
 class Histogram;
 class LineChart;
@@ -33,13 +35,17 @@ private:
   /**
    * 3 line charts for RGB.
    */
-
   LineChart *lineCharts[3];
 
   /**
    * 1 histogram for gray.
    */
   Histogram *grayHistogram;
+
+  /**
+   * The grid.
+   */
+  QwtPlotGrid *grid;
 
   /**
    * Init the plot.
