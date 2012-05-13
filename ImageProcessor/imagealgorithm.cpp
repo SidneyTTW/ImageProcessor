@@ -276,9 +276,9 @@ void ImageAlgorithm::reverse(QImage *image)
 }
 
 QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
-                                         int mapR[MAX_COLOR_VALUE + 1],
-                                         int mapG[MAX_COLOR_VALUE + 1],
-                                         int mapB[MAX_COLOR_VALUE + 1],
+                                         const int mapR[MAX_COLOR_VALUE + 1],
+                                         const int mapG[MAX_COLOR_VALUE + 1],
+                                         const int mapB[MAX_COLOR_VALUE + 1],
                                          RGBAField tunel,
                                          Area area)
 {
@@ -320,9 +320,9 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
 }
 
 void ImageAlgorithm::changeRGBWithMap(QImage *image,
-                                      int mapR[MAX_COLOR_VALUE + 1],
-                                      int mapG[MAX_COLOR_VALUE + 1],
-                                      int mapB[MAX_COLOR_VALUE + 1],
+                                      const int mapR[MAX_COLOR_VALUE + 1],
+                                      const int mapG[MAX_COLOR_VALUE + 1],
+                                      const int mapB[MAX_COLOR_VALUE + 1],
                                       RGBAField tunel,
                                       Area area)
 {

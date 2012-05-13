@@ -18,6 +18,7 @@
 #include "redeyereductionprocessor.h"
 #include "resizeprocessor.h"
 #include "reverseprocessor.h"
+#include "rgbmapprocessor.h"
 #include "rotateprocessor.h"
 #include "sharpenprocessor.h"
 #include "tograyprocessor.h"
@@ -52,6 +53,7 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new HistogramMatchProcessor());
   result.push_back(new PointProcessor());
   result.push_back(new DilationErosionProcessor());
+  result.push_back(new RGBMapProcessor());
   return result;
 }
 

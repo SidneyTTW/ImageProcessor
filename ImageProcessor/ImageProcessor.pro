@@ -67,7 +67,11 @@ SOURCES += main.cpp\
     boundprocessor.cpp \
     bounddialog.cpp \
     dilationerosiondialog.cpp \
-    dilationerosionprocessor.cpp
+    dilationerosionprocessor.cpp \
+    rgbmapdialog.cpp \
+    rgbmapplot.cpp \
+    xyplotpicker.cpp \
+    rgbmapprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -130,7 +134,11 @@ HEADERS  += mainwindow.h \
     boundprocessor.h \
     bounddialog.h \
     dilationerosiondialog.h \
-    dilationerosionprocessor.h
+    dilationerosionprocessor.h \
+    rgbmapdialog.h \
+    rgbmapplot.h \
+    xyplotpicker.h \
+    rgbmapprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -148,7 +156,8 @@ FORMS    += mainwindow.ui \
     pointdialog.ui \
     rotatedialog.ui \
     bounddialog.ui \
-    dilationerosiondialog.ui
+    dilationerosiondialog.ui \
+    rgbmapdialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

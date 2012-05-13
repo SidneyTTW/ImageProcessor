@@ -420,9 +420,9 @@ namespace ImageAlgorithm
    * @param area The area to change.
    */
   QImage *changeRGBWithMap(const QImage& image,
-                           int mapR[MAX_COLOR_VALUE + 1],
-                           int mapG[MAX_COLOR_VALUE + 1],
-                           int mapB[MAX_COLOR_VALUE + 1],
+                           const int mapR[MAX_COLOR_VALUE + 1],
+                           const int mapG[MAX_COLOR_VALUE + 1],
+                           const int mapB[MAX_COLOR_VALUE + 1],
                            RGBAField tunel,
                            Area area = Area());
 
@@ -438,9 +438,9 @@ namespace ImageAlgorithm
    * @param area The area to change.
    */
   void changeRGBWithMap(QImage *image,
-                        int mapR[MAX_COLOR_VALUE + 1],
-                        int mapG[MAX_COLOR_VALUE + 1],
-                        int mapB[MAX_COLOR_VALUE + 1],
+                        const int mapR[MAX_COLOR_VALUE + 1],
+                        const int mapG[MAX_COLOR_VALUE + 1],
+                        const int mapB[MAX_COLOR_VALUE + 1],
                         RGBAField tunel,
                         Area area = Area());
 

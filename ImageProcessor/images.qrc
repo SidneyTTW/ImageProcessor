@@ -40,5 +40,6 @@
         <file>images/open_filter.png</file>
         <file>images/erosion.png</file>
         <file>images/dilation.png</file>
+        <file>images/rgb_map.png</file>
     </qresource>
 </RCC>
