@@ -65,11 +65,13 @@ public:
 
 DilationErosionDialog::DilationErosionDialog(const QImage& image,
                                              const Area& area,
+                                             bool gray,
                                              QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DilationErosionDialog),
     _image(image),
     _area(area),
+    _gray(gray),
     changingByCode(true)
 {
   ui->setupUi(this);
@@ -110,47 +112,96 @@ void DilationErosionDialog::resetPreview()
     type = DilationErosionProcessor::Open;
   else if (ui->closeButton->isChecked())
     type = DilationErosionProcessor::Close;
-  switch (type)
+  if (_gray)
   {
-  case DilationErosionProcessor::Dilation:
+    switch (type)
     {
-      ImageAlgorithm::DilationFilter *filter =
-          new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
-      image = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(_image, _area, filter);
-      delete filter;
-      break;
+    case DilationErosionProcessor::Dilation:
+      {
+        ImageAlgorithm::GrayDilationFilter *filter =
+            new ImageAlgorithm::GrayDilationFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(_image, _area, filter);
+        delete filter;
+        break;
+      }
+    case DilationErosionProcessor::Erosion:
+      {
+        ImageAlgorithm::GrayErosionFilter *filter =
+            new ImageAlgorithm::GrayErosionFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(_image, _area, filter);
+        delete filter;
+        break;
+      }
+    case DilationErosionProcessor::Open:
+      {
+        ImageAlgorithm::GrayErosionFilter *filter =
+            new ImageAlgorithm::GrayErosionFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(_image, _area, filter);
+        delete filter;
+        ImageAlgorithm::GrayDilationFilter *filter2 =
+            new ImageAlgorithm::GrayDilationFilter(matrix.data(), center, width, height);
+        ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(image, _area, filter2);
+        delete filter2;
+        break;
+      }
+    case DilationErosionProcessor::Close:
+      {
+        ImageAlgorithm::GrayDilationFilter *filter =
+            new ImageAlgorithm::GrayDilationFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(_image, _area, filter);
+        delete filter;
+        ImageAlgorithm::GrayErosionFilter *filter2 =
+            new ImageAlgorithm::GrayErosionFilter(matrix.data(), center, width, height);
+        ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(image, _area, filter2);
+        delete filter2;
+        break;
+      }
     }
-  case DilationErosionProcessor::Erosion:
+  }
+  else
+  {
+    switch (type)
     {
-      ImageAlgorithm::ErosionFilter *filter =
-          new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
-      image = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(_image, _area, filter);
-      delete filter;
-      break;
-    }
-  case DilationErosionProcessor::Open:
-    {
-      ImageAlgorithm::ErosionFilter *filter =
-          new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
-      image = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(_image, _area, filter);
-      delete filter;
-      ImageAlgorithm::DilationFilter *filter2 =
-          new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
-      ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter2);
-      delete filter2;
-      break;
-    }
-  case DilationErosionProcessor::Close:
-    {
-      ImageAlgorithm::DilationFilter *filter =
-          new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
-      image = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(_image, _area, filter);
-      delete filter;
-      ImageAlgorithm::ErosionFilter *filter2 =
-          new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
-      ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter2);
-      delete filter2;
-      break;
+    case DilationErosionProcessor::Dilation:
+      {
+        ImageAlgorithm::DilationFilter *filter =
+            new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(_image, _area, filter);
+        delete filter;
+        break;
+      }
+    case DilationErosionProcessor::Erosion:
+      {
+        ImageAlgorithm::ErosionFilter *filter =
+            new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(_image, _area, filter);
+        delete filter;
+        break;
+      }
+    case DilationErosionProcessor::Open:
+      {
+        ImageAlgorithm::ErosionFilter *filter =
+            new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(_image, _area, filter);
+        delete filter;
+        ImageAlgorithm::DilationFilter *filter2 =
+            new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
+        ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter2);
+        delete filter2;
+        break;
+      }
+    case DilationErosionProcessor::Close:
+      {
+        ImageAlgorithm::DilationFilter *filter =
+            new ImageAlgorithm::DilationFilter(matrix.data(), center, width, height);
+        image = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(_image, _area, filter);
+        delete filter;
+        ImageAlgorithm::ErosionFilter *filter2 =
+            new ImageAlgorithm::ErosionFilter(matrix.data(), center, width, height);
+        ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter2);
+        delete filter2;
+        break;
+      }
     }
   }
   if (image != NULL)
@@ -270,7 +321,7 @@ void DilationErosionDialog::on_okPushButton_clicked()
   for (int i = 0;i < height;++i)
     for (int j = 0;j < width;++j)
       matrix.push_back(matrixValueAt(i, j));
-  emit confirmed(type, width, height, center, _area,  matrix);
+  emit confirmed(type, width, height, center, _gray, _area,  matrix);
   accept();
 }
 

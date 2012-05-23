@@ -22,6 +22,7 @@ public:
    */
   explicit DilationErosionDialog(const QImage& image,
                                  const Area& area,
+                                 bool gray,
                                  QWidget *parent = 0);
 
   /**
@@ -46,6 +47,11 @@ private:
    * Whether the ui is changing by code.
    */
   bool changingByCode;
+
+  /**
+   * Whether the image is gray.
+   */
+  bool _gray;
 
   /**
    * Get the matrix value at given position.
@@ -83,6 +89,7 @@ signals:
                  int width,
                  int height,
                  int center,
+                 bool gray,
                  Area area,
                  QVector<int> mtrix);
 };

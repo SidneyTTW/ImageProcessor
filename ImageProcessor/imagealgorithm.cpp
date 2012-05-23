@@ -1085,7 +1085,7 @@ void ImageAlgorithm::magicErase(QImage *image,
 
   bool *visited = new bool[width * height];
   int index = 0;
-  int *vector = new int[width * height * 2];
+  int *vector = new int[width * height * 2 * 4];
   vector[0] = pos.x();
   vector[1] = pos.y();
   unsigned char *imageDataPtr = image->bits();
@@ -1125,6 +1125,7 @@ void ImageAlgorithm::magicErase(QImage *image,
       }
     }
   }
+  int tmp = 1;
   delete [] vector;
   delete [] visited;
 }

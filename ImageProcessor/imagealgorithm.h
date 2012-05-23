@@ -935,6 +935,90 @@ namespace ImageAlgorithm
   };
 
   /**
+   * Class of filter of dilation for gray image.
+   */
+  class GrayDilationFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param matrix The matrix.
+     * @param center Center of the matrix.
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     * @param divisor The divisor.
+     * @param offset The offset.
+     */
+    GrayDilationFilter(const int *matrix,
+                       int center,
+                       int width,
+                       int height) :
+      AbstractFilter(width, height),
+      _center(center)
+    {
+      _matrix = new int[width * height];
+      memcpy(_matrix, matrix, width * height * 4);
+    }
+
+    /**
+     * Destructor.
+     */
+    ~GrayDilationFilter()
+    {
+      delete [] _matrix;
+    }
+
+    /**
+     * Filt the image.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
+     * @param n Number of pointers.
+     */
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
+    {
+      int r, g, b, a;
+      if (isNull[_center])
+        return;
+      getRGBA(imageDataPtr + offsets[_center], r, g, b, a);
+
+      int sr, sg, sb, sa;
+      int value = 0;
+      for (int i = 0;i < n;++i)
+      {
+        if (isNull[i])
+          continue;
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
+        value = qBound(value, _matrix[i] + sg, MAX_COLOR_VALUE);
+      }
+      setRGBA(filtedImgDataPtr + offsets[_center],
+              value,
+              value,
+              value,
+              MAX_COLOR_VALUE);
+    }
+
+  private:
+    /**
+     * The matrix.
+     */
+    int *_matrix;
+
+    /**
+     * The center.
+     */
+    int _center;
+  };
+
+  /**
    * Class of filter of erosion.
    */
   class ErosionFilter : public AbstractFilter
@@ -1010,6 +1094,89 @@ namespace ImageAlgorithm
                 MAX_COLOR_VALUE);
       else
         setRGBA(filtedImgDataPtr + offsets[_center], 0, 0, 0, MAX_COLOR_VALUE);
+    }
+
+  private:
+    /**
+     * The matrix.
+     */
+    int *_matrix;
+
+    /**
+     * The center.
+     */
+    int _center;
+  };
+
+  /**
+   * Class of filter of erosion.
+   */
+  class GrayErosionFilter : public AbstractFilter
+  {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param matrix The matrix.
+     * @param center Center of the matrix.
+     * @param width Width of the matrix.
+     * @param height Height of the matrix.
+     */
+    GrayErosionFilter(const int *matrix,
+                      int center,
+                      int width,
+                      int height) :
+      AbstractFilter(width, height),
+      _center(center)
+    {
+      _matrix = new int[width * height];
+      memcpy(_matrix, matrix, width * height * 4);
+    }
+
+    /**
+     * Destructor.
+     */
+    ~GrayErosionFilter()
+    {
+      delete [] _matrix;
+    }
+
+    /**
+     * Filt the image.
+     * The alpha will be set to MAX_COLOR_VALUE
+     *
+     * @param imageDataPtr Pointer of the original image.
+     * @param filtedImgDataPtr Pointer of the filted image.
+     * @param offsets Pointer of the offsets.
+     * @param isNull Pointer of whether the pixel is null.
+     * @param n Number of pointers.
+     */
+    inline void filt(const unsigned char *imageDataPtr,
+                     unsigned char *filtedImgDataPtr,
+                     int *offsets,
+                     bool *isNull,
+                     int n)
+    {
+      int r, g, b, a;
+      if (isNull[_center])
+        return;
+      getRGBA(imageDataPtr + offsets[_center], r, g, b, a);
+      a = MAX_COLOR_VALUE;
+
+      int sr, sg, sb, sa;
+      int value = MAX_COLOR_VALUE;
+      for (int i = 0;i < n;++i)
+      {
+        if (isNull[i])
+          continue;
+        getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
+        value = qBound(0, sg - _matrix[i], value);
+      }
+      setRGBA(filtedImgDataPtr + offsets[_center],
+              value,
+              value,
+              value,
+              MAX_COLOR_VALUE);
     }
 
   private:

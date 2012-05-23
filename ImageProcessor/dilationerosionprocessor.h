@@ -65,6 +65,11 @@ private:
    */
   int _center;
 
+  /**
+   * Whether to use the gray filter or black and white filter.
+   */
+  bool _gray;
+
 private slots:
   /**
    * Slot used to get the confirm.
@@ -73,6 +78,7 @@ private slots:
                int width,
                int height,
                int center,
+               bool gray,
                Area area,
                QVector<int> matrix);
 };
