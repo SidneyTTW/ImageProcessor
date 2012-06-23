@@ -90,6 +90,7 @@
     </property>
     <addaction name="newAction"/>
     <addaction name="openAction"/>
+    <addaction name="reconstructAction"/>
     <addaction name="saveAsAction"/>
     <addaction name="openChainAction"/>
     <addaction name="saveChainAction"/>
@@ -265,6 +266,11 @@
    </property>
    <property name="statusTip">
     <string>Create an image</string>
+   </property>
+  </action>
+  <action name="reconstructAction">
+   <property name="text">
+    <string>Reconstruct</string>
    </property>
   </action>
  </widget>

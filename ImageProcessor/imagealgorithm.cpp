@@ -1,5 +1,6 @@
 #include "imagealgorithm.h"
 
+#include <QDir>
 #include <qmath.h>
 
 inline QPointF calculatePos(double r, double angle)
@@ -119,7 +120,8 @@ void ImageAlgorithm::convertToGrayScale(QImage *image,
 
 QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
                                                QVector<int> threshold,
-                                               int startColor)
+                                               int startColor,
+                                               Area area)
 {
   if (startColor != 0)
     startColor = MAX_COLOR_VALUE;
@@ -156,12 +158,17 @@ QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
     {
       int r, g, b, a;
       getRGBA(imageDataPtr, r, g, b, a);
-      int gray = calculateGray(r, g, b, Green);
-      setRGBA(blackAndWhiteImgDataPtr,
-              coloreMap[gray],
-              coloreMap[gray],
-              coloreMap[gray],
-              MAX_COLOR_VALUE);
+      if ((area.getType() == area.TypeEmpty) || area.in(j, i))
+      {
+        int gray = calculateGray(r, g, b, Green);
+        setRGBA(blackAndWhiteImgDataPtr,
+                coloreMap[gray],
+                coloreMap[gray],
+                coloreMap[gray],
+                MAX_COLOR_VALUE);
+      }
+      else
+        setRGBA(blackAndWhiteImgDataPtr, r, g, b, a);
       imageDataPtr += 4;
       blackAndWhiteImgDataPtr += 4;
     }
@@ -171,7 +178,8 @@ QImage *ImageAlgorithm::convertToBlackAndWhite(const QImage& image,
 
 void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
                                             QVector<int> threshold,
-                                            int startColor)
+                                            int startColor,
+                                            Area area)
 {
   if (startColor != 0)
     startColor = MAX_COLOR_VALUE;
@@ -201,14 +209,17 @@ void ImageAlgorithm::convertToBlackAndWhite(QImage *image,
     imageDataPtr = backup + realWidth * i;
     for(int j = 0;j < width;++j)
     {
-      int r, g, b, a;
-      getRGBA(imageDataPtr, r, g, b, a);
-      int gray = calculateGray(r, g, b, Green);
-      setRGBA(imageDataPtr,
-              coloreMap[gray],
-              coloreMap[gray],
-              coloreMap[gray],
-              MAX_COLOR_VALUE);
+      if (area.getType() == Area::TypeAll || area.in(j, i))
+      {
+        int r, g, b, a;
+        getRGBA(imageDataPtr, r, g, b, a);
+        int gray = calculateGray(r, g, b, Green);
+        setRGBA(imageDataPtr,
+                coloreMap[gray],
+                coloreMap[gray],
+                coloreMap[gray],
+                MAX_COLOR_VALUE);
+      }
       imageDataPtr += 4;
     }
   }
@@ -300,10 +311,10 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
     resultImgDataPtr = backup2 + realWidth2 * i;
     for(int j = 0;j < width;++j)
     {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
       if ((area.getType() == area.TypeEmpty) || area.in(j, i))
       {
-        int r, g, b, a;
-        getRGBA(imageDataPtr, r, g, b, a);
         if (tunel.testFlag(Field_R))
           r = mapR[r];
         if (tunel.testFlag(Field_G))
@@ -312,6 +323,8 @@ QImage *ImageAlgorithm::changeRGBWithMap(const QImage& image,
           b = mapB[b];
         setRGBA(resultImgDataPtr, r, g, b, a);
       }
+      else
+        setRGBA(resultImgDataPtr, r, g, b, a);
       imageDataPtr += 4;
       resultImgDataPtr += 4;
     }
@@ -339,10 +352,10 @@ void ImageAlgorithm::changeRGBWithMap(QImage *image,
     imageDataPtr = backup + realWidth * i;
     for(int j = 0;j < width;++j)
     {
+      int r, g, b, a;
+      getRGBA(imageDataPtr, r, g, b, a);
       if ((area.getType() == area.TypeEmpty) || area.in(j, i))
       {
-        int r, g, b, a;
-        getRGBA(imageDataPtr, r, g, b, a);
         if (tunel.testFlag(Field_R))
           r = mapR[r];
         if (tunel.testFlag(Field_G))
@@ -351,6 +364,8 @@ void ImageAlgorithm::changeRGBWithMap(QImage *image,
           b = mapB[b];
         setRGBA(imageDataPtr, r, g, b, a);
       }
+      else
+        setRGBA(imageDataPtr, r, g, b, a);
       imageDataPtr += 4;
     }
   }
@@ -803,7 +818,7 @@ void ImageAlgorithm::algebraOperation(QImage *image,
       default:
         break;
       }
-      setRGBA(imageDataPtr, r1, g1, b1, a1);
+      setRGBA(imageDataPtr, r1, g1, b1, MAX_COLOR_VALUE);
       imageDataPtr += 4;
       imageDataPtr2 += 4;
     }
@@ -888,7 +903,6 @@ QImage *ImageAlgorithm::rotate(const QImage& image,
   unsigned char *resultImgDataPtr = resultImg->bits();
   int realWidth1 = image.bytesPerLine();
   int realWidth2 = resultImg->bytesPerLine();
-  const unsigned char *backup1 = imageDataPtr;
   unsigned char *backup2 = resultImgDataPtr;
 
   memset(resultImgDataPtr, 0, resultImageWidth * resultImageHeight);
@@ -1022,11 +1036,11 @@ QImage *ImageAlgorithm::erase(const QImage& image,
   for(int i = qMax(0, bound.top());i < qMin(height, bound.bottom());++i)
   {
     resultImgDataPtr = backup2 + realWidth2 * i + 4 * qMax(0, bound.left());
-    for (int j = qMax(0, bound.left());j < qMax(0, bound.right());++j)
+    for (int j = qMax(0, bound.left());j < qMin(width, bound.right());++j)
     {
       if ((area.getType() == area.TypeEmpty) || area.in(j, i))
         setRGBA(resultImgDataPtr, r, g, b, a);
-      imageDataPtr += 4;
+      resultImgDataPtr += 4;
     }
   }
   return resultImg;
@@ -1052,13 +1066,281 @@ void ImageAlgorithm::erase(QImage *image, const Area& area, const QColor& color)
   for(int i = qMax(0, bound.top());i < qMin(height, bound.bottom());++i)
   {
     imageDataPtr = backup1 + realWidth1 * i + 4 * qMax(0, bound.left());
-    for (int j = qMax(0, bound.left());j < qMax(0, bound.right());++j)
+    for (int j = qMax(0, bound.left());j < qMin(width, bound.right());++j)
     {
       if (area.in(j, i))
         setRGBA(imageDataPtr, r, g, b, a);
       imageDataPtr += 4;
     }
   }
+}
+
+int *getSquareKernel(int size)
+{
+  int *result = new int[(size * 2 + 1) * ((size * 2 + 1))];
+  int count = 0;
+  for (int i = - size;i <= size;i++)
+    for (int j = -size;j <= size;j++)
+      result[count++] = MAX_COLOR_VALUE;
+  return result;
+}
+
+int *getCrossKernel(int size)
+{
+  int *result = new int[(size * 2 + 1) * ((size * 2 + 1))];
+  int count = 0;
+  for (int i = - size;i <= size;i++)
+    for (int j = -size;j <= size;j++)
+      result[count++] = (i == 0 || j == 0) ?
+                        MAX_COLOR_VALUE :
+                        -(MAX_COLOR_VALUE + 1);
+  return result;
+}
+
+int *getDiscKernel(int size)
+{
+  int *result = new int[(size * 2 + 1) * ((size * 2 + 1))];
+  int count = 0;
+  for (int i = -size;i <= size;i++)
+    for (int j = -size;j <= size;j++)
+      result[count++] = (i * i + j * j <= size * size) ?
+                        MAX_COLOR_VALUE :
+                        -(MAX_COLOR_VALUE + 1);
+  return result;
+}
+
+QImage* ImageAlgorithm::distanceTransform(const QImage &image,
+                                          DistanceTransformType type,
+                                          int size)
+{
+  if (!validType(image))
+    return NULL;
+  int width = image.width();
+  int height = image.height();
+
+  int *kernel;
+  switch (type)
+  {
+  case BlockDistance:
+    kernel = getSquareKernel(size);
+    break;
+  case ChessboardDistance:
+    kernel = getCrossKernel(size);
+    break;
+  case GeometricDistance:
+    kernel = getDiscKernel(size);
+    break;
+  default:
+    return NULL;
+  }
+
+  ErosionFilter *filter = new ErosionFilter(kernel,
+                                            (size * 2 + 1) * (size * 2 + 1) / 2,
+                                            size * 2 + 1,
+                                            size * 2 + 1);
+  delete [] kernel;
+
+  int *distance = new int[width * height];
+  memset(distance, 0, sizeof(int) * width * height);
+
+  QImage *lastImage = new QImage(image);
+  int count = 0;
+  while(true)
+  {
+    ++count;
+    QImage *newImage = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(*lastImage, Area(), filter);
+    bool flag = true;
+    for (int j = 0;j < height;j++)
+      for (int i = 0;i < width;i++)
+        if (qGreen(newImage->pixel(i, j)) == 0 &&
+            qGreen(lastImage->pixel(i, j)) > 0)
+        {
+          distance[j * width + i] = count;
+          flag = false;
+        }
+    QImage *p = lastImage;
+    lastImage = newImage;
+    delete(p);
+    if (flag)
+      break;
+  }
+  QImage *resultImage = new QImage(width, height, SUPPORTED_FORMAT);
+  resultImage->fill(0);
+  for (int j = 0;j < height;++j)
+      for (int i = 0;i < width;++i)
+      {
+        int value = distance[j * width + i] * MAX_COLOR_VALUE / count;
+        resultImage->setPixel(i, j, qRgb(value, value, value));
+      }
+
+  delete [] distance;
+  return resultImage;
+}
+
+void ImageAlgorithm::distanceTransform(QImage *image,
+                                       DistanceTransformType type,
+                                       int size)
+{
+  QImage *result = distanceTransform(*image, type, size);
+  if (result != NULL)
+  {
+    *image = *result;
+    delete result;
+  }
+}
+
+bool allBlack(const QImage& image)
+{
+  int width = image.width();
+  int height = image.height();
+  const unsigned char *imageDataPtr = image.bits();
+  int realWidth = image.bytesPerLine();
+  const unsigned char *backup = imageDataPtr;
+
+  for (int i = 0;i < height;++i)
+  {
+    imageDataPtr = backup + realWidth * i;
+    for (int j = 0;j < width;++j)
+    {
+
+      int r, g, b, a;
+      ImageAlgorithm::getRGBA(imageDataPtr, r, g, b, a);
+      if (r != 0 || g != 0 || b != 0)
+        return false;
+      imageDataPtr += 4;
+    }
+  }
+  return true;
+}
+
+QImage *ImageAlgorithm::skeleton(const QImage &image)
+{
+  if (!validType(image))
+    return NULL;
+  const QImage *currentImage = &image;
+  QVector<const QImage *> s;
+  int *kernel = getCrossKernel(1);
+  ErosionFilter *erosionFilter = new ErosionFilter(kernel, 4, 3, 3);
+  DilationFilter *dilationFilter = new DilationFilter(kernel, 4, 3, 3);
+  delete [] kernel;
+  QImage *result = new QImage(image.width(), image.height(), SUPPORTED_FORMAT);
+  result->fill(0);
+  while (true)
+  {
+    if (allBlack(*currentImage))
+      break;
+    currentImage = filtImage<ErosionFilter>(*currentImage, Area(), erosionFilter);
+    s.push_back(currentImage);
+  }
+
+  QString pathBase = QDir::homePath() + "/.ImageProcessor/";
+  QDir dir = QDir(pathBase);
+  if(!dir.exists())
+  {
+    if(!dir.mkdir(pathBase))
+      return NULL;
+  }
+
+  // Make the path if it hasn't be created
+  QFileInfoList fileInfoList = dir.entryInfoList();
+  foreach(QFileInfo fileInfo, fileInfoList)
+  {
+    if(fileInfo.isFile())
+    {
+      QFile tmpFile(fileInfo.fileName());
+      dir.remove(tmpFile.fileName());
+    }
+  }
+
+  int count = 0;
+  foreach (currentImage, s)
+  {
+    QImage *opened = filtImage<ErosionFilter>(*currentImage, Area(), erosionFilter);
+    filtImage<DilationFilter>(opened, Area(), dilationFilter);
+    QImage *tmpSkeleton = algebraOperation(*currentImage, *opened, Minus);
+    tmpSkeleton->save(QObject::tr("%1%2.bmp").arg(pathBase).arg(count));
+    ++count;
+    algebraOperation(result, *tmpSkeleton, Add);
+    delete tmpSkeleton;
+    delete opened;
+    delete currentImage;
+  }
+
+  delete erosionFilter;
+  delete dilationFilter;
+  return result;
+}
+
+
+void ImageAlgorithm::skeleton(QImage *image)
+{
+  QImage *result = skeleton(*image);
+  if (result != NULL)
+  {
+    *image = *result;
+    delete result;
+  }
+}
+
+QImage *ImageAlgorithm::skeletonReconstruct(const QString& dirPath)
+{
+  QImage *result = NULL;
+  QImage *mask = NULL;
+
+  QDir dir = QDir(dirPath);
+  if(!dir.exists())
+    return NULL;
+
+  int count = 0;
+
+  QFileInfoList fileInfoList = dir.entryInfoList();
+  foreach(QFileInfo fileInfo, fileInfoList)
+  {
+    if(fileInfo.isFile())
+    {
+      if (fileInfo.baseName() != "mask")
+        ++count;
+      else
+        mask = new QImage(QImage(fileInfo.absoluteFilePath()).
+                          convertToFormat(SUPPORTED_FORMAT));
+    }
+  }
+
+  int *kernel = getCrossKernel(1);
+  DilationFilter *filter = new DilationFilter(kernel, 4, 3, 3);
+  delete [] kernel;
+
+  for (int i = 1;i < count;++i)
+  {
+    QImage *image = new QImage(QImage(QObject::tr("%1/%2.bmp").arg(dirPath).arg(i)).
+                               convertToFormat(SUPPORTED_FORMAT));
+    if (image->isNull())
+    {
+      delete image;
+      continue;
+    }
+
+    if (mask != NULL)
+      algebraOperation(image, *mask, Multiply);
+
+    for (int j = 0;j < i;++j)
+      filtImage<DilationFilter>(image, Area(), filter);
+
+    if (result == NULL)
+    {
+      result = image;
+    }
+    else
+    {
+      algebraOperation(result, *image, Add);
+      delete image;
+    }
+  }
+
+  if (mask != NULL)
+    delete mask;
+  delete filter;
+  return result;
 }
 
 QImage *ImageAlgorithm::magicErase(const QImage& image,
@@ -1125,15 +1407,15 @@ void ImageAlgorithm::magicErase(QImage *image,
       }
     }
   }
-  int tmp = 1;
   delete [] vector;
   delete [] visited;
 }
 
 BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
-                                            ImageToGrayAlgorithmType type)
+                                            ImageToGrayAlgorithmType type,
+                                            const Area& area)
 {
-  BasicStatistic result(image.width(), image.height());
+  BasicStatistic result;
   if (!validType(image))
     return result;
   int width = image.width();
@@ -1146,13 +1428,17 @@ BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
     imageDataPtr = backup + realWidth * i;
     for(int j = 0;j < width;++j)
     {
-      int r, g, b, a;
-      getRGBA(imageDataPtr, r, g, b, a);
-      int gray = calculateGray(r, g, b, type);
-      ++result.counts[BasicStatistic::Red][r];
-      ++result.counts[BasicStatistic::Green][g];
-      ++result.counts[BasicStatistic::Blue][b];
-      ++result.counts[BasicStatistic::Gray][gray];
+      if (area.getType() == Area::TypeEmpty || area.in(j, i))
+      {
+        int r, g, b, a;
+        getRGBA(imageDataPtr, r, g, b, a);
+        int gray = calculateGray(r, g, b, type);
+        ++result.counts[BasicStatistic::Red][r];
+        ++result.counts[BasicStatistic::Green][g];
+        ++result.counts[BasicStatistic::Blue][b];
+        ++result.counts[BasicStatistic::Gray][gray];
+        ++result._pixels;
+      }
       imageDataPtr += 4;
     }
   }
@@ -1160,9 +1446,10 @@ BasicStatistic ImageAlgorithm::getStatistic(const QImage& image,
 }
 
 int ImageAlgorithm::OTSU(const QImage& image,
-                         ImageToGrayAlgorithmType type)
+                         ImageToGrayAlgorithmType type,
+                         Area area)
 {
-  BasicStatistic statistic = getStatistic(image, type);
+  BasicStatistic statistic = getStatistic(image, type, area);
   double maxDelta = 0;
   int result = 0;
   for(int i = 0;i <= MAX_COLOR_VALUE;++i)
@@ -1237,9 +1524,10 @@ double caculateCurrentEntropy(int histogram[],int curThreshold, EntropyState sta
 }
 
 int ImageAlgorithm::maxEntropy(const QImage& image,
-                               ImageToGrayAlgorithmType type)
+                               ImageToGrayAlgorithmType type,
+                               Area area)
 {
-  BasicStatistic statistic = getStatistic(image, type);
+  BasicStatistic statistic = getStatistic(image, type, area);
   int result = 0;
   double maxEntropy = -1;
   for(int i = 0;i <= MAX_COLOR_VALUE;++i)

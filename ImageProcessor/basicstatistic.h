@@ -17,17 +17,17 @@ public:
   /**
    * Constructor.
    */
-  BasicStatistic(int width, int height);
+  BasicStatistic();
 
   /**
-   * Width of the image.
+   * Constructor.
    */
-  int _width;
+  BasicStatistic(int pixels);
 
   /**
-   * Height of the image.
+   * Number of pixels.
    */
-  int _height;
+  int _pixels;
 
   /**
    * Array to store the statistic.

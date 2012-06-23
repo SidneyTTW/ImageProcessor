@@ -211,6 +211,11 @@ public slots:
   void open();
 
   /**
+   * Reconstruct.
+   */
+  void reconstruct();
+
+  /**
    * Save.
    */
   void saveAs();

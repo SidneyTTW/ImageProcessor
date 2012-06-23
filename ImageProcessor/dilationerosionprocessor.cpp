@@ -62,10 +62,9 @@ QImage *DilationErosionProcessor::processImage(const QImage& image) const
             new ImageAlgorithm::GrayErosionFilter(_matrix.data(), _center, _width, _height);
         result = ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(image, _area, filter);
         delete filter;
-        break;
         ImageAlgorithm::GrayDilationFilter *filter2 =
             new ImageAlgorithm::GrayDilationFilter(_matrix.data(), _center, _width, _height);
-        result = ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(image, _area, filter2);
+        ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(result, _area, filter2);
         delete filter2;
         break;
       }
@@ -75,10 +74,9 @@ QImage *DilationErosionProcessor::processImage(const QImage& image) const
             new ImageAlgorithm::GrayDilationFilter(_matrix.data(), _center, _width, _height);
         result = ImageAlgorithm::filtImage<ImageAlgorithm::GrayDilationFilter>(image, _area, filter);
         delete filter;
-        break;
         ImageAlgorithm::GrayErosionFilter *filter2 =
             new ImageAlgorithm::GrayErosionFilter(_matrix.data(), _center, _width, _height);
-        result = ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(image, _area, filter2);
+        ImageAlgorithm::filtImage<ImageAlgorithm::GrayErosionFilter>(result, _area, filter2);
         delete filter2;
         break;
       }
@@ -110,10 +108,9 @@ QImage *DilationErosionProcessor::processImage(const QImage& image) const
             new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
         result = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter);
         delete filter;
-        break;
         ImageAlgorithm::DilationFilter *filter2 =
             new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
-        result = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter2);
+        ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(result, _area, filter2);
         delete filter2;
         break;
       }
@@ -123,10 +120,9 @@ QImage *DilationErosionProcessor::processImage(const QImage& image) const
             new ImageAlgorithm::DilationFilter(_matrix.data(), _center, _width, _height);
         result = ImageAlgorithm::filtImage<ImageAlgorithm::DilationFilter>(image, _area, filter);
         delete filter;
-        break;
         ImageAlgorithm::ErosionFilter *filter2 =
             new ImageAlgorithm::ErosionFilter(_matrix.data(), _center, _width, _height);
-        result = ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(image, _area, filter2);
+        ImageAlgorithm::filtImage<ImageAlgorithm::ErosionFilter>(result, _area, filter2);
         delete filter2;
         break;
       }

@@ -1,26 +1,21 @@
-#ifndef TOBLACKANDWHITEPROCESSOR_H
-#define TOBLACKANDWHITEPROCESSOR_H
+#ifndef DISTANCETRANSFORMPROCESSOR_H
+#define DISTANCETRANSFORMPROCESSOR_H
 
 #include "abstractimageprocessorwithdialogoption.h"
 
-#include <QVector>
+#include "imagealgorithm.h"
 
 /**
- * Class of processor to convert an image into black and white.
+ * Class of processor to resize an image.
  */
-class ToBlackAndWhiteProcessor : public AbstractImageProcessorWithDialogOption
+class DistanceTransformProcessor : public AbstractImageProcessorWithDialogOption
 {
   Q_OBJECT
 public:
   /**
-   * Type of the threshold.
-   */
-  enum ThresholdType {OTSU, MaxEntropy, Custom};
-
-  /**
    * Constructor.
    */
-  ToBlackAndWhiteProcessor();
+  DistanceTransformProcessor();
 
   virtual Area::AreaType acceptableAreaType() const;
   virtual Area::AreaTypeFlag resultAreaType() const;
@@ -38,33 +33,20 @@ public:
 
 private:
   /**
-   * The thresholds.
+   * Type.
    */
-  QVector<int> thresholds;
+  ImageAlgorithm::DistanceTransformType type;
 
   /**
-   * The type of the convertion.
+   * Size.
    */
-  ThresholdType type;
-
-  /**
-   * The area to convert.
-   */
-  Area _area;
-
-  /**
-   * The start color.
-   */
-  int startColor;
+  int size;
 
 private slots:
   /**
    * Slot used to get the confirm.
    */
-  void confirm(ToBlackAndWhiteProcessor::ThresholdType type,
-               int startColor,
-               QVector<int> thresholds,
-               Area area);
+  void confirm(ImageAlgorithm::DistanceTransformType type, int size);
 };
 
-#endif // TOBLACKANDWHITEPROCESSOR_H
+#endif // DISTANCETRANSFORMPROCESSOR_H

@@ -14,9 +14,9 @@ HistogramMatchDialog::HistogramMatchDialog(const QImage& image, QWidget *parent)
     _image(image)
 {
   ui->setupUi(this);
-  targetPlot = new BasicStatisticPlot(BasicStatistic(image.width(), image.height()));
+  targetPlot = new BasicStatisticPlot(BasicStatistic(image.width() * image.height()));
   ui->statisticLayout->addWidget(targetPlot);
-  resultPlot = new BasicStatisticPlot(BasicStatistic(image.width(), image.height()));
+  resultPlot = new BasicStatisticPlot(BasicStatistic(image.width() * image.height()));
   ui->statisticLayout->addWidget(resultPlot);
   resetPreview();
 }
@@ -56,7 +56,7 @@ void HistogramMatchDialog::resetPreview()
   else
   {
     ui->imageViewerWidget->setImage(_image);
-    targetPlot->setStatistic(BasicStatistic(_image.width(), _image.height()));
+    targetPlot->setStatistic(BasicStatistic(_image.width() * _image.height()));
     resultPlot->setStatistic(statistic1);
   }
 }

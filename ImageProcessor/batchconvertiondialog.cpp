@@ -48,7 +48,7 @@ void BatchConvertionDialog::on_addFileButton_clicked()
                      (this,
                       "Select image files",
                       tr(""),
-                      "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
+                      "Image (*.png *.jpg *.jpeg *.bmp *.gif *.tif)");
   QStringList list2 = model->stringList();
   list2.append(list);
   model->setStringList(list2);

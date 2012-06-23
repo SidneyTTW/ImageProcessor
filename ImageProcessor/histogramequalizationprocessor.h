@@ -41,6 +41,20 @@ public:
     return _tunel;
   }
 
+  /**
+   * Calculate the map.
+   *
+   * @param statistic The statistic.
+   * @param mapR Map of red.
+   * @param mapG Map of green.
+   * @param mapB Map of blue.
+   */
+  static void calculateRGBMap(const BasicStatistic& statistic,
+                              int mapR[MAX_COLOR_VALUE + 1],
+                              int mapG[MAX_COLOR_VALUE + 1],
+                              int mapB[MAX_COLOR_VALUE + 1],
+                              ImageAlgorithm::RGBAField tunel);
+
 private:
   /**
    * The tunel to change.
@@ -51,19 +65,6 @@ private:
    * The option widget.
    */
   HistogramEqualizationOptionWidget *_optionWidget;
-
-  /**
-   * Calculate the map.
-   *
-   * @param statistic The statistic.
-   * @param mapR Map of red.
-   * @param mapG Map of green.
-   * @param mapB Map of blue.
-   */
-  void calculateRGBMap(const BasicStatistic& statistic,
-                       int mapR[MAX_COLOR_VALUE + 1],
-                       int mapG[MAX_COLOR_VALUE + 1],
-                       int mapB[MAX_COLOR_VALUE + 1]) const;
 
 private slots:
   /**

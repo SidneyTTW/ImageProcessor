@@ -71,7 +71,12 @@ SOURCES += main.cpp\
     rgbmapdialog.cpp \
     rgbmapplot.cpp \
     xyplotpicker.cpp \
-    rgbmapprocessor.cpp
+    rgbmapprocessor.cpp \
+    histogramdilationerosionprocessor.cpp \
+    histogramequalizationprocessor2.cpp \
+    distancetransformprocessor.cpp \
+    distancetransformdialog.cpp \
+    skeletonprocessor.cpp
 
 HEADERS  += mainwindow.h \
     area.h \
@@ -138,7 +143,12 @@ HEADERS  += mainwindow.h \
     rgbmapdialog.h \
     rgbmapplot.h \
     xyplotpicker.h \
-    rgbmapprocessor.h
+    rgbmapprocessor.h \
+    histogramdilationerosionprocessor.h \
+    histogramequalizationprocessor2.h \
+    distancetransformprocessor.h \
+    distancetransformdialog.h \
+    skeletonprocessor.h
 
 FORMS    += mainwindow.ui \
     tograyoptionwidget.ui \
@@ -157,7 +167,8 @@ FORMS    += mainwindow.ui \
     rotatedialog.ui \
     bounddialog.ui \
     dilationerosiondialog.ui \
-    rgbmapdialog.ui
+    rgbmapdialog.ui \
+    distancetransformdialog.ui
 
 INCLUDEPATH += c:/qwt
 CONFIG += qwt

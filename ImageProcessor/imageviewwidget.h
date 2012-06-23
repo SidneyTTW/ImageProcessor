@@ -36,6 +36,7 @@ public:
    */
   ~MyScene()
   {
+    removeItem(cursorItem);
     delete cursorItem;
   }
 

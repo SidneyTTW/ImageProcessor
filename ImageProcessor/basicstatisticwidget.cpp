@@ -10,7 +10,7 @@ BasicStatisticWidget::BasicStatisticWidget(QWidget *parent) :
     ui(new Ui::BasicStatisticWidget)
 {
   ui->setupUi(this);
-  plot = new BasicStatisticPlot(BasicStatistic(0, 0));
+  plot = new BasicStatisticPlot(BasicStatistic());
   zoomer = new QwtPlotZoomer(plot->canvas());
   zoomer->setZoomBase();
 

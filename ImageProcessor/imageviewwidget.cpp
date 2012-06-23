@@ -261,6 +261,7 @@ bool ImageViewWidget::eventFilter(QObject *object, QEvent *event)
 ImageViewWidget::~ImageViewWidget()
 {
   delete label;
+  scene->removeItem(imageItem);
   delete imageItem;
   delete scene;
   delete view;

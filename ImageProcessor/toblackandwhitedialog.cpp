@@ -7,9 +7,11 @@
 #include "xplotpicker.h"
 
 ToBlackAndWhiteDialog::ToBlackAndWhiteDialog(const MyImage& image,
+                                             const Area& area,
                                              QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ToBlackAndWhiteDialog)
+    ui(new Ui::ToBlackAndWhiteDialog),
+    _area(area)
 {
   ui->setupUi(this);
 
@@ -206,7 +208,7 @@ void ToBlackAndWhiteDialog::resetPreview()
     thresholds.append(singleThreshold);
   else
     thresholds = _thresholds;
-  QImage *image = ImageAlgorithm::convertToBlackAndWhite(_image, thresholds, startColor);
+  QImage *image = ImageAlgorithm::convertToBlackAndWhite(_image, thresholds, startColor, _area);
   ui->imageViewerWidget->setImage(*image);
   delete image;
 }
@@ -232,7 +234,9 @@ void ToBlackAndWhiteDialog::on_OTSUButton_toggled(bool checked)
   xPlotPicker->setEnabled(false);
   xPlotPicker->setRubberBand(QwtPicker::NoRubberBand);
   ui->thresholdSpinBox->setEnabled(false);
-  singleChanged(ImageAlgorithm::OTSU(_image, ImageAlgorithm::Green));
+  singleChanged(ImageAlgorithm::OTSU(_image,
+                                     ImageAlgorithm::Green,
+                                     _area));
 }
 
 void ToBlackAndWhiteDialog::on_maxEntropyButton_toggled(bool checked)
@@ -242,7 +246,9 @@ void ToBlackAndWhiteDialog::on_maxEntropyButton_toggled(bool checked)
   xPlotPicker->setEnabled(false);
   xPlotPicker->setRubberBand(QwtPicker::NoRubberBand);
   ui->thresholdSpinBox->setEnabled(false);
-  singleChanged(ImageAlgorithm::maxEntropy(_image, ImageAlgorithm::Green));
+  singleChanged(ImageAlgorithm::maxEntropy(_image,
+                                           ImageAlgorithm::Green,
+                                           _area));
 }
 
 void ToBlackAndWhiteDialog::on_okPushButton_clicked()
@@ -259,7 +265,7 @@ void ToBlackAndWhiteDialog::on_okPushButton_clicked()
     thresholds.append(singleThreshold);
   else
     thresholds = _thresholds;
-  emit confirm(type, startColor, thresholds);
+  emit confirm(type, startColor, thresholds, _area);
   accept();
 }
 

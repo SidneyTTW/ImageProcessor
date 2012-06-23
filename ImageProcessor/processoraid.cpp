@@ -5,11 +5,13 @@
 #include "algebraoperationprocessor.h"
 #include "boundprocessor.h"
 #include "dilationerosionprocessor.h"
+#include "distancetransformprocessor.h"
 #include "drawlineprocessor.h"
 #include "eraseprocessor.h"
 #include "fastgaussprocessor.h"
 #include "filterprocessor.h"
 #include "histogramequalizationprocessor.h"
+#include "histogramequalizationprocessor2.h"
 #include "histogrammatchprocessor.h"
 #include "hslprocessor.h"
 #include "magiceraseprocessor.h"
@@ -21,6 +23,7 @@
 #include "rgbmapprocessor.h"
 #include "rotateprocessor.h"
 #include "sharpenprocessor.h"
+#include "skeletonprocessor.h"
 #include "tograyprocessor.h"
 #include "toblackandwhiteprocessor.h"
 
@@ -50,8 +53,11 @@ QVector<AbstractImageProcessorWithDialogOption *> ProcessorAid::complexOptions()
   result.push_back(new BoundProcessor());
   result.push_back(new HSLProcessor());
   result.push_back(new AlgebraOperationProcessor());
+  result.push_back(new HistogramEqualizationProcessor2());
   result.push_back(new HistogramMatchProcessor());
   result.push_back(new PointProcessor());
+  result.push_back(new DistanceTransformProcessor());
+  result.push_back(new SkeletonProcessor());
   result.push_back(new DilationErosionProcessor());
   result.push_back(new RGBMapProcessor());
   return result;

@@ -53,6 +53,8 @@ namespace ImageAlgorithm
    */
   enum AlgebraOperationType{Add, Minus, Multiply, Divide};
 
+  enum DistanceTransformType{GeometricDistance, BlockDistance, ChessboardDistance};
+
   /**
    * The type of the RGBA fields.
    */
@@ -360,8 +362,9 @@ namespace ImageAlgorithm
    * @param startColor The start color, 0 means black, 1 means white.
    */
   QImage *convertToBlackAndWhite(const QImage& image,
-                                        QVector<int> threshold,
-                                        int startColor=0);
+                                 QVector<int> threshold,
+                                 int startColor,
+                                 Area area);
 
   /**
    * Convert an image to a black and white.
@@ -371,8 +374,9 @@ namespace ImageAlgorithm
    * @param startColor The start color, 0 means black, 1 means white.
    */
   void convertToBlackAndWhite(QImage *image,
-                                     QVector<int> threshold,
-                                     int startColor=0);
+                              QVector<int> threshold,
+                              int startColor,
+                              Area area);
 
   /**
    * Filt an image according to given filter.
@@ -582,6 +586,18 @@ namespace ImageAlgorithm
    */
   void erase(QImage *image, const Area& area, const QColor& color);
 
+  QImage *distanceTransform(const QImage &image,
+                            DistanceTransformType type,
+                            int size);
+
+  void distanceTransform(QImage *image, DistanceTransformType type, int size);
+
+  QImage *skeleton(const QImage &image);
+
+  void skeleton(QImage *image);
+
+  QImage *skeletonReconstruct(const QString& dir);
+
   /**
    * Erase a point and nearby points if their color are similar.
    *
@@ -607,7 +623,8 @@ namespace ImageAlgorithm
    * @param type The type of algorithm to use.
    */
   BasicStatistic getStatistic(const QImage& image,
-                              ImageToGrayAlgorithmType type);
+                              ImageToGrayAlgorithmType type,
+                              const Area& area=Area());
 
 
   /**
@@ -616,7 +633,9 @@ namespace ImageAlgorithm
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  int OTSU(const QImage& image, ImageToGrayAlgorithmType type);
+  int OTSU(const QImage& image,
+           ImageToGrayAlgorithmType type,
+           Area area);
 
 
   /**
@@ -625,7 +644,9 @@ namespace ImageAlgorithm
    * @param image The image.
    * @param type The type of algorithm to use.
    */
-  int maxEntropy(const QImage& image, ImageToGrayAlgorithmType type);
+  int maxEntropy(const QImage& image,
+                 ImageToGrayAlgorithmType type,
+                 Area area);
 
   /**
    * @param k (2k+1) will be the size of the core.
@@ -867,7 +888,7 @@ namespace ImageAlgorithm
       _center(center)
     {
       _matrix = new int[width * height];
-      memcpy(_matrix, matrix, width * height * 4);
+      memcpy(_matrix, matrix, width * height * sizeof(int));
     }
 
     /**
@@ -906,7 +927,7 @@ namespace ImageAlgorithm
         if (isNull[i])
           continue;
         getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
-        if (_matrix[i] != 0 && _matrix[i] <= sg)
+        if (_matrix[i] != -(MAX_COLOR_VALUE + 1) && _matrix[i] <= sg)
         {
           touch = true;
           break;
@@ -958,7 +979,7 @@ namespace ImageAlgorithm
       _center(center)
     {
       _matrix = new int[width * height];
-      memcpy(_matrix, matrix, width * height * 4);
+      memcpy(_matrix, matrix, width * height * sizeof(int));
     }
 
     /**
@@ -994,7 +1015,7 @@ namespace ImageAlgorithm
       int value = 0;
       for (int i = 0;i < n;++i)
       {
-        if (isNull[i])
+        if (isNull[i] || _matrix[i] == -(MAX_COLOR_VALUE + 1))
           continue;
         getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
         value = qBound(value, _matrix[i] + sg, MAX_COLOR_VALUE);
@@ -1040,7 +1061,7 @@ namespace ImageAlgorithm
       _center(center)
     {
       _matrix = new int[width * height];
-      memcpy(_matrix, matrix, width * height * 4);
+      memcpy(_matrix, matrix, width * height * sizeof(int));
     }
 
     /**
@@ -1078,9 +1099,12 @@ namespace ImageAlgorithm
       for (int i = 0;i < n;++i)
       {
         if (isNull[i])
-          continue;
+        {
+          allIn = false;
+          break;
+        }
         getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
-        if (_matrix[i] != 0 && _matrix[i] > sg)
+        if (_matrix[i] != -(MAX_COLOR_VALUE + 1) && _matrix[i] > sg)
         {
           allIn = false;
           break;
@@ -1130,7 +1154,7 @@ namespace ImageAlgorithm
       _center(center)
     {
       _matrix = new int[width * height];
-      memcpy(_matrix, matrix, width * height * 4);
+      memcpy(_matrix, matrix, width * height * sizeof(int));
     }
 
     /**
@@ -1167,7 +1191,7 @@ namespace ImageAlgorithm
       int value = MAX_COLOR_VALUE;
       for (int i = 0;i < n;++i)
       {
-        if (isNull[i])
+        if (isNull[i] || _matrix[i] == -(MAX_COLOR_VALUE + 1))
           continue;
         getRGBA(imageDataPtr + offsets[i], sr, sg, sb, sa);
         value = qBound(0, sg - _matrix[i], value);

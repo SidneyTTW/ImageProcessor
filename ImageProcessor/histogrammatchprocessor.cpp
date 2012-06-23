@@ -86,7 +86,7 @@ void HistogramMatchProcessor::calculateRGBMap(const BasicStatistic& statistic1,
   for (int i = 0;i <= MAX_COLOR_VALUE;++i)
   {
     sum += statistic2.counts[BasicStatistic::Gray][i];
-    rates[i] = 1.0 * sum / (statistic2._width * statistic2._height);
+    rates[i] = 1.0 * sum / (statistic2._pixels);
   }
   int index = 0;
   sum = 0;
@@ -94,7 +94,7 @@ void HistogramMatchProcessor::calculateRGBMap(const BasicStatistic& statistic1,
   {
     sum += statistic1.counts[BasicStatistic::Gray][i];
     while (index < MAX_COLOR_VALUE &&
-           1.0 * sum / (statistic1._width * statistic1._height) > rates[index])
+           1.0 * sum / (statistic1._pixels) > rates[index])
       ++index;
     mapR[i] = index;
     mapG[i] = index;

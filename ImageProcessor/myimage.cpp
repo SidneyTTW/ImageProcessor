@@ -65,25 +65,25 @@ void MyImage::save(const QString& path) const
   int realWidth = _image.bytesPerLine();
   const unsigned char *backup = imageDataPtr;
 
-  bool hasColor = false;
+  bool hasColor = true;
 
-  for(int i = 0;i < height;++i)
-  {
-    imageDataPtr = backup + realWidth * i;
-    for(int j = 0;j < width;++j)
-    {
-      int r, g, b, a;
-      ImageAlgorithm::getRGBA(imageDataPtr, r, g, b, a);
-      if (r != g || r != b)
-      {
-        hasColor = true;
-        break;
-      }
-      imageDataPtr += 4;
-    }
-    if (hasColor)
-      break;
-  }
+//  for(int i = 0;i < height;++i)
+//  {
+//    imageDataPtr = backup + realWidth * i;
+//    for(int j = 0;j < width;++j)
+//    {
+//      int r, g, b, a;
+//      ImageAlgorithm::getRGBA(imageDataPtr, r, g, b, a);
+//      if (r != g || r != b)
+//      {
+//        hasColor = true;
+//        break;
+//      }
+//      imageDataPtr += 4;
+//    }
+//    if (hasColor)
+//      break;
+//  }
 
   if (hasColor)
     _image.save(path);

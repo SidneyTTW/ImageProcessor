@@ -148,10 +148,17 @@ Area Area::fromString(const QString& str)
   case TypeRectangle:
     if (list.size() != 4)
       break;
-    result = Area(QRect(list.takeFirst().toInt(),
-                        list.takeFirst().toInt(),
-                        list.takeFirst().toInt(),
-                        list.takeFirst().toInt()));
+    {
+      int values[4];
+      values[0] = list.takeFirst().toInt();
+      values[1] = list.takeFirst().toInt();
+      values[2] = list.takeFirst().toInt();
+      values[3] = list.takeFirst().toInt();
+      result = Area(QRect(values[0],
+                          values[1],
+                          values[2],
+                          values[3]));
+    }
     break;
   case TypePolygon:
     {
@@ -160,18 +167,29 @@ Area Area::fromString(const QString& str)
         break;
       QPolygon poly;
       for (int i = 0;i < size;++i)
-        poly.append(QPoint(list.takeFirst().toInt(),
-                           list.takeFirst().toInt()));
+      {
+        int values[2];
+        values[0] = list.takeFirst().toInt();
+        values[1] = list.takeFirst().toInt();
+        poly.append(QPoint(values[0], values[1]));
+      }
       result = Area(poly);
     }
     break;
   case TypeEllipse:
     if (list.size() != 4)
       break;
-    result = Area(Ellipse(QPoint(list.takeFirst().toInt(),
-                                 list.takeFirst().toInt()),
-                          list.takeFirst().toInt(),
-                          list.takeFirst().toInt()));
+    {
+      int values[4];
+      values[0] = list.takeFirst().toInt();
+      values[1] = list.takeFirst().toInt();
+      values[2] = list.takeFirst().toInt();
+      values[3] = list.takeFirst().toInt();
+      result = Area(Ellipse(QPoint(values[0],
+                                   values[1]),
+                            values[2],
+                            values[3]));
+    }
     break;
   default:
     break;

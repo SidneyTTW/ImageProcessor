@@ -13,6 +13,7 @@
 #include "batchconvertiondialog.h"
 #include "basicstatisticwidget.h"
 #include "colorchooser.h"
+#include "imagealgorithm.h"
 #include "imageprocessorwithsimpleoptionaction.h"
 #include "imageprocessorwithcomplexoptionaction.h"
 #include "imageviewwidget.h"
@@ -126,6 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
   connect(ui->newAction, SIGNAL(triggered()), this, SLOT(newFile()));
   connect(ui->openAction, SIGNAL(triggered()), this, SLOT(open()));
+  connect(ui->reconstructAction, SIGNAL(triggered()), this, SLOT(reconstruct()));
   connect(ui->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
   connect(ui->openChainAction, SIGNAL(triggered()), this, SLOT(openChain()));
   connect(ui->saveChainAction, SIGNAL(triggered()), this, SLOT(saveChain()));
@@ -178,9 +180,9 @@ void MainWindow::complexActionSelected(QObject *action)
   if (widget == NULL || processChain == NULL)
     return;
   QDialog *dialog = ((ImageProcessorWithComplexOptionAction *)action)->
-                    getConfiguarionInstance()->
-                    getOptionDialog(widget->getArea(),
-                                    *processChain->getCurrentImage());
+                     getConfiguarionInstance()->
+                     getOptionDialog(widget->getArea(),
+                                     *processChain->getCurrentImage());
   if (dialog != NULL)
     dialog->exec();
 }
@@ -424,12 +426,46 @@ void MainWindow::open()
       QFileDialog::getOpenFileNames(this,
                                     "Select an image file",
                                     tr(""),
-                                    "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
+                                    "Image (*.png *.jpg *.jpeg *.bmp *.gif *.tif)");
   if (paths.isEmpty())
     return;
   QString path;
   foreach (path, paths)
     open(path);
+}
+
+void MainWindow::reconstruct()
+{
+  QString path = QFileDialog::getExistingDirectory(this,
+                                                   "Select a folder of skeleton");
+  if (path.isEmpty())
+    return;
+  QImage *i = ImageAlgorithm::skeletonReconstruct(path);
+  if (i == NULL)
+  {
+    QMessageBox::critical(this,
+                          "Failed to reconstruct from the folder",
+                          tr("Failed to reconstruct: %1").
+                          arg(path));
+    return;
+  }
+  MyImage *image = new MyImage(*i, MyImage::BlackAndWhite);
+  delete i;
+  disconnectAll();
+  ImageViewWidget *widget = new ImageViewWidget();
+  statisticWidget->setBoundedImageView(widget);
+  connect(widget, SIGNAL(areaChanged(Area)), this, SLOT(areaChanged(Area)));
+  QAction *action = ui->windowMenu->addAction(path, signalMapper3, SLOT(map()));
+  signalMapper3->setMapping(action, (QObject *)widget);
+  widget->setImage(image->getImage());
+  processChains.insert(widget, new ProcessChain(image));
+  actions.insert(widget, action);
+  ui->stackedWidget->addWidget(widget);
+  ui->stackedWidget->setCurrentWidget(widget);
+  enableDisableActions();
+  setWindowTitle(tr("Image Processor--%1").arg(action->text()));
+  return;
+
 }
 
 void MainWindow::open(QString path)
@@ -440,11 +476,12 @@ void MainWindow::open(QString path)
       suffix != "jpg" &&
       suffix != "jpeg" &&
       suffix != "bmp" &&
-      suffix != "gif")
+      suffix != "gif" &&
+      suffix != "tif")
   {
     QMessageBox::critical(this,
                           "Wrong type of image",
-                          tr("Can't open file: %1\nThis program only accepts *.png *.jpg *.jpeg *.bmp *.gif").
+                          tr("Can't open file: %1\nThis program only accepts *.png *.jpg *.jpeg *.bmp *.gif *.tif").
                           arg(path));
     return;
   }
@@ -493,7 +530,8 @@ void MainWindow::dropEvent(QDropEvent *event)
           suffix == "jpg" ||
           suffix == "jpeg" ||
           suffix == "bmp" ||
-          suffix == "gif")
+          suffix == "gif" ||
+          suffix == "tif")
         open(url.toLocalFile());
       else if (suffix == "pc")
         openChain(url.toLocalFile());
@@ -515,7 +553,7 @@ void MainWindow::saveAs()
          getSaveFileName(this,
                          "Set the name of the image file",
                          path,
-                         "JPEG(*.jpg *.jpeg);;BMP(*.bmp);;PNG(*.png)");
+                         "JPEG(*.jpg *.jpeg);;BMP(*.bmp);;PNG(*.png);;TIFF(*tif)");
   if (path.isEmpty())
     return;
   processChain->getCurrentImage()->save(path);

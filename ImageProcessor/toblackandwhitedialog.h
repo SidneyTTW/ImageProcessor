@@ -27,7 +27,9 @@ public:
   /**
    * Constructor
    */
-  explicit ToBlackAndWhiteDialog(const MyImage& image, QWidget *parent = 0);
+  explicit ToBlackAndWhiteDialog(const MyImage& image,
+                                 const Area& area,
+                                 QWidget *parent = 0);
 
   /**
    * Destructor
@@ -61,6 +63,11 @@ private:
    * The multiple thresholds.
    */
   QVector<int> _thresholds;
+
+  /**
+   * The area to convert.
+   */
+  Area _area;
 
   /**
    * The item to show the thresholds.
@@ -141,7 +148,8 @@ signals:
    */
   void confirm(ToBlackAndWhiteProcessor::ThresholdType type,
                int startColor,
-               QVector<int> thresholds);
+               QVector<int> thresholds,
+               Area area);
 };
 
 #endif // TOBLACKANDWHITEDIALOG_H

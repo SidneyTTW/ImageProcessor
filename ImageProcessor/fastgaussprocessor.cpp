@@ -72,8 +72,8 @@ QWidget *FastGaussProcessor::optionWidget()
   {
     _optionWidget = new QSpinBox();
     _optionWidget->setMinimum(1);
-    _optionWidget->setValue(10);;
-    _optionWidget->setMaximum(200);
+    _optionWidget->setValue(10);
+    _optionWidget->setMaximum(2000);
     connect(_optionWidget,
             SIGNAL(valueChanged(int)),
             this,

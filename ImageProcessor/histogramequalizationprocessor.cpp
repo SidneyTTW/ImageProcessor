@@ -22,7 +22,7 @@ QImage *HistogramEqualizationProcessor::processImage(const QImage& image) const
   int mapR[MAX_COLOR_VALUE + 1];
   int mapG[MAX_COLOR_VALUE + 1];
   int mapB[MAX_COLOR_VALUE + 1];
-  calculateRGBMap(statistic, mapR, mapG, mapB);
+  calculateRGBMap(statistic, mapR, mapG, mapB, _tunel);
   QImage *result = ImageAlgorithm::changeRGBWithMap(image,
                                                     mapR,
                                                     mapG,
@@ -35,10 +35,10 @@ void HistogramEqualizationProcessor::processImage(QImage *image) const
 {
   BasicStatistic statistic =
       ImageAlgorithm::getStatistic(*image, ImageAlgorithm::Green);
-  int mapR[MAX_COLOR_VALUE];
-  int mapG[MAX_COLOR_VALUE];
-  int mapB[MAX_COLOR_VALUE];
-  calculateRGBMap(statistic, mapR, mapG, mapB);
+  int mapR[MAX_COLOR_VALUE + 1];
+  int mapG[MAX_COLOR_VALUE + 1];
+  int mapB[MAX_COLOR_VALUE + 1];
+  calculateRGBMap(statistic, mapR, mapG, mapB, _tunel);
   ImageAlgorithm::changeRGBWithMap(image, mapR, mapG, mapB, _tunel);
 }
 
@@ -77,23 +77,24 @@ void HistogramEqualizationProcessor::calculateRGBMap
     (const BasicStatistic& statistic,
      int mapR[MAX_COLOR_VALUE + 1],
      int mapG[MAX_COLOR_VALUE + 1],
-     int mapB[MAX_COLOR_VALUE + 1]) const
+     int mapB[MAX_COLOR_VALUE + 1],
+     ImageAlgorithm::RGBAField tunel)
 {
   int sumR = 0, sumG = 0, sumB = 0;
-  int points = statistic._width * statistic._height;
+  int points = statistic._pixels;
   for (int i = 0;i <= MAX_COLOR_VALUE;++i)
   {
-    if (_tunel.testFlag(ImageAlgorithm::Field_R))
+    if (tunel.testFlag(ImageAlgorithm::Field_R))
     {
       sumR += statistic.counts[BasicStatistic::Red][i];
       mapR[i] = MAX_COLOR_VALUE * sumR / points;
     }
-    if (_tunel.testFlag(ImageAlgorithm::Field_G))
+    if (tunel.testFlag(ImageAlgorithm::Field_G))
     {
       sumG += statistic.counts[BasicStatistic::Green][i];
       mapG[i] = MAX_COLOR_VALUE * sumG / points;
     }
-    if (_tunel.testFlag(ImageAlgorithm::Field_B))
+    if (tunel.testFlag(ImageAlgorithm::Field_B))
     {
       sumB += statistic.counts[BasicStatistic::Blue][i];
       mapB[i] = MAX_COLOR_VALUE * sumB / points;

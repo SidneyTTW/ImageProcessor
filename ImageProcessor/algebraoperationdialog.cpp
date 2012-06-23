@@ -107,6 +107,6 @@ void AlgebraOperationDialog::on_fileButton_clicked()
       QFileDialog::getOpenFileName(this,
                                    "Select an image file",
                                    tr(""),
-                                   "Image (*.png *.jpg *.jpeg *.bmp *.gif)");
+                                   "Image (*.png *.jpg *.jpeg *.bmp *.gif *.tif)");
   ui->fileEdit->setText(path);
 }
